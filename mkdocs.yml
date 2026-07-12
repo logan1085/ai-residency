@@ -44,5 +44,10 @@ nav:
       - Module 8: curriculum/modules/module-08-research-methods.md
       - Module 9: curriculum/modules/module-09-systems-deployment.md
       - Module 10: curriculum/modules/module-10-capstone.md
+  - Progress:
+      - Dashboard: progress/index.md
+      - Work Log: progress/log.md
+      - Mastery Rubric: progress/rubric.md
+      - Day 1: progress/day-01.md
   - Code:
       - Transformer From Scratch: code/transformer-from-scratch.md

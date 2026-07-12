@@ -20,7 +20,8 @@ Module 1 builds a mechanistic understanding of modern language models by impleme
 
 ## Assignments
 
-- Read the annotated code in [`src/transformer_from_scratch.py`](https://github.com/logan1085/ai-residency/blob/main/src/transformer_from_scratch.py).
+- Write a tiny transformer from scratch before leaning on the reference implementation.
+- Use [`src/transformer_from_scratch.py`](https://github.com/logan1085/ai-residency/blob/main/src/transformer_from_scratch.py) as the reference only after the first implementation pass.
 - Reproduce the tensor shapes for one batch by hand.
 - Run the smoke tests and record parameter count, logits shape, and loss.
 - Modify `n_heads`, `d_model`, and `context_length`; document which combinations are valid.
@@ -34,6 +35,7 @@ Module 1 builds a mechanistic understanding of modern language models by impleme
 ## Proof of Mastery
 
 - A written walkthrough explaining each class in the implementation.
+- A personal scratch implementation or annotated diff showing what was written independently.
 - Passing tests for forward shape, loss computation, and generation.
 - A diagram-level explanation using the [transformer architecture diagram](../../assets/images/transformer-from-scratch.svg).
 - A short demo showing generation before and after training.
