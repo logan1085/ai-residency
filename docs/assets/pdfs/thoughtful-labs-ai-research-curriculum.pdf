@@ -1,152 +1,131 @@
 %PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
+<<
+/F1 2 0 R /F2 3 0 R
+>>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
 endobj
 3 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
 endobj
 4 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+<<
+/Contents 11 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 5 0 obj
-<< /Length 2281 >>
+<<
+/Contents 12 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+6 0 obj
+<<
+/Contents 13 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+7 0 obj
+<<
+/Contents 14 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 10 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+8 0 obj
+<<
+/PageMode /UseNone /Pages 10 0 R /Type /Catalog
+>>
+endobj
+9 0 obj
+<<
+/Author (\(anonymous\)) /CreationDate (D:20260712021916+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260712021916+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
+>>
+endobj
+10 0 obj
+<<
+/Count 4 /Kids [ 4 0 R 5 0 R 6 0 R 7 0 R ] /Type /Pages
+>>
+endobj
+11 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 1016
+>>
 stream
-BT
-/F1 22 Tf
-72 800 Td
-(Thoughtful Labs AI Research Curriculum) Tj
-/F1 11 Tf
-0 -30 Td
-/F1 11 Tf
-(Source Outline for the Living Residency Repository) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 11 Tf
-(Program Aim) Tj
-0 -18 Td
-/F1 11 Tf
-(Convert strong AI builders into research-capable practitioners through implementation, experiments, evaluation, safety practice, and public proof of mastery.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 11 Tf
-(Modules) Tj
-0 -18 Td
-/F1 13 Tf
-(1. Transformers From Scratch) Tj
-0 -18 Td
-/F1 11 Tf
-(Attention, tokenization, positional embeddings, decoding, and a runnable minimal) Tj
-0 -18 Td
-/F1 11 Tf
-(transformer.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(2. Training and Evaluation) Tj
-0 -18 Td
-/F1 11 Tf
-(Optimization, losses, reproducibility, baselines, ablations, and experiment reports.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(3. Data, Embeddings, and RAG) Tj
-0 -18 Td
-/F1 11 Tf
-(Dataset design, embedding spaces, vector search, chunking, citations, and grounded) Tj
-0 -18 Td
-/F1 11 Tf
-(generation.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(4. Agents and Tool Use) Tj
-0 -18 Td
-/F1 11 Tf
-(Tool schemas, planning loops, memory, approval boundaries, trace review, and recovery.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(5. Multimodal Systems) Tj
-0 -18 Td
-/F1 11 Tf
-(Vision-language and audio-language workflows, non-text evaluation, interfaces, and) Tj
-0 -18 Td
-/F1 11 Tf
-(failure modes.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(6. Evaluation and Observability) Tj
-0 -18 Td
-/F1 11 Tf
-(Benchmarks, judge models, golden sets, traces, regression gates, cost, and latency.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(7. Alignment and Safety) Tj
-0 -18 Td
-/F1 11 Tf
-(Policy design, preference behavior, red teams, refusal quality, tool risk, and risk) Tj
-0 -18 Td
-/F1 11 Tf
-(registers.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(8. Research Methods) Tj
-0 -18 Td
-/F1 11 Tf
-(Literature review, replication, ablations, experiment logs, research memos, and peer) Tj
-0 -18 Td
-/F1 11 Tf
-(review.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-/F1 13 Tf
-(9. Systems and Deployment) Tj
-0 -18 Td
-/F1 11 Tf
-(Serving, APIs, monitoring, reliability, caching, cost modeling, and runbooks.) Tj
-0 -18 Td
-/F1 11 Tf
-() Tj
-0 -18 Td
-ET
-endstream
+Gau0B9lHLd&A@sBbc,V5fjumpnZ>Pq-]qX[9os\CAV%g:%D-^bijcb;Z[b8lZ'2\t/7E7ISU!<gh@'N<r/pOfU];2PI%:lm2L#fFVsf-pK8J4Uh')H\6PkIel+?B)`=qI>8r&jZn1<7G_h0CmZ@TM4P\lmTNmfAoEma9.d.LjNb[VY.$-]??_tXug=O*iP@^mtRi^&\@l"BL7JbK=oY7;eQ+8C0lb9";&bH>73%B]2U-*6MOEik3a(Q*p>,Rm\@6)8#uZe9PYA0F:>\J.&;#sK"gS5QbFOQCjBJ;V]]=#K^N)K@8slbq4o^WWiP(r#KMgZKlckn_mUPiorFUiabb\7Nh'_UgR'_9qabcIktf=&Ff'E`s9)>P'cUkWY-f&3NBM*_DVP"f?`RZa(6U;NnM7D3F`H%(Vbg%>Q;I9^k8X+W@MgekEI'Vi6<m9Y$rK"Ms_.W^S`1^!+#I8e]!pbI5XD3^Q=-VX&g<MbM6OcJ*;D.iNFrAf)6?J&D4%ciheu(V8Ooj+lnqc;&3E3&gJ(fD,rqG=KI`<Af'D'$:BrEX<Ga)JQ'G4b69E$7TRhq%o$6(@j_cn?cn?+0H;8n*:utpk]CpPos"k9!p^[0k^9DMR7'@Xu(mOjMLQJ3B(d$]sZg4Ep(qq]M!)D1AWr;h(,@HYHc!VWRn@:b\j;)VX\NPG'/;dYhVD.RBH9YO"5c4co_;u@^P+,("GiEp4Fu$i*K#T[O=tD$'*iNg1%[hs/H_/*CI88,sA;Ifrd1Ti%:Z";rR@9nk6fF3'.tM=>Hn$N`D1'd>Hd(AS+KD0pji:C<8&;VAM-+CrCJ1;3#3#[U-p58?oHeG"o3KG.%OSjYNjr1O5ih;6S5?E3\8g8*OlS;qppsoapHIY!V1'in7Q<ZC!!pQW^t9Y)R2?<M'I)h[L)`-9r<[=p*U:$"fagfIM(!N/@GngL<r$R]2mQpr#shKN"Kj>W:VX&Yhr6aJbtZGnc\8/A2+kFF;WIY-pW8Giu,4Za<S@kkkURENKZ~>endstream
+endobj
+12 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 765
+>>
+stream
+Gau1,hfG5O&BE],/+t^b9N+4kI'cc*bigl\*qOEhJlgokhLV[)laq[=PJc=>[)7i]]A.U[gunA^kgEs@^Hi4r`J;c<$S37p#V>/m!Ik:e^[ndAmD!a+E1R!9k7'RX6&ojE:iV9A>0h5r0I80;6n0Xh'Y52sc!um1a?P4T"8n4Vp,tRBokjH%^0U&'Wng;)Y4NO?7AUSm`*=E7M"h`oKd'Ws9PknbHD?%J&9p`;n7W&flQ%)Uf"a.r4GnA[,l)RuHJNYbpWE-p3k`'4MZh/t@+tc#`KUETG<3cD[fmb]QhGc/XE'a!TN/_pp0PhT;Y:6jCu*m]c$me8Xr].GKtE!E_*qVJ."g#]?ciKYNJ;_=WDkss\A2?hgp3_aNtMkA/qr8O8J-GU9>uBR!=G6\#;VZ%SeMMTPp'n[2kaU_HWGTr2,<VTP2<[/n*FK2a.1,+V8P-nMPES^X<JU5AI7AuU6jE>!o<=:;rn%Qq_cam&!a)"8Lne@HYH\[!kRR)DZO^?9fu&?pC,%)efa*%@7=kXr"W-_\-Zfb;J+SL+44VDN0l1/2bhE6l8dJ,C7L<pS2AO7rZkIThS':ZlhH]m&)6esGTkg#FJ*[X#(]H(VDsi/PC#`k7<1W@,:.&Odt"XfCrP.PcRJJdhLca8DabY4Xdu`t>N7`12YJE-/_bRnh.&q++QhfSoG&%.)P#4bC:Y0:_f@](qMgWM(n&_mYZ9-Q!iA:?b!*"]^0;2CU2/OHJ#A:r@F[)Vn./BOc6)Ts6$N~>endstream
+endobj
+13 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 814
+>>
+stream
+Gau0B9iKe#&A@7.m#cIgWTDdb3<fb[l%DB[HfLjA8ts=k>Y-9<^Rhi-^'(s-Pjs\C]@,HiVl+/@nF.UoS)jW_$%0E35^Z,"5_<kRaU!Vmk>-jqXc-_F6ILkRIZ-?BiRJ5tlel*TJO=t#Jb!P(^B-G64qsF5*%4LjAFl>V"f0XG__"]QJgkc"M8($`2.5(,kHt*mP2D@KY1iZ-c[IBns.?Cr9e/Dh\8'!$>.IOFR;n&@cM(,nQ5`RVS&8(JK]HAG3GY[Bg4)oSTV`j7l]0/F<J=hX%6f`g*V_cs$mKN*kEb"J#B4]RU'PX;M8Eul&ljo<RV4/r%L/>!KlN8#AINd8f7ar"*f"nPkJ&VR:?\1O/u4TjK+gTU+LsM!(9FBLZ0$>DidN_qC?6cN&#=Y^N0q_eFt8"p3^VZD0^sFl=-0,95YY,A7cX_Fc0j$;Wp5\YB>bTc*NrI;e#M=8/_3Ge9#Vo:PghYV3?\:PoGi0qd;q/F3Wui??TEEM9JU@:P-.3^8u!9"]K1@O`@W_u_<T:J]X=u2aZqcn[a!B]&%."ul*2$FlF,`4RjsYsk,c.:Ge9WIk\O7,00%B]qi(['2E$&i4b;4"Oq74bh`K7b[E8jbb=W]!9^B-Wk]QhEBqei9",:#VMU]b.<N-jkR9$.XT0n&L?iPBI"M2)Z@QG7*bj5[5Ugg'*ddX)p<$M>(9C&=2LZ^?+BN)6MI7p$2%*kmF@[a9-/$C5p=?e.kTmhAiMC_3rAZG<.]0cb[0?4-[_Tjl14RYq:"PsSnT47-*+MB#%)*?XRj%-,R]X=R0^V(LGO%s5/UA~>endstream
+endobj
+14 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 516
+>>
+stream
+Gat$s9lJ`N'YO#fk"$^>?37BY9\Z4>b+Yqbb[n%$p87QOZ6-IGfCuCu-p\SFoq]:F][=si'?GF:n5_^AWPnI%5g3)C+;V9eb"(6RU[:SlR<a?G]9sDQa+?5ei"bdVZHQ/=_trCZ-qcn[0Wr7e8`Vm\O=0:m(>DAD.&6_GPg;U?FX0*9XU-S)jjB/:-PPa'F8t!X;a'AqR[MD\^65LSNZbarp8i??^NfP8<)C.D?q*0BGFga=DtDS+:LW)a?_lK/X#ZM)<*,k"`cjU,9-u=W0:2.mcO]lM7Lorh^H#e`-\U%_6(8m;=HfoA?Flb*2+c*te9I#/o4H<2l=Up8h#'st,$C<UXF->b#G^OXHM5(a=Ssu>Qf3uK@@aB-Pn%97NNuJkO3Zs$g)?mg)#Yr``jisJlV:HQD+rHkYK)8$'.@./Z0&fV4II7sH>a[:<F(f#$ea#J`Acr=g8Sfg+0@CQ>mtDe"m_$m6cD.\;@eNifgqrf^r@64'KPf_VTteMO3q=mSasi~>endstream
 endobj
 xref
-0 6
+0 15
 0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000115 00000 n 
-0000000241 00000 n 
-0000000311 00000 n 
+0000000061 00000 n 
+0000000102 00000 n 
+0000000209 00000 n 
+0000000321 00000 n 
+0000000526 00000 n 
+0000000731 00000 n 
+0000000936 00000 n 
+0000001141 00000 n 
+0000001210 00000 n 
+0000001490 00000 n 
+0000001568 00000 n 
+0000002676 00000 n 
+0000003532 00000 n 
+0000004437 00000 n 
 trailer
-<< /Size 6 /Root 1 0 R >>
+<<
+/ID 
+[<50bcd8c4099bfaa11bac02f3084c74ba><50bcd8c4099bfaa11bac02f3084c74ba>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 9 0 R
+/Root 8 0 R
+/Size 15
+>>
 startxref
-2644
+5044
 %%EOF
