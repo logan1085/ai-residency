@@ -49,5 +49,9 @@ nav:
       - Work Log: progress/log.md
       - Mastery Rubric: progress/rubric.md
       - Day 1: progress/day-01.md
+  - Learning System:
+      - Overview: learning/index.md
+      - Residency Coach: learning/residency-coach.md
+      - Session Report: learning/session-report-template.md
   - Code:
       - Transformer From Scratch: code/transformer-from-scratch.md

@@ -27,5 +27,6 @@ This repository converts the Thoughtful Labs AI Research Curriculum into a maint
 - Open the [curriculum overview](curriculum/index.md).
 - Track progress on the [roadmap](curriculum/roadmap.md).
 - Use the [progress dashboard](progress/index.md) as the residency operating system.
+- Use the [learning system](learning/index.md) to run study sessions with a dedicated Residency Coach.
 - Begin with [Module 1: Transformers From Scratch](curriculum/modules/module-01-transformers.md).
 - Review the source outline PDF: [Thoughtful Labs AI Research Curriculum](assets/pdfs/thoughtful-labs-ai-research-curriculum.pdf).
