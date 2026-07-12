@@ -1,0 +1,152 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 2281 >>
+stream
+BT
+/F1 22 Tf
+72 800 Td
+(Thoughtful Labs AI Research Curriculum) Tj
+/F1 11 Tf
+0 -30 Td
+/F1 11 Tf
+(Source Outline for the Living Residency Repository) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 11 Tf
+(Program Aim) Tj
+0 -18 Td
+/F1 11 Tf
+(Convert strong AI builders into research-capable practitioners through implementation, experiments, evaluation, safety practice, and public proof of mastery.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 11 Tf
+(Modules) Tj
+0 -18 Td
+/F1 13 Tf
+(1. Transformers From Scratch) Tj
+0 -18 Td
+/F1 11 Tf
+(Attention, tokenization, positional embeddings, decoding, and a runnable minimal) Tj
+0 -18 Td
+/F1 11 Tf
+(transformer.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(2. Training and Evaluation) Tj
+0 -18 Td
+/F1 11 Tf
+(Optimization, losses, reproducibility, baselines, ablations, and experiment reports.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(3. Data, Embeddings, and RAG) Tj
+0 -18 Td
+/F1 11 Tf
+(Dataset design, embedding spaces, vector search, chunking, citations, and grounded) Tj
+0 -18 Td
+/F1 11 Tf
+(generation.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(4. Agents and Tool Use) Tj
+0 -18 Td
+/F1 11 Tf
+(Tool schemas, planning loops, memory, approval boundaries, trace review, and recovery.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(5. Multimodal Systems) Tj
+0 -18 Td
+/F1 11 Tf
+(Vision-language and audio-language workflows, non-text evaluation, interfaces, and) Tj
+0 -18 Td
+/F1 11 Tf
+(failure modes.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(6. Evaluation and Observability) Tj
+0 -18 Td
+/F1 11 Tf
+(Benchmarks, judge models, golden sets, traces, regression gates, cost, and latency.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(7. Alignment and Safety) Tj
+0 -18 Td
+/F1 11 Tf
+(Policy design, preference behavior, red teams, refusal quality, tool risk, and risk) Tj
+0 -18 Td
+/F1 11 Tf
+(registers.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(8. Research Methods) Tj
+0 -18 Td
+/F1 11 Tf
+(Literature review, replication, ablations, experiment logs, research memos, and peer) Tj
+0 -18 Td
+/F1 11 Tf
+(review.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+/F1 13 Tf
+(9. Systems and Deployment) Tj
+0 -18 Td
+/F1 11 Tf
+(Serving, APIs, monitoring, reliability, caching, cost modeling, and runbooks.) Tj
+0 -18 Td
+/F1 11 Tf
+() Tj
+0 -18 Td
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2644
+%%EOF

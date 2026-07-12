@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Transformer from scratch architecture</title>
+  <desc id="desc">A diagram of token input flowing through embeddings, repeated transformer blocks, logits, and autoregressive decoding.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f8faf9}.box{fill:#fff;stroke:#151515;stroke-width:2;rx:8}.soft{fill:#eef7f5;stroke:#007f73}.warn{fill:#fff7ea;stroke:#b26a00}.txt{font:600 18px Inter,Arial,sans-serif;fill:#151515}.small{font:500 14px Inter,Arial,sans-serif;fill:#5f6468}.arrow{stroke:#151515;stroke-width:2.5;marker-end:url(#arrow)}
+    </style>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#151515"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="960" height="540"/>
+  <rect class="box soft" x="48" y="226" width="138" height="88"/>
+  <text class="txt" x="117" y="263" text-anchor="middle">Tokens</text>
+  <text class="small" x="117" y="288" text-anchor="middle">ids, context</text>
+  <line class="arrow" x1="186" y1="270" x2="248" y2="270"/>
+  <rect class="box" x="250" y="196" width="150" height="148"/>
+  <text class="txt" x="325" y="245" text-anchor="middle">Embeddings</text>
+  <text class="small" x="325" y="273" text-anchor="middle">token + position</text>
+  <text class="small" x="325" y="298" text-anchor="middle">dropout</text>
+  <line class="arrow" x1="400" y1="270" x2="462" y2="270"/>
+  <rect class="box warn" x="464" y="78" width="250" height="384"/>
+  <text class="txt" x="589" y="116" text-anchor="middle">N Transformer Blocks</text>
+  <rect class="box" x="504" y="152" width="170" height="64"/>
+  <text class="small" x="589" y="190" text-anchor="middle">LayerNorm + Causal MHA</text>
+  <rect class="box" x="504" y="238" width="170" height="64"/>
+  <text class="small" x="589" y="276" text-anchor="middle">Residual Connection</text>
+  <rect class="box" x="504" y="324" width="170" height="64"/>
+  <text class="small" x="589" y="362" text-anchor="middle">MLP + Residual</text>
+  <line class="arrow" x1="714" y1="270" x2="776" y2="270"/>
+  <rect class="box" x="778" y="196" width="134" height="148"/>
+  <text class="txt" x="845" y="246" text-anchor="middle">Logits</text>
+  <text class="small" x="845" y="274" text-anchor="middle">next-token</text>
+  <text class="small" x="845" y="299" text-anchor="middle">distribution</text>
+  <path class="arrow" d="M845 344 C845 430 116 430 116 318" fill="none"/>
+  <text class="small" x="473" y="456" text-anchor="middle">Autoregressive generation feeds sampled tokens back into the context window.</text>
+</svg>

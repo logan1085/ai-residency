@@ -1,0 +1,48 @@
+site_name: AI Research Residency
+site_description: A portfolio-ready living curriculum for the Thoughtful Labs AI Research Residency.
+site_url: https://logan1085.github.io/ai-residency/
+repo_url: https://github.com/logan1085/ai-residency
+repo_name: logan1085/ai-residency
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.tabs
+    - toc.follow
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: black
+      accent: teal
+  font:
+    text: Inter
+    code: JetBrains Mono
+extra_css:
+  - stylesheets/extra.css
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+nav:
+  - Home: index.md
+  - Curriculum:
+      - Overview: curriculum/index.md
+      - Roadmap: curriculum/roadmap.md
+      - Module 1: curriculum/modules/module-01-transformers.md
+      - Module 2: curriculum/modules/module-02-training-evaluation.md
+      - Module 3: curriculum/modules/module-03-data-embeddings-rag.md
+      - Module 4: curriculum/modules/module-04-agents-tools.md
+      - Module 5: curriculum/modules/module-05-multimodal-systems.md
+      - Module 6: curriculum/modules/module-06-evaluation-observability.md
+      - Module 7: curriculum/modules/module-07-alignment-safety.md
+      - Module 8: curriculum/modules/module-08-research-methods.md
+      - Module 9: curriculum/modules/module-09-systems-deployment.md
+      - Module 10: curriculum/modules/module-10-capstone.md
+  - Code:
+      - Transformer From Scratch: code/transformer-from-scratch.md

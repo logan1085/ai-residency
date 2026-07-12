@@ -1,0 +1,87 @@
+:root {
+  --tl-ink: #151515;
+  --tl-muted: #5f6468;
+  --tl-line: #d8dee2;
+  --tl-teal: #007f73;
+  --tl-gold: #b26a00;
+  --tl-rose: #b4235a;
+}
+
+.md-header,
+.md-tabs {
+  background: var(--tl-ink);
+}
+
+.hero {
+  border-bottom: 1px solid var(--tl-line);
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 2rem;
+  padding: 2.5rem 0 2rem;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1;
+  margin: 0;
+}
+
+.hero p {
+  color: var(--tl-muted);
+  font-size: 1.15rem;
+  max-width: 56rem;
+}
+
+.curriculum-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+}
+
+.module-card {
+  border: 1px solid var(--tl-line);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.module-card h3 {
+  margin-top: 0;
+}
+
+.module-card p {
+  color: var(--tl-muted);
+  margin-bottom: 0;
+}
+
+.status-track {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.status-track th,
+.status-track td {
+  border-bottom: 1px solid var(--tl-line);
+  padding: .65rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.status-track th {
+  color: var(--tl-muted);
+  font-size: .78rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.badge {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  display: inline-block;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: .1rem .45rem;
+}
+
+.badge.foundation { color: var(--tl-teal); }
+.badge.research { color: var(--tl-rose); }
+.badge.ship { color: var(--tl-gold); }

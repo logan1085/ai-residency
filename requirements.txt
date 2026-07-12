@@ -1,0 +1,4 @@
+mkdocs-material>=9.5
+pymdown-extensions>=10.0
+pytest>=8.0
+torch>=2.2
