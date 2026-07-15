@@ -121,3 +121,16 @@ body {
   font-weight: 600;
   color: var(--accent);
 }
+
+/* Sandbox direction toggle buttons */
+.sandbox-dir-btn:hover {
+  background-color: var(--accent) !important;
+  color: white !important;
+  border-color: var(--accent) !important;
+}
+
+/* Verdict card */
+.verdict-card {
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
