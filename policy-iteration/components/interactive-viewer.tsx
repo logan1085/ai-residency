@@ -71,7 +71,7 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: "A,B,C",
     explanation:
-      "We start with an arbitrary (bad) policy: A \u2192 Up, B \u2192 Up, C \u2192 Left. Under this policy, every state bumps into a wall and stays in place \u2014 nobody can reach the goal! Let\u2019s evaluate it to see how bad it is.",
+      "We start with an arbitrary (bad) policy: A \u2192 Up, B \u2192 Up, C \u2192 Left. Under this policy, every state bumps into a wall and stays in place. Nobody can reach the goal! Let\u2019s evaluate it to see how bad it is.",
   },
   {
     phase: "eval-0",
@@ -80,7 +80,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: null, C: null, G: 0 },
     focus: "A",
     explanation:
-      "Under \u03c0\u2080, state A\u2019s policy is Up, which bumps into the top wall. The agent stays in A, pays \u22121, and faces the same situation forever. The Bellman equation gives us an infinite discounted sum.",
+      "Under \u03c0\u2080, state A\u2019s policy is Up, which bumps into the top wall. The agent stays in A, pays \u22121, and faces the same situation forever. It\u2019s stuck in an infinite loop, so the penalties pile up to the worst possible score: \u221210.",
     equation:
       "V(A) = R + \u03b3\u00b7V(A)\nV(A) = \u22121 + 0.9\u00b7V(A)\nV(A) \u2212 0.9\u00b7V(A) = \u22121\n0.1\u00b7V(A) = \u22121\nV(A) = \u221210",
   },
@@ -91,7 +91,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "B,C",
     explanation:
-      "The same logic applies: B goes Up (wall), C goes Left (wall). Both loop forever in place. Every non-goal state has the same value under this terrible policy.",
+      "Same story for B and C: B goes Up (wall), C goes Left (wall). Both are stuck in place, racking up \u22121 penalties forever. A value of \u221210 means the state is trapped and never reaches the goal.",
     equation:
       "V(B) = \u22121 + 0.9\u00b7V(B) = \u221210\nV(C) = \u22121 + 0.9\u00b7V(C) = \u221210",
   },
@@ -102,7 +102,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "all",
     explanation:
-      "Policy evaluation for \u03c0\u2080 is done. Every non-goal state has value \u221210, reflecting the infinite loop of wall-bumping. The policy is clearly bad \u2014 now let\u2019s try to improve it.",
+      "Policy evaluation for \u03c0\u2080 is done. Every non-goal state is stuck with a value of \u221210, the worst possible. All three states just bump into walls forever. The policy is clearly terrible. Now let\u2019s try to improve it.",
   },
   {
     phase: "improve-0",
@@ -191,7 +191,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: 0, C: 0, G: 0 },
     focus: "A",
     explanation:
-      "State A still goes Up (wall), looping forever in place. Its value remains \u221210. The policy for A hasn\u2019t changed yet \u2014 improvement is needed.",
+      "State A still goes Up (wall), looping forever in place. Its value remains \u221210. The policy for A hasn\u2019t changed yet, so improvement is needed.",
     equation:
       "V(A) = \u22121 + 0.9\u00b7V(A)\n0.1\u00b7V(A) = \u22121\nV(A) = \u221210",
   },
@@ -239,7 +239,7 @@ const STEPS: Step[] = [
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "We run policy improvement again: for every state, the greedy action matches the current policy. No changes are made \u2014 the policy is stable!",
+      "We run policy improvement again: for every state, the greedy action matches the current policy. No changes are made. The policy is stable!",
     equation:
       "For each state s:\n  argmax_a Q(s, a) = \u03c0\u2082(s)\n\nPolicy stable \u2192 \u03c0\u2082 = \u03c0*",
   },
@@ -344,14 +344,26 @@ function GridCell({
 
       {/* Value display */}
       <span
-        className="text-2xl font-bold tabular-nums"
+        className={`font-bold tabular-nums ${
+          value !== null && value <= -10 ? "text-xl" : "text-2xl"
+        }`}
         style={{ fontFamily: "var(--font-mono), monospace" }}
       >
-        {isGoal ? "0" : value !== null ? value : "\u2014"}
+        {isGoal ? "0" : value !== null ? value : "?"}
       </span>
 
+      {/* Small label for -10 */}
+      {!isGoal && value !== null && value <= -10 && (
+        <span
+          className="text-[9px] font-medium uppercase tracking-wide"
+          style={{ color: "#B91C1C" }}
+        >
+          stuck
+        </span>
+      )}
+
       {/* Policy arrow */}
-      {!isGoal && (
+      {!isGoal && (value === null || value > -10) && (
         <span className="policy-arrow mt-0.5" style={{ color: arrow ? "var(--foreground)" : "var(--text-secondary)" }}>
           {arrowChar(arrow)}
         </span>
