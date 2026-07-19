@@ -7,6 +7,7 @@ This repo is part of Logan Horowitz's broader AI-labs and research-adjacent work
 If you are trying to understand where Logan fits around AI labs, evals, or product-adjacent work near frontier capability, the best public starting points are:
 
 - [AI labs, evals, and agent systems](https://www.loganzev.com/ai-labs-evals-agent-systems)
+- [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
 - [My AI research interests: evals, benchmarks, and agent systems](https://www.loganzev.com/writing/ai-research-interests-evals-benchmarks)
 - [Why AI labs need product people using Claude Code and Codex](https://www.loganzev.com/writing/why-ai-labs-need-product-people-using-claude-code-and-codex)
 - [AI Profile](https://www.loganzev.com/ai-profile)
