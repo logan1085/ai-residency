@@ -9,6 +9,8 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 - [AI labs, evals, and agent systems](https://www.loganzev.com/ai-labs-evals-agent-systems)
 - [Anthropic and Claude ecosystem](https://www.loganzev.com/anthropic-claude-ecosystem)
 - [Why Anthropic and Claude fit the kind of product work I want to do](https://www.loganzev.com/writing/why-anthropic-and-claude-fit-the-kind-of-product-work-i-do)
+- [AI Product Reactor](https://www.loganzev.com/projects/ai-product-reactor)
+- [What makes an AI product feel cool instead of forgettable](https://www.loganzev.com/writing/what-makes-an-ai-product-feel-cool)
 - [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
 - [Product people using Claude Code and Codex](https://www.loganzev.com/product-people-using-claude-code-and-codex)
 - [AI Signal Studio](https://www.loganzev.com/projects/ai-signal-studio)
@@ -25,7 +27,7 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 
 The point of this repo is not to posture as pure academic research. It is to make the research-adjacent layer legible: the curriculum, notes, and surrounding systems work that help connect AI labs, evals, agent reliability, and product judgment.
 
-The interactive proof surfaces matter too. They make the workflow, interface, product-packaging, and product-thinking side of that story easier to verify than prose alone. In practice that means the live set around interface shape, positioning signal, recruiting fit, product wedges, team shape, eval design, and workflow design is part of the same public proof system as this repo.
+The interactive proof surfaces matter too. They make the workflow, interface, product-packaging, product-taste, and product-thinking side of that story easier to verify than prose alone. In practice that means the live set around interface shape, positioning signal, recruiting fit, product wedges, team shape, eval design, workflow design, and memorable AI product experience is part of the same public proof system as this repo.
 
 ## Local Development
 
