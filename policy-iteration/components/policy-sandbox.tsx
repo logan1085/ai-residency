@@ -3,72 +3,83 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
 /* ------------------------------------------------------------------ */
-/*  Types                                                              */
+/*  Types & Constants                                                  */
 /* ------------------------------------------------------------------ */
 
 type Direction = "up" | "down" | "left" | "right";
-type State = "A" | "B" | "C" | "G";
-
-interface Policy {
-  A: Direction;
-  B: Direction;
-  C: Direction;
-}
-
-interface Values {
-  A: number;
-  B: number;
-  C: number;
-  G: number;
-}
+type Policy = Record<string, Direction>;
+type Values = Record<string, number>;
 
 interface PathResult {
-  path: State[];
+  path: string[];
   reachesGoal: boolean;
   loops: boolean;
+}
+
+const GRID = 4;
+const STATES = Array.from({ length: 15 }, (_, i) => String(i + 1));
+const GOAL = "G";
+const ALL_CELLS = [...STATES, GOAL];
+
+/* ------------------------------------------------------------------ */
+/*  Position helpers                                                   */
+/* ------------------------------------------------------------------ */
+
+function toPos(s: string): [number, number] {
+  if (s === GOAL) return [3, 3];
+  const n = parseInt(s) - 1;
+  return [Math.floor(n / GRID), n % GRID];
+}
+
+function toState(r: number, c: number): string {
+  if (r === 3 && c === 3) return GOAL;
+  return String(r * GRID + c + 1);
 }
 
 /* ------------------------------------------------------------------ */
 /*  Transition function                                                */
 /* ------------------------------------------------------------------ */
 
-function transition(state: State, dir: Direction): State {
-  const moves: Record<string, Record<Direction, State>> = {
-    A: { up: "A", down: "C", left: "A", right: "B" },
-    B: { up: "B", down: "G", left: "A", right: "B" },
-    C: { up: "A", down: "C", left: "C", right: "G" },
-  };
-  return moves[state]?.[dir] ?? state;
+function transition(state: string, dir: Direction): string {
+  const [r, c] = toPos(state);
+  let nr = r,
+    nc = c;
+  if (dir === "up") nr = Math.max(0, r - 1);
+  if (dir === "down") nr = Math.min(3, r + 1);
+  if (dir === "left") nc = Math.max(0, c - 1);
+  if (dir === "right") nc = Math.min(3, c + 1);
+  return toState(nr, nc);
 }
 
 /* ------------------------------------------------------------------ */
-/*  One Bellman iteration                                              */
+/*  Bellman iteration                                                  */
 /* ------------------------------------------------------------------ */
 
+function initValues(): Values {
+  const v: Values = { G: 0 };
+  for (const s of STATES) v[s] = 0;
+  return v;
+}
+
 function bellmanStep(policy: Policy, v: Values): Values {
-  const newV: Values = { A: 0, B: 0, C: 0, G: 0 };
-  for (const s of ["A", "B", "C"] as const) {
+  const newV: Values = { G: 0 };
+  for (const s of STATES) {
     const next = transition(s, policy[s]);
-    const reward = next === "G" ? 0 : -1;
+    const reward = next === GOAL ? 0 : -1;
     newV[s] = reward + 0.9 * v[next];
   }
   return newV;
 }
 
 function hasConverged(prev: Values, next: Values): boolean {
-  return (
-    Math.abs(prev.A - next.A) < 0.001 &&
-    Math.abs(prev.B - next.B) < 0.001 &&
-    Math.abs(prev.C - next.C) < 0.001
-  );
+  for (const s of STATES) {
+    if (Math.abs(prev[s] - next[s]) >= 0.001) return false;
+  }
+  return true;
 }
 
-/* ------------------------------------------------------------------ */
-/*  Full evaluation (for instant results)                              */
-/* ------------------------------------------------------------------ */
-
 function evaluatePolicy(policy: Policy): Values {
-  let v: Values = { A: 0, B: 0, C: 0, G: 0 };
+  let v = initValues();
   for (let i = 0; i < 200; i++) {
     v = bellmanStep(policy, v);
   }
@@ -79,15 +90,15 @@ function evaluatePolicy(policy: Policy): Values {
 /*  Path tracing                                                       */
 /* ------------------------------------------------------------------ */
 
-function tracePath(start: State, policy: Policy): PathResult {
-  const path: State[] = [start];
+function tracePath(start: string, policy: Policy): PathResult {
+  const path: string[] = [start];
   let current = start;
 
-  for (let i = 0; i < 10; i++) {
-    const next = transition(current, policy[current as "A" | "B" | "C"]);
+  for (let i = 0; i < 20; i++) {
+    const next = transition(current, policy[current]);
     path.push(next);
 
-    if (next === "G") {
+    if (next === GOAL) {
       return { path, reachesGoal: true, loops: false };
     }
 
@@ -102,23 +113,31 @@ function tracePath(start: State, policy: Policy): PathResult {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Optimality check                                                   */
+/*  Optimal policy & check                                             */
 /* ------------------------------------------------------------------ */
 
-const OPTIMAL_VALUES: Values = { A: -1, B: 0, C: 0, G: 0 };
+function getOptimalPolicy(): Policy {
+  const p: Policy = {};
+  for (const s of STATES) {
+    const [, c] = toPos(s);
+    p[s] = c === 3 ? "down" : "right";
+  }
+  return p;
+}
+
+const OPTIMAL_POLICY = getOptimalPolicy();
+const OPTIMAL_VALUES = evaluatePolicy(OPTIMAL_POLICY);
 
 function isOptimal(values: Values): boolean {
-  return (
-    Math.abs(values.A - OPTIMAL_VALUES.A) < 0.01 &&
-    Math.abs(values.B - OPTIMAL_VALUES.B) < 0.01 &&
-    Math.abs(values.C - OPTIMAL_VALUES.C) < 0.01
-  );
+  for (const s of STATES) {
+    if (Math.abs(values[s] - OPTIMAL_VALUES[s]) > 0.05) return false;
+  }
+  return true;
 }
 
 function allReachGoal(policy: Policy): boolean {
-  for (const s of ["A", "B", "C"] as const) {
-    const result = tracePath(s, policy);
-    if (!result.reachesGoal) return false;
+  for (const s of STATES) {
+    if (!tracePath(s, policy).reachesGoal) return false;
   }
   return true;
 }
@@ -154,63 +173,13 @@ function cellBg(value: number | null, showValues: boolean): string {
   return "var(--cell-green)";
 }
 
-/* ------------------------------------------------------------------ */
-/*  Direction Picker                                                   */
-/* ------------------------------------------------------------------ */
-
 const ALL_DIRS: Direction[] = ["up", "right", "down", "left"];
-
-function DirectionPicker({
-  state,
-  selected,
-  onChange,
-  disabled,
-}: {
-  state: "A" | "B" | "C";
-  selected: Direction;
-  onChange: (dir: Direction) => void;
-  disabled: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <span
-        className="text-sm font-semibold w-5 shrink-0"
-        style={{ fontFamily: "var(--font-serif), serif" }}
-      >
-        {state}
-      </span>
-      <div className="flex gap-1.5">
-        {ALL_DIRS.map((dir) => {
-          const active = selected === dir;
-          return (
-            <button
-              key={dir}
-              onClick={() => onChange(dir)}
-              disabled={disabled}
-              className="sandbox-dir-btn flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                backgroundColor: active ? "var(--accent)" : "var(--equation-bg)",
-                color: active ? "white" : "var(--text-secondary)",
-                border: active
-                  ? "1px solid var(--accent)"
-                  : "1px solid var(--card-border)",
-              }}
-              aria-label={`Set ${state} to ${dir}`}
-              aria-pressed={active}
-            >
-              <span className="text-sm leading-none">{ARROW_CHARS[dir]}</span>
-              <span>{DIR_LABELS[dir]}</span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /*  Results section                                                    */
 /* ------------------------------------------------------------------ */
+
+const TRACE_STATES = ["1", "4", "13", "11"];
 
 function Results({
   values,
@@ -222,27 +191,27 @@ function Results({
   const optimal = isOptimal(values);
   const reaches = allReachGoal(policy);
 
-  const paths = {
-    A: tracePath("A", policy),
-    B: tracePath("B", policy),
-    C: tracePath("C", policy),
-  };
+  let reachCount = 0;
+  let loopCount = 0;
+  const pathResults: Record<string, PathResult> = {};
+  for (const s of STATES) {
+    const p = tracePath(s, policy);
+    pathResults[s] = p;
+    if (p.reachesGoal) reachCount++;
+    else loopCount++;
+  }
 
-  const improvementHints: string[] = [];
-  if (!optimal) {
-    for (const s of ["A", "B", "C"] as const) {
-      if (!paths[s].reachesGoal) {
-        improvementHints.push(
-          `${s} never reaches the goal. Try pointing it toward a neighboring state that does.`
-        );
-      } else {
-        const pathLen = paths[s].path.length - 1;
-        const optLen = s === "A" ? 2 : 1;
-        if (pathLen > optLen) {
-          improvementHints.push(
-            `${s} reaches the goal in ${pathLen} steps, but it could do it in ${optLen}.`
-          );
-        }
+  const loopingStates: string[] = [];
+  const suboptimalStates: string[] = [];
+  for (const s of STATES) {
+    if (!pathResults[s].reachesGoal) {
+      loopingStates.push(s);
+    } else {
+      const pathLen = pathResults[s].path.length - 1;
+      const [r, c] = toPos(s);
+      const optLen = 3 - r + (3 - c);
+      if (pathLen > optLen) {
+        suboptimalStates.push(s);
       }
     }
   }
@@ -282,7 +251,7 @@ function Results({
               ? "Optimal Policy!"
               : reaches
                 ? "It works, but it\u2019s not optimal"
-                : "Stuck in a loop"}
+                : "Some states are stuck"}
           </h4>
         </div>
         <p
@@ -292,15 +261,15 @@ function Results({
           {optimal
             ? "Every state reaches the goal by the shortest possible path. This is the best policy for this grid."
             : reaches
-              ? "All states eventually reach the goal, but some take a longer route than necessary."
-              : "At least one state is stuck in an infinite loop and will never reach the goal."}
+              ? "All 15 states reach the goal, but some take a longer route than necessary."
+              : `${reachCount} of 15 states reach the goal. ${loopCount} ${loopCount === 1 ? "is" : "are"} stuck in ${loopCount === 1 ? "a loop" : "loops"}.`}
         </p>
       </div>
 
-      {/* Path traces + values */}
-      <div className="grid sm:grid-cols-3 gap-3">
-        {(["A", "B", "C"] as const).map((s) => {
-          const p = paths[s];
+      {/* Path traces for representative states */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {TRACE_STATES.map((s) => {
+          const p = pathResults[s];
           const stepCount = p.reachesGoal ? p.path.length - 1 : null;
 
           return (
@@ -322,11 +291,12 @@ function Results({
                   className="text-lg font-bold tabular-nums"
                   style={{
                     fontFamily: "var(--font-mono), monospace",
-                    color: values[s] <= -9.99
-                      ? "#EF4444"
-                      : values[s] < -0.01
-                        ? "var(--foreground)"
-                        : "#10B981",
+                    color:
+                      values[s] <= -9.99
+                        ? "#EF4444"
+                        : values[s] < -0.01
+                          ? "var(--foreground)"
+                          : "#10B981",
                   }}
                 >
                   {formatValue(values[s])}
@@ -356,7 +326,7 @@ function Results({
                   </>
                 ) : (
                   <>
-                    {p.path[0]} {"\u2192"} {p.path[0]} {"\u2192"} ...
+                    {p.path.slice(0, 5).join(" \u2192 ")} {"\u2192"} ...
                     <span
                       className="block mt-1 font-sans"
                       style={{
@@ -374,7 +344,7 @@ function Results({
       </div>
 
       {/* Hints */}
-      {improvementHints.length > 0 && (
+      {(loopingStates.length > 0 || suboptimalStates.length > 0) && (
         <div
           className="rounded-lg border p-4"
           style={{
@@ -389,15 +359,28 @@ function Results({
             How to improve
           </p>
           <ul className="space-y-1">
-            {improvementHints.map((hint, i) => (
+            {loopingStates.length > 0 && (
               <li
-                key={i}
                 className="text-xs leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
               >
-                {hint}
+                {loopingStates.length <= 5
+                  ? `States ${loopingStates.join(", ")} never reach the goal.`
+                  : `${loopingStates.length} states never reach the goal.`}{" "}
+                Try pointing them toward the bottom-right corner.
               </li>
-            ))}
+            )}
+            {suboptimalStates.length > 0 && (
+              <li
+                className="text-xs leading-relaxed"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                {suboptimalStates.length <= 5
+                  ? `States ${suboptimalStates.join(", ")} reach`
+                  : `${suboptimalStates.length} states reach`}{" "}
+                the goal but take a longer path than necessary.
+              </li>
+            )}
           </ul>
         </div>
       )}
@@ -410,21 +393,21 @@ function Results({
 /* ------------------------------------------------------------------ */
 
 export default function PolicySandbox() {
-  const [policy, setPolicy] = useState<Policy>({
-    A: "up",
-    B: "up",
-    C: "left",
+  const [policy, setPolicy] = useState<Policy>(() => {
+    const p: Policy = {};
+    for (const s of STATES) p[s] = "up";
+    return p;
   });
-  const [values, setValues] = useState<Values>({ A: 0, B: 0, C: 0, G: 0 });
+  const [values, setValues] = useState<Values>(initValues);
   const [iteration, setIteration] = useState(0);
   const [running, setRunning] = useState(false);
   const [converged, setConverged] = useState(false);
+  const [selected, setSelected] = useState<string>("1");
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const valuesRef = useRef<Values>({ A: 0, B: 0, C: 0, G: 0 });
+  const valuesRef = useRef<Values>(initValues());
 
   const showValues = running || converged;
 
-  // Clean up timer on unmount
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -432,23 +415,22 @@ export default function PolicySandbox() {
   }, []);
 
   const setDirection = useCallback(
-    (state: "A" | "B" | "C", dir: Direction) => {
+    (state: string, dir: Direction) => {
       setPolicy((prev) => ({ ...prev, [state]: dir }));
-      // Reset evaluation state
       if (timerRef.current) clearInterval(timerRef.current);
       setRunning(false);
       setConverged(false);
       setIteration(0);
-      setValues({ A: 0, B: 0, C: 0, G: 0 });
-      valuesRef.current = { A: 0, B: 0, C: 0, G: 0 };
+      const init = initValues();
+      setValues(init);
+      valuesRef.current = init;
     },
     []
   );
 
   const startEvaluation = useCallback(() => {
-    // Reset
     if (timerRef.current) clearInterval(timerRef.current);
-    const init: Values = { A: 0, B: 0, C: 0, G: 0 };
+    const init = initValues();
     setValues(init);
     valuesRef.current = init;
     setIteration(0);
@@ -465,10 +447,9 @@ export default function PolicySandbox() {
       setValues({ ...next });
       setIteration(iter);
 
-      if (hasConverged(prev, next) || iter >= 50) {
+      if (hasConverged(prev, next) || iter >= 100) {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
-        // Snap to fully converged values for display accuracy
         const final = evaluatePolicy(policy);
         valuesRef.current = final;
         setValues({ ...final });
@@ -495,14 +476,15 @@ export default function PolicySandbox() {
     setRunning(false);
     setConverged(false);
     setIteration(0);
-    setValues({ A: 0, B: 0, C: 0, G: 0 });
-    valuesRef.current = { A: 0, B: 0, C: 0, G: 0 };
+    const init = initValues();
+    setValues(init);
+    valuesRef.current = init;
   }, []);
 
   const showOptimal = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = null;
-    const optPolicy: Policy = { A: "right", B: "down", C: "right" };
+    const optPolicy = getOptimalPolicy();
     setPolicy(optPolicy);
     const v = evaluatePolicy(optPolicy);
     setValues(v);
@@ -512,6 +494,9 @@ export default function PolicySandbox() {
     setConverged(true);
   }, []);
 
+  const selectedNext = transition(selected, policy[selected]);
+  const selectedHitsWall = selectedNext === selected;
+
   return (
     <div
       className="rounded-xl border overflow-hidden"
@@ -520,58 +505,70 @@ export default function PolicySandbox() {
         borderColor: "var(--card-border)",
       }}
     >
-      {/* ---- Top: Grid + Direction Pickers ---- */}
+      {/* ---- Top: Grid + Direction Picker ---- */}
       <div className="p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
           {/* Grid visualization */}
           <div className="shrink-0">
-            <div className="grid grid-cols-2 gap-2.5" style={{ width: "200px" }}>
-              {(["A", "B", "C", "G"] as const).map((s) => {
-                const isGoal = s === "G";
+            <div
+              className="grid grid-cols-4 gap-1.5"
+              style={{ width: "280px" }}
+            >
+              {ALL_CELLS.map((s) => {
+                const isGoal = s === GOAL;
                 const dir = isGoal ? null : policy[s];
                 const val = showValues ? values[s] : null;
+                const isSelected = !isGoal && selected === s;
 
                 return (
                   <div
                     key={s}
-                    className="grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square"
+                    onClick={() => {
+                      if (!isGoal && !running) setSelected(s);
+                    }}
+                    className={`grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square${!isGoal && !running ? " cursor-pointer" : ""}`}
                     style={{
                       backgroundColor: isGoal
                         ? "var(--cell-green)"
                         : cellBg(val, showValues),
-                      borderColor: "var(--card-border)",
+                      borderColor: isSelected
+                        ? "var(--accent)"
+                        : "var(--card-border)",
+                      boxShadow: isSelected
+                        ? "0 0 0 1px var(--accent)"
+                        : "none",
                     }}
                   >
                     <span
-                      className="absolute top-1 left-1.5 text-[10px] font-semibold"
+                      className="absolute top-0.5 left-1 text-[9px] font-semibold"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       {s}
                     </span>
 
                     {isGoal && (
-                      <span className="absolute top-0.5 right-1 text-sm">
+                      <span className="absolute top-0 right-0.5 text-xs">
                         &#9733;
                       </span>
                     )}
 
                     {isGoal ? (
                       <span
-                        className="text-xl font-bold tabular-nums"
+                        className="text-sm font-bold tabular-nums"
                         style={{ fontFamily: "var(--font-mono), monospace" }}
                       >
                         0
                       </span>
                     ) : showValues && val !== null ? (
                       <span
-                        className="text-lg font-bold tabular-nums"
+                        className="text-sm font-bold tabular-nums"
                         style={{ fontFamily: "var(--font-mono), monospace" }}
                       >
                         {formatValue(val)}
                       </span>
                     ) : (
                       <span
-                        className="text-2xl leading-none"
+                        className="text-lg leading-none"
                         style={{ color: "var(--foreground)" }}
                       >
                         {dir ? ARROW_CHARS[dir] : ""}
@@ -580,7 +577,7 @@ export default function PolicySandbox() {
 
                     {!isGoal && showValues && val !== null && dir && (
                       <span
-                        className="text-sm leading-none mt-0.5"
+                        className="text-xs leading-none"
                         style={{ color: "var(--text-secondary)" }}
                       >
                         {ARROW_CHARS[dir]}
@@ -599,7 +596,11 @@ export default function PolicySandbox() {
               >
                 <span
                   className="text-xs font-semibold tabular-nums"
-                  style={{ color: running ? "var(--accent)" : "var(--text-secondary)" }}
+                  style={{
+                    color: running
+                      ? "var(--accent)"
+                      : "var(--text-secondary)",
+                  }}
                 >
                   {converged
                     ? `Converged at iteration ${iteration}`
@@ -613,41 +614,50 @@ export default function PolicySandbox() {
                 className="text-[10px] text-center mt-2"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Arrows show your chosen direction
+                Click a cell to select it, then choose a direction
               </p>
             )}
           </div>
 
-          {/* Direction pickers + Bellman equation */}
+          {/* Direction picker for selected cell + info */}
           <div className="flex-1 min-w-0">
             <p
               className="text-xs font-semibold uppercase tracking-wider mb-3"
               style={{ color: "var(--text-secondary)" }}
             >
-              Choose a direction for each state
+              Direction for state {selected}
             </p>
-            <div className="space-y-2.5">
-              <DirectionPicker
-                state="A"
-                selected={policy.A}
-                onChange={(dir) => setDirection("A", dir)}
-                disabled={running}
-              />
-              <DirectionPicker
-                state="B"
-                selected={policy.B}
-                onChange={(dir) => setDirection("B", dir)}
-                disabled={running}
-              />
-              <DirectionPicker
-                state="C"
-                selected={policy.C}
-                onChange={(dir) => setDirection("C", dir)}
-                disabled={running}
-              />
+            <div className="flex gap-1.5 mb-4">
+              {ALL_DIRS.map((dir) => {
+                const active = policy[selected] === dir;
+                return (
+                  <button
+                    key={dir}
+                    onClick={() => setDirection(selected, dir)}
+                    disabled={running}
+                    className="sandbox-dir-btn flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundColor: active
+                        ? "var(--accent)"
+                        : "var(--equation-bg)",
+                      color: active ? "white" : "var(--text-secondary)",
+                      border: active
+                        ? "1px solid var(--accent)"
+                        : "1px solid var(--card-border)",
+                    }}
+                    aria-label={`Set state ${selected} to ${dir}`}
+                    aria-pressed={active}
+                  >
+                    <span className="text-sm leading-none">
+                      {ARROW_CHARS[dir]}
+                    </span>
+                    <span>{DIR_LABELS[dir]}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Live Bellman equation display */}
+            {/* Bellman equation for selected cell (during evaluation) */}
             {showValues && (
               <div className="equation-block mt-4 text-[11px]">
                 <p
@@ -657,54 +667,83 @@ export default function PolicySandbox() {
                     fontFamily: "var(--font-sans), system-ui, sans-serif",
                   }}
                 >
-                  Bellman update (each iteration)
+                  Bellman update for state {selected}
                 </p>
-                {(["A", "B", "C"] as const).map((s) => {
-                  const next = transition(s, policy[s]);
-                  const reward = next === "G" ? "0" : "-1";
-                  return (
-                    <div key={s}>
-                      V({s}) = {reward} + 0.9 {"\u00d7"} V({next}) = <strong>{formatValue(values[s])}</strong>
-                    </div>
-                  );
-                })}
+                <div>
+                  V({selected}) ={" "}
+                  {selectedNext === GOAL ? "0" : "-1"} + 0.9 {"\u00d7"} V(
+                  {selectedNext}) ={" "}
+                  <strong>{formatValue(values[selected])}</strong>
+                </div>
               </div>
             )}
 
-            {/* Where each arrow leads */}
+            {/* Transition info for selected cell (before evaluation) */}
             {!showValues && (
               <div
-                className="mt-4 rounded-md p-3"
+                className="mt-2 rounded-md p-3"
                 style={{ backgroundColor: "var(--equation-bg)" }}
               >
                 <p
                   className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  Where does each direction go?
+                  Where does this direction go?
                 </p>
                 <div
-                  className="grid grid-cols-3 gap-x-4 gap-y-1 text-[11px]"
+                  className="text-[11px]"
                   style={{
                     color: "var(--text-secondary)",
                     fontFamily: "var(--font-mono), monospace",
                   }}
                 >
-                  {(["A", "B", "C"] as const).map((s) => {
-                    const next = transition(s, policy[s]);
-                    const hitsWall = next === s;
-                    return (
-                      <span key={s}>
-                        {s}{ARROW_CHARS[policy[s]]}{next}
-                        {hitsWall && (
-                          <span style={{ color: "#EF4444" }}> wall</span>
-                        )}
-                      </span>
-                    );
-                  })}
+                  {selected}
+                  {ARROW_CHARS[policy[selected]]}
+                  {selectedNext}
+                  {selectedHitsWall && (
+                    <span style={{ color: "#EF4444" }}>
+                      {" "}
+                      (wall — stays put!)
+                    </span>
+                  )}
                 </div>
               </div>
             )}
+
+            {/* Current policy summary grid */}
+            <div
+              className="mt-3 rounded-md p-3"
+              style={{ backgroundColor: "var(--equation-bg)" }}
+            >
+              <p
+                className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Current policy
+              </p>
+              <div
+                className="grid grid-cols-4 gap-1 text-center"
+                style={{ fontFamily: "var(--font-mono), monospace" }}
+              >
+                {ALL_CELLS.map((s) => (
+                  <span
+                    key={s}
+                    className="text-xs"
+                    style={{
+                      color:
+                        s === GOAL
+                          ? "var(--text-secondary)"
+                          : selected === s
+                            ? "var(--accent)"
+                            : "var(--text-secondary)",
+                      fontWeight: selected === s ? 700 : 400,
+                    }}
+                  >
+                    {s === GOAL ? "\u2605" : ARROW_CHARS[policy[s]]}
+                  </span>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -723,7 +762,8 @@ export default function PolicySandbox() {
             className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
             style={{ backgroundColor: "var(--accent)" }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent-hover)")
+              (e.currentTarget.style.backgroundColor =
+                "var(--accent-hover)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--accent)")
@@ -737,7 +777,8 @@ export default function PolicySandbox() {
             className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
             style={{ backgroundColor: "var(--accent)" }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent-hover)")
+              (e.currentTarget.style.backgroundColor =
+                "var(--accent-hover)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.backgroundColor = "var(--accent)")
@@ -756,7 +797,8 @@ export default function PolicySandbox() {
             backgroundColor: "var(--card-bg)",
           }}
           onMouseEnter={(e) => {
-            if (!running) e.currentTarget.style.backgroundColor = "var(--equation-bg)";
+            if (!running)
+              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "var(--card-bg)";
@@ -774,7 +816,8 @@ export default function PolicySandbox() {
             backgroundColor: "var(--card-bg)",
           }}
           onMouseEnter={(e) => {
-            if (!running) e.currentTarget.style.backgroundColor = "var(--equation-bg)";
+            if (!running)
+              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = "var(--card-bg)";

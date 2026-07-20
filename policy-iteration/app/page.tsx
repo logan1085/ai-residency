@@ -72,12 +72,12 @@ export default function Home() {
                 className="text-sm leading-relaxed mb-3"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Computer scientists formalize this as a{" "}
-                <strong>Markov Decision Process</strong> (MDP). The
-                intersections are <em>states</em>, the turns are{" "}
-                <em>actions</em>, the wasted time is a negative{" "}
-                <em>reward</em>, and your overall plan for which way to turn at
-                each intersection is called a <em>policy</em>. The goal is to
+                In AI, this setup has a name: a{" "}
+                <strong>Markov Decision Process</strong>. The
+                intersections are <strong>states</strong>, your turns are{" "}
+                <strong>actions</strong>, the wasted time is a negative{" "}
+                <strong>reward</strong>, and your plan for which way to turn at
+                each intersection is your <strong>policy</strong>. The goal:
                 find the policy that gets you to the hotel with the least total
                 cost.
               </p>
@@ -179,12 +179,12 @@ export default function Home() {
 
               {/* Evaluate ↔ Improve loop diagram */}
               <div
-                className="flex items-center justify-center gap-4 py-6 rounded-lg"
+                className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 py-4 sm:py-6 rounded-lg"
                 style={{ backgroundColor: "var(--equation-bg)" }}
               >
                 <div className="flex flex-col items-center">
                   <div
-                    className="rounded-lg border-2 px-4 py-2 text-sm font-semibold"
+                    className="rounded-lg border-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold"
                     style={{
                       borderColor: "#8B5CF6",
                       color: "#8B5CF6",
@@ -201,14 +201,14 @@ export default function Home() {
                   </span>
                 </div>
 
-                <div className="flex flex-col items-center gap-0.5">
+                <div className="flex flex-col items-center gap-0.5 rotate-90 sm:rotate-0">
                   <span style={{ color: "var(--accent)" }}>&#8594;</span>
                   <span style={{ color: "var(--accent)" }}>&#8592;</span>
                 </div>
 
                 <div className="flex flex-col items-center">
                   <div
-                    className="rounded-lg border-2 px-4 py-2 text-sm font-semibold"
+                    className="rounded-lg border-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold"
                     style={{
                       borderColor: "#F59E0B",
                       color: "#F59E0B",
@@ -225,11 +225,11 @@ export default function Home() {
                   </span>
                 </div>
 
-                <span style={{ color: "var(--text-secondary)" }}>&#8594;</span>
+                <span className="rotate-90 sm:rotate-0" style={{ color: "var(--text-secondary)" }}>&#8594;</span>
 
                 <div className="flex flex-col items-center">
                   <div
-                    className="rounded-lg border-2 px-4 py-2 text-sm font-semibold"
+                    className="rounded-lg border-2 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-semibold"
                     style={{
                       borderColor: "#10B981",
                       color: "#10B981",
@@ -344,132 +344,33 @@ export default function Home() {
             className="text-sm leading-relaxed mb-6"
             style={{ color: "var(--text-secondary)" }}
           >
-            Step through the algorithm below. The left panel shows the grid: the
-            number in each cell is its score (how bad it is to be there), and
-            the arrow is the current action. The right panel explains what&apos;s
-            happening at each step. Use the{" "}
-            <kbd
-              className="px-1.5 py-0.5 rounded text-xs border"
-              style={{
-                borderColor: "var(--card-border)",
-                backgroundColor: "var(--equation-bg)",
-              }}
-            >
-              &larr;
-            </kbd>{" "}
-            <kbd
-              className="px-1.5 py-0.5 rounded text-xs border"
-              style={{
-                borderColor: "var(--card-border)",
-                backgroundColor: "var(--equation-bg)",
-              }}
-            >
-              &rarr;
-            </kbd>{" "}
-            keys or the buttons to navigate, or hit Play to watch it auto-advance.
+            Step through the algorithm below. The grid shows each cell&apos;s
+            score (how bad it is to be there) and an arrow for the current
+            action. Use the buttons to navigate, or hit Play to auto-advance.
+            <span className="hidden sm:inline">
+              {" "}You can also use{" "}
+              <kbd
+                className="px-1.5 py-0.5 rounded text-xs border"
+                style={{
+                  borderColor: "var(--card-border)",
+                  backgroundColor: "var(--equation-bg)",
+                }}
+              >
+                &larr;
+              </kbd>{" "}
+              <kbd
+                className="px-1.5 py-0.5 rounded text-xs border"
+                style={{
+                  borderColor: "var(--card-border)",
+                  backgroundColor: "var(--equation-bg)",
+                }}
+              >
+                &rarr;
+              </kbd>{" "}
+              keys.
+            </span>
           </p>
           <InteractiveViewer />
-        </section>
-
-        {/* ---- Why This Matters for AI Today ---- */}
-        <section className="mb-14">
-          <h2
-            className="text-2xl font-semibold mb-6"
-            style={{ fontFamily: "var(--font-serif), serif" }}
-          >
-            Why This Matters for AI Today
-          </h2>
-
-          <p
-            className="text-sm leading-relaxed mb-4"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            Policy iteration was published in the 1960s, but the core idea
-            (evaluate your current strategy, then improve it) is alive and well
-            in modern AI. Here&apos;s how:
-          </p>
-
-          <div className="space-y-6">
-            <div>
-              <h3
-                className="text-base font-semibold mb-2"
-                style={{ fontFamily: "var(--font-serif), serif" }}
-              >
-                The Conceptual Skeleton of Modern RL
-              </h3>
-              <p
-                className="text-sm leading-relaxed mb-3"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Policy iteration isn&apos;t a historical curiosity. It&apos;s the
-                conceptual skeleton underneath modern reinforcement learning. The
-                large language models you interact with daily (ChatGPT, Claude)
-                were refined using a process called{" "}
-                <strong>Reinforcement Learning from Human Feedback</strong>{" "}
-                (RLHF): the model generates responses (its current
-                &ldquo;policy&rdquo;), humans rate those responses (the
-                &ldquo;evaluation&rdquo;), and the model is updated to produce
-                better responses (&ldquo;improvement&rdquo;). That&apos;s the same
-                evaluate → improve loop you just watched in the grid world.
-              </p>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                One well-known implementation of this loop is{" "}
-                <strong>PPO</strong> (Proximal Policy Optimization), which is
-                designed to improve a policy without allowing any single update
-                to be so large that performance collapses. Think of it as adjusting a
-                recipe one ingredient at a time instead of overhauling everything
-                at once. Modern language-model post-training may use
-                other optimization methods as well, but the underlying structure
-                is always the same two-phase cycle.
-              </p>
-            </div>
-
-            <div>
-              <h3
-                className="text-base font-semibold mb-2"
-                style={{ fontFamily: "var(--font-serif), serif" }}
-              >
-                Reinforcement Learning at Scale
-              </h3>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Our grid had 4 states. Real RL problems (teaching a robot to
-                walk, playing Go, managing a power grid) can have billions of
-                states. Modern algorithms like{" "}
-                <strong>PPO</strong> and{" "}
-                <strong>SAC</strong> (Soft Actor-Critic) are implementations
-                of this same two-phase loop. They replace exact evaluation with
-                neural network approximations so they can handle enormous state
-                spaces, but the core rhythm (evaluate, improve, repeat) is
-                unchanged from what you just stepped through.
-              </p>
-            </div>
-
-            <div>
-              <h3
-                className="text-base font-semibold mb-2"
-                style={{ fontFamily: "var(--font-serif), serif" }}
-              >
-                The Insight That Transfers Everywhere
-              </h3>
-              <p
-                className="text-sm leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                The deepest lesson of policy iteration isn&apos;t the math. It&apos;s
-                the structure. <em>Evaluate honestly, improve incrementally,
-                repeat until stable.</em> This pattern shows up beyond AI: in
-                how companies run A/B tests, how athletes review game film, how
-                scientists refine hypotheses, and how editors revise drafts. The
-                algorithm formalizes something humans already do intuitively.
-              </p>
-            </div>
-          </div>
         </section>
 
         {/* ---- Key Takeaways ---- */}
@@ -517,11 +418,11 @@ export default function Home() {
                 className="text-sm leading-relaxed"
                 style={{ color: "var(--text-secondary)" }}
               >
-                The <em>policy improvement theorem</em> proves that each round
-                of greedy improvement produces a strategy that is at least as
-                good as the previous one. Since there are only so many possible
-                strategies, the algorithm must eventually find the best one.
-                You can&apos;t get worse, only better or the same.
+                Each round of improvement is mathematically guaranteed to
+                produce a strategy at least as good as the one before. Since
+                there are only so many possible strategies, the algorithm must
+                eventually land on the best one. You can&apos;t get worse —
+                only better or the same.
               </p>
             </div>
 
@@ -550,54 +451,508 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ---- Real-World Examples ---- */}
+        {/* ---- Policy Iteration in the Real World ---- */}
         <section className="mb-14">
           <h2
             className="text-2xl font-semibold mb-6"
             style={{ fontFamily: "var(--font-serif), serif" }}
           >
-            Real-World Examples
+            Policy Iteration in the Real World
           </h2>
           <p
-            className="text-sm leading-relaxed mb-6"
+            className="text-sm leading-relaxed mb-8"
             style={{ color: "var(--text-secondary)" }}
           >
-            This same evaluate-improve loop powers some of the most impressive
-            AI systems in the world. Here are a few:
+            Our grid had 4 states. Real problems have millions or billions. But
+            the algorithm is the same: evaluate your current strategy, improve
+            it, repeat. Here are three systems that use this exact loop at
+            massive scale.
           </p>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            <ExampleCard
-              title="AlphaGo (DeepMind)"
-              description="Defeated the world champion in Go, a game with more board positions than atoms in the universe. AlphaGo used policy iteration inside a Monte Carlo tree search: it evaluated board positions with a neural network and improved its move-selection policy through millions of self-play games."
-              tag="Games"
-            />
-            <ExampleCard
-              title="ChatGPT & Claude (RLHF)"
-              description="Both OpenAI and Anthropic use reinforcement learning from human feedback to fine-tune their language models. Human raters evaluate model outputs (the evaluation step), and the model's response policy is updated to produce answers humans prefer (the improvement step)."
-              tag="Language Models"
-            />
-            <ExampleCard
-              title="Robotics (Boston Dynamics, Figure)"
-              description="Teaching a robot to walk, grasp objects, or navigate a warehouse uses RL policies trained in simulation. The robot's control policy is repeatedly evaluated against physics simulations and improved, often thousands of times per second, before being deployed to the real hardware."
-              tag="Robotics"
-            />
-            <ExampleCard
-              title="Recommendation Systems"
-              description="Netflix, Spotify, and YouTube use RL to decide what to show you next. Your viewing history is the state, the recommendation is the action, and your engagement (watch time, likes) is the reward. The platform continually evaluates its recommendation policy and improves it."
-              tag="Products"
-            />
-            <ExampleCard
-              title="Autonomous Vehicles (Waymo)"
-              description="Self-driving cars face a continuous stream of decisions: brake, accelerate, change lanes. RL policies help plan maneuvers by evaluating possible trajectories and improving the driving policy in simulation before road testing."
-              tag="Transportation"
-            />
-            <ExampleCard
-              title="Data Center Cooling (Google)"
-              description="Google used RL to cut data center energy consumption by 40%. The agent treats temperature readings as states, cooling system adjustments as actions, and energy savings as rewards. A textbook MDP solved with policy optimization."
-              tag="Energy"
-            />
+          <div className="space-y-8">
+            {/* ---- Example 1: RLHF ---- */}
+            <div
+              className="rounded-xl border overflow-hidden"
+              style={{
+                borderColor: "var(--card-border)",
+                backgroundColor: "var(--card-bg)",
+              }}
+            >
+              <div className="p-5 sm:p-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: "rgba(139, 92, 246, 0.1)",
+                      color: "#8B5CF6",
+                    }}
+                  >
+                    Language Models
+                  </span>
+                </div>
+                <h3
+                  className="text-lg font-semibold"
+                  style={{ fontFamily: "var(--font-serif), serif" }}
+                >
+                  How ChatGPT &amp; Claude Learn to Write Better
+                </h3>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Language models start by learning patterns from text on the
+                  internet, but they need refinement to be genuinely helpful. The
+                  method is called{" "}
+                  <strong>
+                    Reinforcement Learning from Human Feedback
+                  </strong>{" "}
+                  (RLHF) — and it&apos;s the evaluate-improve loop in disguise.
+                </p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  The model generates responses to thousands of prompts. Human
+                  raters read pairs of responses and pick the better one —
+                  that&apos;s <strong>evaluation</strong>. Then the model is
+                  updated to produce more responses like the preferred ones —
+                  that&apos;s <strong>improvement</strong>. One common algorithm
+                  for this update is{" "}
+                  <strong>PPO</strong> (Proximal Policy Optimization), which
+                  makes small, careful changes to avoid breaking what already
+                  works — like adjusting a recipe one ingredient at a time. The
+                  cycle repeats until the model&apos;s responses consistently
+                  score well.
+                </p>
+
+                {/* Flow diagram */}
+                <div
+                  className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 py-4 sm:py-5 px-3 rounded-lg"
+                  style={{ backgroundColor: "var(--equation-bg)" }}
+                >
+                  {[
+                    {
+                      label: "Generate responses",
+                      sub: "Policy in action",
+                      color: "#8B5CF6",
+                    },
+                    {
+                      label: "Humans rate them",
+                      sub: "Evaluate",
+                      color: "#F59E0B",
+                    },
+                    {
+                      label: "Update model",
+                      sub: "Improve",
+                      color: "#10B981",
+                    },
+                    {
+                      label: "Repeat",
+                      sub: "Until stable",
+                      color: "var(--text-secondary)",
+                    },
+                  ].map((step, i) => (
+                    <div key={i} className="contents">
+                      {i > 0 && (
+                        <span
+                          className="shrink-0 rotate-90 sm:rotate-0"
+                          style={{ color: "var(--accent)" }}
+                        >
+                          &#8594;
+                        </span>
+                      )}
+                      <div className="flex flex-col items-center">
+                        <div
+                          className="rounded-lg border-2 px-3 py-1.5 text-xs font-semibold whitespace-nowrap"
+                          style={{
+                            borderColor: step.color,
+                            color: step.color,
+                            backgroundColor: "white",
+                          }}
+                        >
+                          {step.label}
+                        </div>
+                        <span
+                          className="text-[10px] mt-1"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          {step.sub}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Concept mapping */}
+                <div
+                  className="rounded-lg border p-4"
+                  style={{
+                    borderColor: "var(--card-border)",
+                    backgroundColor: "var(--equation-bg)",
+                  }}
+                >
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-wider mb-2.5"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Mapping to our grid
+                  </p>
+                  <div
+                    className="grid gap-y-1.5 text-xs leading-relaxed"
+                    style={{
+                      gridTemplateColumns: "1fr auto 1fr",
+                      columnGap: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    <span className="font-semibold">Grid World</span>
+                    <span />
+                    <span className="font-semibold">Language Model</span>
+                    <span>Grid cells (A, B, C)</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Possible conversations</span>
+                    <span>Up / Down / Left / Right</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Which word to write next</span>
+                    <span>&minus;1 per wrong step</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Human preference score</span>
+                    <span>Direction at each cell</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>How the model generates text</span>
+                    <span>V-values per state</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Predicted response quality</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ---- Example 2: AlphaGo ---- */}
+            <div
+              className="rounded-xl border overflow-hidden"
+              style={{
+                borderColor: "var(--card-border)",
+                backgroundColor: "var(--card-bg)",
+              }}
+            >
+              <div className="p-5 sm:p-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: "rgba(16, 185, 129, 0.1)",
+                      color: "#10B981",
+                    }}
+                  >
+                    Games
+                  </span>
+                </div>
+                <h3
+                  className="text-lg font-semibold"
+                  style={{ fontFamily: "var(--font-serif), serif" }}
+                >
+                  How AlphaGo Mastered the World&apos;s Hardest Board Game
+                </h3>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  In 2016, DeepMind&apos;s AlphaGo defeated the world champion
+                  at Go — a game with more possible board positions than atoms in
+                  the observable universe. Brute-force search was impossible.
+                  Instead, AlphaGo used policy iteration.
+                </p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  It trained two neural networks: a{" "}
+                  <strong>policy network</strong> (which move to play) and a{" "}
+                  <strong>value network</strong> (how good is this board
+                  position — just like our V-values). It played millions of games
+                  against itself. After each batch of games, it evaluated
+                  positions with the value network, improved the policy network
+                  based on which moves led to wins, and repeated.
+                </p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  The same loop that found the optimal path through a 2&times;2
+                  grid found superhuman Go strategy. The only difference is
+                  scale.
+                </p>
+
+                {/* Flow diagram */}
+                <div
+                  className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 py-4 sm:py-5 px-3 rounded-lg"
+                  style={{ backgroundColor: "var(--equation-bg)" }}
+                >
+                  {[
+                    {
+                      label: "Evaluate position",
+                      sub: "Value network",
+                      color: "#8B5CF6",
+                    },
+                    {
+                      label: "Select best move",
+                      sub: "Policy network",
+                      color: "#F59E0B",
+                    },
+                    {
+                      label: "Play game",
+                      sub: "Self-play",
+                      color: "#10B981",
+                    },
+                    {
+                      label: "Update networks",
+                      sub: "Improve",
+                      color: "var(--text-secondary)",
+                    },
+                  ].map((step, i) => (
+                    <div key={i} className="contents">
+                      {i > 0 && (
+                        <span
+                          className="shrink-0 rotate-90 sm:rotate-0"
+                          style={{ color: "var(--accent)" }}
+                        >
+                          &#8594;
+                        </span>
+                      )}
+                      <div className="flex flex-col items-center">
+                        <div
+                          className="rounded-lg border-2 px-3 py-1.5 text-xs font-semibold whitespace-nowrap"
+                          style={{
+                            borderColor: step.color,
+                            color: step.color,
+                            backgroundColor: "white",
+                          }}
+                        >
+                          {step.label}
+                        </div>
+                        <span
+                          className="text-[10px] mt-1"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          {step.sub}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Concept mapping */}
+                <div
+                  className="rounded-lg border p-4"
+                  style={{
+                    borderColor: "var(--card-border)",
+                    backgroundColor: "var(--equation-bg)",
+                  }}
+                >
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-wider mb-2.5"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Mapping to our grid
+                  </p>
+                  <div
+                    className="grid gap-y-1.5 text-xs leading-relaxed"
+                    style={{
+                      gridTemplateColumns: "1fr auto 1fr",
+                      columnGap: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    <span className="font-semibold">Grid World</span>
+                    <span />
+                    <span className="font-semibold">Go</span>
+                    <span>Grid cells (A, B, C)</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>
+                      Board positions (10<sup>170</sup> possibilities)
+                    </span>
+                    <span>Up / Down / Left / Right</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Where to place a stone (361 intersections)</span>
+                    <span>&minus;1 per wrong step</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Win (+1) or loss (&minus;1)</span>
+                    <span>Direction at each cell</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Move-selection neural network</span>
+                    <span>V-values per state</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Position-evaluation neural network</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ---- Example 3: Self-Driving Cars ---- */}
+            <div
+              className="rounded-xl border overflow-hidden"
+              style={{
+                borderColor: "var(--card-border)",
+                backgroundColor: "var(--card-bg)",
+              }}
+            >
+              <div className="p-5 sm:p-6 space-y-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: "rgba(245, 158, 11, 0.1)",
+                      color: "#F59E0B",
+                    }}
+                  >
+                    Transportation
+                  </span>
+                </div>
+                <h3
+                  className="text-lg font-semibold"
+                  style={{ fontFamily: "var(--font-serif), serif" }}
+                >
+                  How Self-Driving Cars Learn to Navigate
+                </h3>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  A self-driving car faces a continuous stream of decisions:
+                  brake, accelerate, change lanes, yield to a pedestrian.
+                  Companies like Waymo train driving policies in simulation
+                  before deploying them to real roads.
+                </p>
+                <p
+                  className="text-sm leading-relaxed"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  The car&apos;s sensors read the road (the{" "}
+                  <strong>state</strong>). The policy decides what to do (the{" "}
+                  <strong>action</strong>). A simulator scores the outcome — was
+                  the ride safe? efficient? comfortable? (the{" "}
+                  <strong>reward</strong>). The policy is updated based on
+                  millions of simulated drives, improving its decision-making for
+                  every scenario it might encounter. This is policy iteration at
+                  industrial scale.
+                </p>
+
+                {/* Flow diagram */}
+                <div
+                  className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3 py-4 sm:py-5 px-3 rounded-lg"
+                  style={{ backgroundColor: "var(--equation-bg)" }}
+                >
+                  {[
+                    {
+                      label: "Read sensors",
+                      sub: "State",
+                      color: "#8B5CF6",
+                    },
+                    {
+                      label: "Decide action",
+                      sub: "Policy",
+                      color: "#F59E0B",
+                    },
+                    {
+                      label: "Simulate drive",
+                      sub: "Evaluate",
+                      color: "#10B981",
+                    },
+                    {
+                      label: "Score & update",
+                      sub: "Improve",
+                      color: "var(--text-secondary)",
+                    },
+                  ].map((step, i) => (
+                    <div key={i} className="contents">
+                      {i > 0 && (
+                        <span
+                          className="shrink-0 rotate-90 sm:rotate-0"
+                          style={{ color: "var(--accent)" }}
+                        >
+                          &#8594;
+                        </span>
+                      )}
+                      <div className="flex flex-col items-center">
+                        <div
+                          className="rounded-lg border-2 px-3 py-1.5 text-xs font-semibold whitespace-nowrap"
+                          style={{
+                            borderColor: step.color,
+                            color: step.color,
+                            backgroundColor: "white",
+                          }}
+                        >
+                          {step.label}
+                        </div>
+                        <span
+                          className="text-[10px] mt-1"
+                          style={{ color: "var(--text-secondary)" }}
+                        >
+                          {step.sub}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Concept mapping */}
+                <div
+                  className="rounded-lg border p-4"
+                  style={{
+                    borderColor: "var(--card-border)",
+                    backgroundColor: "var(--equation-bg)",
+                  }}
+                >
+                  <p
+                    className="text-[10px] font-semibold uppercase tracking-wider mb-2.5"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
+                    Mapping to our grid
+                  </p>
+                  <div
+                    className="grid gap-y-1.5 text-xs leading-relaxed"
+                    style={{
+                      gridTemplateColumns: "1fr auto 1fr",
+                      columnGap: "12px",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    <span className="font-semibold">Grid World</span>
+                    <span />
+                    <span className="font-semibold">Self-Driving Car</span>
+                    <span>Grid cells (A, B, C)</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Sensor readings (cameras, lidar, radar)</span>
+                    <span>Up / Down / Left / Right</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Steering, braking, acceleration</span>
+                    <span>&minus;1 per wrong step</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Safety, efficiency, comfort scores</span>
+                    <span>Direction at each cell</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Driving decisions for each road situation</span>
+                    <span>V-values per state</span>
+                    <span style={{ color: "var(--accent)" }}>&rarr;</span>
+                    <span>Predicted safety of each road situation</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
+
+          {/* Closing insight */}
+          <p
+            className="text-sm leading-relaxed mt-8"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            The deepest lesson isn&apos;t the math — it&apos;s the structure.{" "}
+            <em>Evaluate honestly, improve incrementally, repeat until
+            stable.</em> This pattern shows up wherever complex decisions need
+            to be optimized, from training AI systems to how companies run A/B
+            tests, athletes review game film, and scientists refine hypotheses.
+          </p>
         </section>
 
         {/* ---- Try It Yourself ---- */}
@@ -612,9 +967,10 @@ export default function Home() {
             className="text-sm leading-relaxed mb-6"
             style={{ color: "var(--text-secondary)" }}
           >
-            Now that you&apos;ve seen how the algorithm works, try being the
-            decision-maker yourself. Set a direction for each state and see
-            what happens.
+            Now try a bigger challenge. Below is a 4&times;4 grid with 15
+            states and a goal in the bottom-right corner. Click any cell to
+            select it, choose a direction, and see how the values converge
+            when you test your policy.
           </p>
           <PolicySandbox />
         </section>
@@ -653,45 +1009,3 @@ export default function Home() {
   );
 }
 
-/* ------------------------------------------------------------------ */
-/*  Example Card                                                       */
-/* ------------------------------------------------------------------ */
-
-function ExampleCard({
-  title,
-  description,
-  tag,
-}: {
-  title: string;
-  description: string;
-  tag: string;
-}) {
-  return (
-    <div
-      className="rounded-lg border p-4 flex flex-col gap-2"
-      style={{
-        borderColor: "var(--card-border)",
-        backgroundColor: "var(--card-bg)",
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <span
-          className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full"
-          style={{
-            backgroundColor: "var(--equation-bg)",
-            color: "var(--accent)",
-          }}
-        >
-          {tag}
-        </span>
-      </div>
-      <h4 className="text-sm font-semibold">{title}</h4>
-      <p
-        className="text-sm leading-relaxed"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {description}
-      </p>
-    </div>
-  );
-}

@@ -440,8 +440,8 @@ export default function InteractiveViewer() {
       <div className="flex flex-col lg:flex-row">
         {/* Left — Grid */}
         <div
-          className="flex-shrink-0 flex items-center justify-center p-6 lg:p-8 lg:w-[340px]"
-          style={{ borderRight: "1px solid var(--card-border)" }}
+          className="flex-shrink-0 flex items-center justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
+          style={{ borderColor: "var(--card-border)" }}
         >
           <div className="grid grid-cols-2 gap-3 w-full max-w-[240px]">
             <GridCell
@@ -476,7 +476,7 @@ export default function InteractiveViewer() {
         </div>
 
         {/* Right — Explanation */}
-        <div className="flex-1 p-6 lg:p-8 flex flex-col gap-4 min-h-[320px]">
+        <div className="flex-1 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
           {/* Phase badge */}
           <div>
             <span
@@ -548,15 +548,21 @@ export default function InteractiveViewer() {
       >
         {/* Progress bar */}
         <div className="flex items-center gap-3">
-          <span
-            className="text-xs font-medium tabular-nums whitespace-nowrap"
-            style={{
-              color: "var(--text-secondary)",
-              fontFamily: "var(--font-mono), monospace",
-            }}
-          >
-            Step {currentStep + 1} of {total}
-          </span>
+          <div className="flex items-center gap-2">
+            <span
+              className="w-2 h-2 rounded-full shrink-0"
+              style={{ backgroundColor: phaseColor(step.phase) }}
+            />
+            <span
+              className="text-xs font-medium tabular-nums whitespace-nowrap"
+              style={{
+                color: "var(--text-secondary)",
+                fontFamily: "var(--font-mono), monospace",
+              }}
+            >
+              {currentStep + 1}/{total}
+            </span>
+          </div>
           <div className="flex-1">
             <input
               type="range"
@@ -620,6 +626,15 @@ export default function InteractiveViewer() {
             &#9654;|
           </ControlButton>
         </div>
+
+        {currentStep === 0 && (
+          <p
+            className="text-xs text-center"
+            style={{ color: "var(--text-secondary)" }}
+          >
+            Press Play to watch the algorithm run, or step through one at a time
+          </p>
+        )}
       </div>
     </div>
   );
