@@ -8,6 +8,7 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 
 - [AI labs, evals, and agent systems](https://www.loganzev.com/ai-labs-evals-agent-systems)
 - [Anthropic and Claude ecosystem](https://www.loganzev.com/anthropic-claude-ecosystem)
+- [Why Anthropic and Claude fit the kind of product work I want to do](https://www.loganzev.com/writing/why-anthropic-and-claude-fit-the-kind-of-product-work-i-do)
 - [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
 - [Product people using Claude Code and Codex](https://www.loganzev.com/product-people-using-claude-code-and-codex)
 - [AI Signal Studio](https://www.loganzev.com/projects/ai-signal-studio)
