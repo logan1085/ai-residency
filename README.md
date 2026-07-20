@@ -11,8 +11,10 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 - [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
 - [Product people using Claude Code and Codex](https://www.loganzev.com/product-people-using-claude-code-and-codex)
 - [AI Signal Studio](https://www.loganzev.com/projects/ai-signal-studio)
+- [AI Company Fit Radar](https://www.loganzev.com/projects/ai-company-fit-radar)
 - [AI Product Wedge Lab](https://www.loganzev.com/projects/ai-product-wedge-lab)
 - [AI Team Builder](https://www.loganzev.com/projects/ai-team-builder)
+- [AI Evals Lab](https://www.loganzev.com/projects/ai-evals-lab)
 - [AI Workflow Lab](https://www.loganzev.com/projects/ai-workflow-lab)
 - [My AI research interests: evals, benchmarks, and agent systems](https://www.loganzev.com/writing/ai-research-interests-evals-benchmarks)
 - [What I've actually built with Claude Code and Codex](https://www.loganzev.com/writing/what-ive-actually-built-with-claude-code-and-codex)
@@ -21,7 +23,7 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 
 The point of this repo is not to posture as pure academic research. It is to make the research-adjacent layer legible: the curriculum, notes, and surrounding systems work that help connect AI labs, evals, agent reliability, and product judgment.
 
-The interactive proof surfaces matter too. They make the workflow, product-packaging, and product-thinking side of that story easier to verify than prose alone. In practice that means the live set around positioning signal, product wedges, team shape, and workflow design is part of the same public proof system as this repo.
+The interactive proof surfaces matter too. They make the workflow, product-packaging, and product-thinking side of that story easier to verify than prose alone. In practice that means the live set around positioning signal, recruiting fit, product wedges, team shape, eval design, and workflow design is part of the same public proof system as this repo.
 
 ## Local Development
 
