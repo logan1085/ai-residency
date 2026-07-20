@@ -8,11 +8,15 @@ If you are trying to understand where Logan fits around AI labs, evals, or produ
 
 - [AI labs, evals, and agent systems](https://www.loganzev.com/ai-labs-evals-agent-systems)
 - [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
+- [AI Team Builder](https://www.loganzev.com/projects/ai-team-builder)
+- [AI Workflow Lab](https://www.loganzev.com/projects/ai-workflow-lab)
 - [My AI research interests: evals, benchmarks, and agent systems](https://www.loganzev.com/writing/ai-research-interests-evals-benchmarks)
 - [Why AI labs need product people using Claude Code and Codex](https://www.loganzev.com/writing/why-ai-labs-need-product-people-using-claude-code-and-codex)
 - [AI Profile](https://www.loganzev.com/ai-profile)
 
 The point of this repo is not to posture as pure academic research. It is to make the research-adjacent layer legible: the curriculum, notes, and surrounding systems work that help connect AI labs, evals, agent reliability, and product judgment.
+
+The interactive proof surfaces matter too. They make the workflow and product-thinking side of that story easier to verify than prose alone.
 
 ## Local Development
 
