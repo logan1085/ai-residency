@@ -603,8 +603,8 @@ export default function PolicySandbox() {
                   }}
                 >
                   {converged
-                    ? `Converged at iteration ${iteration}`
-                    : `Iteration ${iteration}`}
+                    ? `Settled after ${iteration} rounds`
+                    : `Round ${iteration}`}
                 </span>
               </div>
             )}
@@ -667,7 +667,7 @@ export default function PolicySandbox() {
                     fontFamily: "var(--font-sans), system-ui, sans-serif",
                   }}
                 >
-                  Bellman update for state {selected}
+                  Score calculation for room {selected}
                 </p>
                 <div>
                   V({selected}) ={" "}

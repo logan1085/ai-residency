@@ -47,12 +47,12 @@ interface Step {
 const STEPS: Step[] = [
   {
     phase: "setup",
-    title: "The Grid World",
+    title: "The Grid",
     policy: { A: null, B: null, C: null },
     values: { A: null, B: null, C: null, G: 0 },
     focus: "all",
     explanation:
-      "We have a 2\u00d72 grid with four states: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal state with value 0. Our task: find the optimal policy that reaches G as quickly as possible.",
+      "Here\u2019s a simple 2\u00d72 grid with four rooms: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal \u2014 it has a score of 0 because you\u2019re already there. Our job: figure out which direction each room should point so you reach the goal as fast as possible.",
   },
   {
     phase: "setup",
@@ -61,69 +61,69 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: null,
     explanation:
-      "From each non-goal state, the agent can move Up, Down, Left, or Right. Moving into a wall keeps the agent in place. Every move costs \u22121 reward, except moving into the goal which gives 0. The discount factor \u03b3 = 0.9.",
-    equation: "R(s, a) = \u22121  for all moves\nR(s, a) = 0   when entering goal G\n\u03b3 = 0.9",
+      "From any room, you can go Up, Down, Left, or Right. If you walk into a wall, you stay put. Every move costs you \u22121 point, except walking into the goal which is free. Future points are worth slightly less than immediate ones (worth 90% as much).",
+    equation: "Each move costs:   \u22121 point\nReaching the goal:  0 (free!)\nFuture discount:    0.9 (90%)",
   },
   {
     phase: "init",
-    title: "Initial Policy \u03c0\u2080",
+    title: "Starting Strategy",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: null, B: null, C: null, G: 0 },
     focus: "A,B,C",
     explanation:
-      "We start with an arbitrary (bad) policy: A \u2192 Up, B \u2192 Up, C \u2192 Left. Under this policy, every state bumps into a wall and stays in place. Nobody can reach the goal! Let\u2019s evaluate it to see how bad it is.",
+      "We start with a deliberately bad strategy: A points Up, B points Up, C points Left. Look at the grid \u2014 every room is pointing straight into a wall! Nobody can reach the goal. Let\u2019s score this strategy to see how bad it really is.",
   },
   {
     phase: "eval-0",
-    title: "Evaluating State A",
+    title: "Scoring Room A",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: -10, B: null, C: null, G: 0 },
     focus: "A",
     explanation:
-      "Under \u03c0\u2080, state A\u2019s policy is Up, which bumps into the top wall. The agent stays in A, pays \u22121, and faces the same situation forever. It\u2019s stuck in an infinite loop, so the penalties pile up to the worst possible score: \u221210.",
+      "Room A says \"go Up,\" but that\u2019s a wall. So you stay in A, lose 1 point, and face the exact same situation again. You\u2019re stuck in an endless loop, losing 1 point over and over. The penalties add up to \u221210 \u2014 the worst possible score.",
     equation:
-      "V(A) = R + \u03b3\u00b7V(A)\nV(A) = \u22121 + 0.9\u00b7V(A)\nV(A) \u2212 0.9\u00b7V(A) = \u22121\n0.1\u00b7V(A) = \u22121\nV(A) = \u221210",
+      "Score(A) = cost + 0.9 \u00d7 Score(where you end up)\nScore(A) = \u22121 + 0.9 \u00d7 Score(A)    \u2190 you end up back in A!\nSolving: Score(A) = \u221210",
   },
   {
     phase: "eval-0",
-    title: "States B and C",
+    title: "Rooms B and C",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "B,C",
     explanation:
-      "Same story for B and C: B goes Up (wall), C goes Left (wall). Both are stuck in place, racking up \u22121 penalties forever. A value of \u221210 means the state is trapped and never reaches the goal.",
+      "Same story for B and C. B goes Up (wall) and C goes Left (wall). Both are stuck in place, losing 1 point per move forever. A score of \u221210 means \"you\u2019re trapped and will never reach the goal.\"",
     equation:
-      "V(B) = \u22121 + 0.9\u00b7V(B) = \u221210\nV(C) = \u22121 + 0.9\u00b7V(C) = \u221210",
+      "Score(B) = \u22121 + 0.9 \u00d7 Score(B) = \u221210\nScore(C) = \u22121 + 0.9 \u00d7 Score(C) = \u221210",
   },
   {
     phase: "eval-0",
-    title: "Evaluation Complete",
+    title: "Scoring Complete",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "all",
     explanation:
-      "Policy evaluation for \u03c0\u2080 is done. Every non-goal state is stuck with a value of \u221210, the worst possible. All three states just bump into walls forever. The policy is clearly terrible. Now let\u2019s try to improve it.",
+      "Scoring is done. Every room has a score of \u221210 \u2014 the worst it can get. All three rooms just bump into walls forever. This strategy is clearly terrible. Now let\u2019s see if we can do better.",
   },
   {
     phase: "improve-0",
-    title: "Improving the Policy",
+    title: "Looking for Better Options",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: null,
     explanation:
-      "Policy improvement works by computing Q(s, a) for every action at each state, then picking the action with the highest Q-value. If a better action exists, we switch to it.",
-    equation: "Q(s, a) = R(s, a) + \u03b3\u00b7V(s\u2032)\nwhere s\u2032 is the state reached by action a",
+      "Time to improve. At each room, we\u2019ll try every possible direction and calculate a score for each option. The formula is simple: the cost of moving, plus 90% of the score of wherever you end up. Then we pick whichever direction scores best.",
+    equation: "Score for an option = cost of moving + 0.9 \u00d7 Score(room you land in)",
   },
   {
     phase: "improve-0",
-    title: "State A: All Tied",
+    title: "Room A: All Options Tied",
     policy: { A: "up", B: "up", C: "left" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "A",
     explanation:
-      "From A, every action leads to a state with value \u221210 (or stays in A with value \u221210). All Q-values are equal, so we keep the current action: Up.",
+      "From A, every direction either hits a wall (staying in A) or leads to B or C \u2014 but they all have a score of \u221210. So every option gives the same result. No improvement possible yet \u2014 we keep A pointing Up.",
     equation:
-      "Q(A, Up)    = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210\nQ(A, Down)  = \u22121 + 0.9\u00b7V(C) = \u22121 + 0.9(\u221210) = \u221210\nQ(A, Left)  = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210\nQ(A, Right) = \u22121 + 0.9\u00b7V(B) = \u22121 + 0.9(\u221210) = \u221210",
+      "Try Up:    \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(\u221210) = \u221210\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
       { action: "Up", formula: "\u22121 + 0.9(\u221210)", value: -10 },
       { action: "Down", formula: "\u22121 + 0.9(\u221210)", value: -10 },
@@ -133,14 +133,14 @@ const STEPS: Step[] = [
   },
   {
     phase: "improve-0",
-    title: "State B: Down Wins",
+    title: "Room B: Down Wins!",
     policy: { A: "up", B: "down", C: "left" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "B",
     explanation:
-      "From B, moving Down reaches the goal G (value 0) with reward 0. That gives Q = 0, much better than the \u221210 from other actions. We switch B\u2019s policy to Down!",
+      "From B, going Down leads straight to the goal G (score 0), and reaching the goal is free. That gives a score of 0 \u2014 massively better than \u221210! We switch B\u2019s direction to Down.",
     equation:
-      "Q(B, Up)    = \u22121 + 0.9\u00b7V(B) = \u22121 + 0.9(\u221210) = \u221210\nQ(B, Down)  =  0 + 0.9\u00b7V(G) =  0 + 0.9(0) = 0  \u2190 best!\nQ(B, Left)  = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210\nQ(B, Right) = \u22121 + 0.9\u00b7V(B) = \u22121 + 0.9(\u221210) = \u221210",
+      "Try Up:    \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:   0 + 0.9 \u00d7 Score(G) =  0 + 0.9(0) = 0  \u2190 best!\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
       { action: "Up", formula: "\u22121 + 0.9(\u221210)", value: -10 },
       { action: "Down", formula: "0 + 0.9(0)", value: 0, winner: true },
@@ -150,14 +150,14 @@ const STEPS: Step[] = [
   },
   {
     phase: "improve-0",
-    title: "State C: Right Wins",
+    title: "Room C: Right Wins!",
     policy: { A: "up", B: "down", C: "right" },
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "C",
     explanation:
-      "From C, moving Right reaches the goal G (value 0) with reward 0. That gives Q = 0, the best option. We switch C\u2019s policy to Right!",
+      "From C, going Right reaches the goal G (score 0) for free. Score of 0, same as B. We switch C\u2019s direction to Right!",
     equation:
-      "Q(C, Up)    = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210\nQ(C, Down)  = \u22121 + 0.9\u00b7V(C) = \u22121 + 0.9(\u221210) = \u221210\nQ(C, Left)  = \u22121 + 0.9\u00b7V(C) = \u22121 + 0.9(\u221210) = \u221210\nQ(C, Right) =  0 + 0.9\u00b7V(G) =  0 + 0.9(0) = 0  \u2190 best!",
+      "Try Up:    \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(\u221210) = \u221210\nTry Left:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(\u221210) = \u221210\nTry Right:  0 + 0.9 \u00d7 Score(G) =  0 + 0.9(0) = 0  \u2190 best!",
     qTable: [
       { action: "Up", formula: "\u22121 + 0.9(\u221210)", value: -10 },
       { action: "Down", formula: "\u22121 + 0.9(\u221210)", value: -10 },
@@ -167,44 +167,44 @@ const STEPS: Step[] = [
   },
   {
     phase: "policy-1",
-    title: "New Policy \u03c0\u2081",
+    title: "Updated Strategy",
     policy: { A: "up", B: "down", C: "right" },
     values: { A: null, B: null, C: null, G: 0 },
     focus: "all",
     explanation:
-      "After improvement, our new policy is: A \u2192 Up (unchanged), B \u2192 Down (improved!), C \u2192 Right (improved!). B and C now point toward the goal. Let\u2019s evaluate this new policy.",
+      "After improving, our new strategy is: A \u2192 Up (unchanged), B \u2192 Down (improved!), C \u2192 Right (improved!). B and C now point toward the goal. But A is still stuck. Let\u2019s score this new strategy.",
   },
   {
     phase: "eval-1",
-    title: "B and C Reach Goal",
+    title: "B and C Reach the Goal",
     policy: { A: "up", B: "down", C: "right" },
     values: { A: null, B: 0, C: 0, G: 0 },
     focus: "B,C",
     explanation:
-      "Under \u03c0\u2081, B goes Down to G (reward 0, done) and C goes Right to G (reward 0, done). Both reach the goal in one step!",
-    equation: "V(B) = 0 + 0.9\u00b7V(G) = 0 + 0 = 0\nV(C) = 0 + 0.9\u00b7V(G) = 0 + 0 = 0",
+      "With the updated strategy, B goes Down to the goal (free!) and C goes Right to the goal (free!). Both reach the goal in one step. Their scores are now 0 \u2014 as good as it gets.",
+    equation: "Score(B) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0\nScore(C) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0",
   },
   {
     phase: "eval-1",
-    title: "A Still Loops",
+    title: "Room A Is Still Stuck",
     policy: { A: "up", B: "down", C: "right" },
     values: { A: -10, B: 0, C: 0, G: 0 },
     focus: "A",
     explanation:
-      "State A still goes Up (wall), looping forever in place. Its value remains \u221210. The policy for A hasn\u2019t changed yet, so improvement is needed.",
+      "Room A still goes Up (wall), bouncing in place forever. Its score stays at \u221210. We haven\u2019t changed A\u2019s direction yet \u2014 it still needs help.",
     equation:
-      "V(A) = \u22121 + 0.9\u00b7V(A)\n0.1\u00b7V(A) = \u22121\nV(A) = \u221210",
+      "Score(A) = \u22121 + 0.9 \u00d7 Score(A)\nSolving: Score(A) = \u221210",
   },
   {
     phase: "improve-1",
-    title: "A: Right and Down Win",
+    title: "Room A: Right and Down Both Win!",
     policy: { A: "right", B: "down", C: "right" },
     values: { A: -10, B: 0, C: 0, G: 0 },
     focus: "A",
     explanation:
-      "Now B and C have value 0, so going Right (to B) or Down (to C) from A both give Q = \u22121 + 0.9(0) = \u22121. Much better than \u221210! We pick Right (arbitrary tie-break). B and C are already optimal.",
+      "Now B and C both have a score of 0. So from A, going Right (to B) or Down (to C) both give a score of \u22121. That\u2019s much better than \u221210! We pick Right (either would work). B and C are already doing their best.",
     equation:
-      "Q(A, Up)    = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210\nQ(A, Right) = \u22121 + 0.9\u00b7V(B) = \u22121 + 0.9(0)    = \u22121  \u2190 best!\nQ(A, Down)  = \u22121 + 0.9\u00b7V(C) = \u22121 + 0.9(0)    = \u22121  \u2190 best!\nQ(A, Left)  = \u22121 + 0.9\u00b7V(A) = \u22121 + 0.9(\u221210) = \u221210",
+      "Try Up:    \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(0)    = \u22121  \u2190 best!\nTry Down:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(0)    = \u22121  \u2190 best!\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
       { action: "Up", formula: "\u22121 + 0.9(\u221210)", value: -10 },
       { action: "Right", formula: "\u22121 + 0.9(0)", value: -1, winner: true },
@@ -214,43 +214,43 @@ const STEPS: Step[] = [
   },
   {
     phase: "policy-2",
-    title: "New Policy \u03c0\u2082",
+    title: "Final Strategy",
     policy: { A: "right", B: "down", C: "right" },
     values: { A: null, B: null, C: null, G: 0 },
     focus: "all",
     explanation:
-      "Our new policy: A \u2192 Right (improved!), B \u2192 Down, C \u2192 Right. Now every state has a path to the goal! Let\u2019s evaluate one more time.",
+      "Our strategy now: A \u2192 Right (improved!), B \u2192 Down, C \u2192 Right. Every room has a clear path to the goal! Let\u2019s score it one more time to be sure.",
   },
   {
     phase: "eval-2",
-    title: "Final Evaluation",
+    title: "Final Scores",
     policy: { A: "right", B: "down", C: "right" },
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "Under \u03c0\u2082: A goes Right to B (\u22121 reward), then B goes Down to G (0 reward). A reaches the goal in 2 steps. B and C each reach it in 1 step.",
+      "A goes Right to B (\u22121 cost), then B goes Down to the goal (free). A reaches the goal in 2 steps. B and C each reach it in 1 step. These are the best scores possible.",
     equation:
-      "V(A) = \u22121 + 0.9\u00b7V(B) = \u22121 + 0.9(0) = \u22121\nV(B) = 0 + 0.9\u00b7V(G) = 0\nV(C) = 0 + 0.9\u00b7V(G) = 0",
+      "Score(A) = \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(0) = \u22121\nScore(B) = 0 + 0.9 \u00d7 Score(G) = 0\nScore(C) = 0 + 0.9 \u00d7 Score(G) = 0",
   },
   {
     phase: "converge",
-    title: "Policy Unchanged",
+    title: "Nothing Left to Improve",
     policy: { A: "right", B: "down", C: "right" },
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "We run policy improvement again: for every state, the greedy action matches the current policy. No changes are made. The policy is stable!",
+      "We check one more time: at every room, is there a better direction? Nope \u2014 each room is already pointing the best way. The strategy is stable, so we\u2019re done!",
     equation:
-      "For each state s:\n  argmax_a Q(s, a) = \u03c0\u2082(s)\n\nPolicy stable \u2192 \u03c0\u2082 = \u03c0*",
+      "For each room, the best direction\nmatches what we already have.\n\nNo changes \u2192 strategy is final!",
   },
   {
     phase: "converge",
-    title: "Optimal Policy Found!",
+    title: "Best Strategy Found!",
     policy: { A: "right", B: "down", C: "right" },
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "Policy iteration has converged in just 2 improvement rounds. The optimal policy sends every state on the shortest path to the goal. A takes 2 steps (A \u2192 B \u2192 G), while B and C each take 1 step.",
+      "That\u2019s it! In just 2 rounds of improvement, we found the best possible strategy. Every room takes the shortest path to the goal: A goes Right to B, then B goes Down to G (2 steps). B and C each reach the goal in 1 step. This is policy iteration in action.",
   },
 ];
 
@@ -260,10 +260,10 @@ const STEPS: Step[] = [
 
 function phaseLabel(phase: Phase): string {
   if (phase === "setup" || phase === "init") return "SETUP";
-  if (phase.startsWith("eval")) return "POLICY EVALUATION";
-  if (phase.startsWith("improve")) return "POLICY IMPROVEMENT";
+  if (phase.startsWith("eval")) return "SCORING";
+  if (phase.startsWith("improve")) return "IMPROVING";
   if (phase.startsWith("policy")) return "SETUP";
-  return "CONVERGENCE";
+  return "FINISHED";
 }
 
 function phaseColor(phase: Phase): string {
@@ -514,9 +514,9 @@ export default function InteractiveViewer() {
               <table className="q-table">
                 <thead>
                   <tr>
-                    <th>Action</th>
-                    <th>Formula</th>
-                    <th>Q-value</th>
+                    <th>Direction</th>
+                    <th>Calculation</th>
+                    <th>Score</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -23,8 +23,7 @@ export default function Home() {
               fontFamily: "var(--font-serif), serif",
             }}
           >
-            An Interactive Walkthrough of Dynamic Programming in Reinforcement
-            Learning
+            An Interactive Guide to How AI Learns the Best Strategy
           </p>
           <p
             className="text-base leading-relaxed max-w-xl mx-auto"
@@ -86,7 +85,7 @@ export default function Home() {
                 style={{ color: "var(--text-secondary)" }}
               >
                 There&apos;s one more ingredient: a{" "}
-                <strong>discount factor</strong> (&gamma;). It captures the
+                <strong>discount factor</strong>. It captures the
                 common-sense idea that a reward right now is worth more than the
                 same reward far in the future. A discount of 0.9 means that a
                 reward two steps away is only worth 81% of a reward right now
@@ -134,7 +133,8 @@ export default function Home() {
                     >
                       &ldquo;If I follow this plan forever, how much total cost
                       will I rack up from each starting point?&rdquo; This
-                      produces a &ldquo;score&rdquo; (called V) for every state.
+                      gives every room a score — a single number capturing
+                      how good or bad it is to be there.
                     </p>
                   </div>
                 </div>
@@ -154,16 +154,15 @@ export default function Home() {
                   </span>
                   <div>
                     <p className="text-sm font-semibold mb-1">
-                      Improve it greedily
+                      Look for better options
                     </p>
                     <p
                       className="text-sm leading-relaxed"
                       style={{ color: "var(--text-secondary)" }}
                     >
-                      At each state, look at all the options and ask: &ldquo;Is
-                      there a different action that would lead to a
-                      higher-scoring state?&rdquo; If yes, switch to that
-                      action.
+                      At each room, try every possible direction and ask:
+                      &ldquo;Would going this way lead somewhere
+                      better?&rdquo; If yes, switch to that direction.
                     </p>
                   </div>
                 </div>
@@ -173,8 +172,8 @@ export default function Home() {
                 className="text-sm leading-relaxed mb-5"
                 style={{ color: "var(--text-secondary)" }}
               >
-                When the improvement step changes nothing, the strategy is as
-                good as it gets. That&apos;s the <strong>optimal policy</strong>.
+                When the improvement step finds nothing to change, the strategy
+                is the best it can possibly be.
               </p>
 
               {/* Evaluate ↔ Improve loop diagram */}
@@ -463,10 +462,10 @@ export default function Home() {
             className="text-sm leading-relaxed mb-8"
             style={{ color: "var(--text-secondary)" }}
           >
-            Our grid had 4 states. Real problems have millions or billions. But
-            the algorithm is the same: evaluate your current strategy, improve
-            it, repeat. Here are three systems that use this exact loop at
-            massive scale.
+            Our grid had 4 rooms. Real problems have millions or billions of
+            possible situations. But the algorithm is the same: score your
+            current strategy, look for improvements, repeat. Here are three
+            systems that use this exact loop at massive scale.
           </p>
 
           <div className="space-y-8">
@@ -608,19 +607,19 @@ export default function Home() {
                     <span className="font-semibold">Grid World</span>
                     <span />
                     <span className="font-semibold">Language Model</span>
-                    <span>Grid cells (A, B, C)</span>
+                    <span>Rooms (A, B, C)</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Possible conversations</span>
-                    <span>Up / Down / Left / Right</span>
+                    <span>Which direction to go</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Which word to write next</span>
-                    <span>&minus;1 per wrong step</span>
+                    <span>&minus;1 per extra move</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Human preference score</span>
-                    <span>Direction at each cell</span>
+                    <span>Direction for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>How the model generates text</span>
-                    <span>V-values per state</span>
+                    <span>Score for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Predicted response quality</span>
                   </div>
@@ -767,23 +766,23 @@ export default function Home() {
                     <span className="font-semibold">Grid World</span>
                     <span />
                     <span className="font-semibold">Go</span>
-                    <span>Grid cells (A, B, C)</span>
+                    <span>Rooms (A, B, C)</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>
                       Board positions (10<sup>170</sup> possibilities)
                     </span>
-                    <span>Up / Down / Left / Right</span>
+                    <span>Which direction to go</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Where to place a stone (361 intersections)</span>
-                    <span>&minus;1 per wrong step</span>
+                    <span>&minus;1 per extra move</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Win (+1) or loss (&minus;1)</span>
-                    <span>Direction at each cell</span>
+                    <span>Direction for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
-                    <span>Move-selection neural network</span>
-                    <span>V-values per state</span>
+                    <span>Neural network that picks moves</span>
+                    <span>Score for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
-                    <span>Position-evaluation neural network</span>
+                    <span>Neural network that judges positions</span>
                   </div>
                 </div>
               </div>
@@ -921,19 +920,19 @@ export default function Home() {
                     <span className="font-semibold">Grid World</span>
                     <span />
                     <span className="font-semibold">Self-Driving Car</span>
-                    <span>Grid cells (A, B, C)</span>
+                    <span>Rooms (A, B, C)</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Sensor readings (cameras, lidar, radar)</span>
-                    <span>Up / Down / Left / Right</span>
+                    <span>Which direction to go</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Steering, braking, acceleration</span>
-                    <span>&minus;1 per wrong step</span>
+                    <span>&minus;1 per extra move</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Safety, efficiency, comfort scores</span>
-                    <span>Direction at each cell</span>
+                    <span>Direction for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Driving decisions for each road situation</span>
-                    <span>V-values per state</span>
+                    <span>Score for each room</span>
                     <span style={{ color: "var(--accent)" }}>&rarr;</span>
                     <span>Predicted safety of each road situation</span>
                   </div>
