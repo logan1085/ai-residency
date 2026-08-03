@@ -1,30 +1,65 @@
 @import "tailwindcss";
 
+/* ==================================================================
+   Thoughtful Lab design tokens
+   Editorial, hairline-ruled, near-black ink on paper. Single teal
+   accent, with gold and rose as the secondary semantic colors.
+   Mirrors docs/stylesheets/extra.css in the parent residency site.
+   ================================================================== */
+
 :root {
-  --background: #FFFBF5;
-  --foreground: #1C1917;
-  --text-secondary: #78716C;
-  --accent: #E07A2F;
-  --accent-hover: #C2410C;
-  --card-bg: #FFFFFF;
-  --card-border: #E8E0D8;
-  --equation-bg: #FFF7ED;
-  --cell-unknown: #F5F0EB;
-  --cell-red: #FCA5A5;
-  --cell-amber: #FCD34D;
-  --cell-green: #6EE7B7;
-  --phase-setup: #3B82F6;
-  --phase-eval: #8B5CF6;
-  --phase-improve: #F59E0B;
-  --phase-converge: #10B981;
+  /* Ink */
+  --tl-ink: #151515;
+  --tl-ink-soft: #33383b;
+  --tl-muted: #5f6468;
+  --tl-faint: #767c81;
+
+  /* Paper */
+  --tl-paper: #ffffff;
+  --tl-surface: #f6f7f8;
+  --tl-surface-strong: #eceff1;
+
+  /* Rules */
+  --tl-line: #d8dee2;
+  --tl-line-soft: #e8ecee;
+
+  /* Accents */
+  --tl-teal: #007f73;
+  --tl-teal-strong: #00625a;
+  --tl-teal-wash: #edf5f4;
+  --tl-gold: #b26a00;
+  --tl-gold-wash: #f9f3e9;
+  --tl-rose: #b4235a;
+  --tl-rose-wash: #f9edf1;
+
+  --tl-radius: 3px;
+
+  /* ---- Semantic aliases consumed by the components ---- */
+  --background: var(--tl-paper);
+  --foreground: var(--tl-ink);
+  --text-secondary: var(--tl-muted);
+  --accent: var(--tl-teal);
+  --accent-hover: var(--tl-teal-strong);
+  --card-bg: var(--tl-paper);
+  --card-border: var(--tl-line);
+  --equation-bg: var(--tl-surface);
+
+  --cell-unknown: var(--tl-surface);
+  --cell-red: var(--tl-rose-wash);
+  --cell-amber: var(--tl-gold-wash);
+  --cell-green: var(--tl-teal-wash);
+
+  --phase-setup: var(--tl-muted);
+  --phase-eval: var(--tl-teal);
+  --phase-improve: var(--tl-gold);
+  --phase-converge: var(--tl-ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-lora);
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
@@ -33,104 +68,561 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Grid cell value transitions */
-.grid-cell {
-  transition: background-color 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+::selection {
+  background: var(--tl-teal-wash);
 }
 
-/* Pulsing highlight for focused cell */
-@keyframes pulse-border {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 47, 0.4); }
-  50% { box-shadow: 0 0 0 4px rgba(224, 122, 47, 0.2); }
+/* ==================================================================
+   Typography
+   ================================================================== */
+
+.tl-eyebrow {
+  color: var(--tl-muted);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tl-display {
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1;
+}
+
+.tl-h2 {
+  font-size: clamp(1.375rem, 3.2vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.15;
+}
+
+.tl-h3 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.3;
+}
+
+.tl-h4 {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  line-height: 1.35;
+}
+
+.tl-lede {
+  color: var(--tl-ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  max-width: 62ch;
+}
+
+.tl-lede strong {
+  color: var(--tl-ink);
+  font-weight: 600;
+}
+
+.tl-body {
+  color: var(--tl-muted);
+  font-size: 0.9375rem;
+  line-height: 1.72;
+  max-width: 68ch;
+}
+
+.tl-body strong {
+  color: var(--tl-ink);
+  font-weight: 600;
+}
+
+.tl-body em {
+  color: var(--tl-ink-soft);
+}
+
+.tl-note {
+  color: var(--tl-faint);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.tl-mono {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==================================================================
+   Structure — section heads and rules
+   ================================================================== */
+
+.tl-section-head {
+  align-items: baseline;
+  border-top: 1px solid var(--tl-ink);
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.875rem;
+}
+
+.tl-section-index {
+  color: var(--tl-teal);
+  flex-shrink: 0;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.tl-rule {
+  border: 0;
+  border-top: 1px solid var(--tl-line);
+  margin: 0;
+}
+
+.tl-rule-soft {
+  border: 0;
+  border-top: 1px solid var(--tl-line-soft);
+  margin: 0;
+}
+
+/* ==================================================================
+   Surfaces
+   ================================================================== */
+
+.tl-panel {
+  background: var(--tl-paper);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+}
+
+.tl-inset {
+  background: var(--tl-surface);
+  border: 1px solid var(--tl-line-soft);
+  border-radius: var(--tl-radius);
+}
+
+/* A step or claim called out with a colored left rule rather than a box */
+.tl-callout {
+  border-left: 2px solid var(--tl-line);
+  padding-left: 1rem;
+}
+
+.tl-callout-eval {
+  border-left-color: var(--tl-teal);
+}
+
+.tl-callout-improve {
+  border-left-color: var(--tl-gold);
+}
+
+.tl-callout-index {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Small uppercase label sitting above a block of data */
+.tl-label {
+  color: var(--tl-faint);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Category tag on the real-world examples */
+.tl-tag {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  display: inline-block;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.5rem;
+  text-transform: uppercase;
+}
+
+kbd {
+  border: 1px solid var(--tl-line);
+  border-bottom-width: 2px;
+  border-radius: var(--tl-radius);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.6875rem;
+  padding: 0.1rem 0.35rem;
+}
+
+/* ==================================================================
+   Flow diagrams — labels joined by hairline rules, not pills
+   ================================================================== */
+
+.tl-flow {
+  align-items: stretch;
+  border-block: 1px solid var(--tl-line);
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-flow-node {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  text-align: center;
+}
+
+.tl-flow-node-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+}
+
+.tl-flow-node-sub {
+  color: var(--tl-faint);
+  display: block;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+}
+
+.tl-flow-arrow {
+  align-items: center;
+  color: var(--tl-teal);
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 0.35rem 0;
+}
+
+@media (min-width: 640px) {
+  .tl-flow {
+    flex-direction: row;
+  }
+
+  .tl-flow-arrow {
+    padding: 0 0.5rem;
+  }
+
+  .tl-flow-node + .tl-flow-arrow,
+  .tl-flow-arrow + .tl-flow-node {
+    border-left: 1px solid var(--tl-line-soft);
+  }
+}
+
+@media (max-width: 639px) {
+  .tl-flow-node + .tl-flow-arrow,
+  .tl-flow-arrow + .tl-flow-node {
+    border-top: 1px solid var(--tl-line-soft);
+  }
+}
+
+/* ==================================================================
+   Concept mapping table — grid world left, real system right
+   ================================================================== */
+
+.tl-map {
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  width: 100%;
+}
+
+.tl-map th {
+  border-bottom: 1px solid var(--tl-line);
+  color: var(--tl-faint);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0 0 0.5rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.tl-map td {
+  border-bottom: 1px solid var(--tl-line-soft);
+  color: var(--tl-muted);
+  line-height: 1.5;
+  padding: 0.55rem 0;
+  vertical-align: top;
+}
+
+.tl-map tr:last-child td {
+  border-bottom: 0;
+}
+
+.tl-map td:first-child {
+  color: var(--tl-ink-soft);
+  padding-right: 0.75rem;
+  width: 42%;
+}
+
+.tl-map-arrow {
+  color: var(--tl-teal);
+  padding-right: 0.75rem !important;
+  width: 1rem;
+}
+
+/* ==================================================================
+   Grid cells
+   ================================================================== */
+
+.grid-cell {
+  transition:
+    background-color 0.45s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+@keyframes tl-focus-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 127, 115, 0.28);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(0, 127, 115, 0.13);
+  }
 }
 
 .cell-focused {
-  border-color: var(--accent) !important;
-  animation: pulse-border 2s ease-in-out infinite;
+  animation: tl-focus-ring 2.2s ease-in-out infinite;
+  border-color: var(--tl-teal) !important;
 }
 
-/* Equation block styling */
+/* ==================================================================
+   Equations
+   ================================================================== */
+
 .equation-block {
-  background: var(--equation-bg);
-  border: 1px solid #FED7AA;
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: var(--tl-surface);
+  border-left: 2px solid var(--tl-line);
+  color: var(--tl-ink-soft);
   font-family: var(--font-mono), monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  max-width: 100%;
   overflow-x: auto;
-  white-space: pre-wrap;
+  padding: 0.75rem 1rem;
+  scrollbar-color: var(--tl-line) transparent;
+  scrollbar-width: thin;
+  /* `pre`, not `pre-wrap`: these blocks are column-aligned ASCII math
+     and wrapping destroys the alignment. Narrow viewports scroll. */
+  white-space: pre;
 }
 
-/* Phase badge */
+/* ==================================================================
+   Phase marker — swatch plus mono label, no filled pill
+   ================================================================== */
+
 .phase-badge {
-  display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  display: inline-flex;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  letter-spacing: 0.16em;
+  line-height: 1;
   text-transform: uppercase;
-  color: white;
 }
 
-/* Progress bar */
+.phase-badge::before {
+  background: currentColor;
+  content: "";
+  display: block;
+  height: 7px;
+  width: 7px;
+}
+
+/* ==================================================================
+   Progress
+   ================================================================== */
+
 .progress-track {
-  background: #E8E0D8;
-  border-radius: 9999px;
-  height: 6px;
+  background: var(--tl-line-soft);
+  height: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: var(--accent);
+  background: var(--tl-ink);
   height: 100%;
-  border-radius: 9999px;
   transition: width 0.3s ease;
 }
 
-/* Arrow styling */
-.policy-arrow {
-  font-size: 1.25rem;
-  line-height: 1;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+input[type="range"] {
+  accent-color: var(--tl-ink);
 }
 
-/* Q-value table */
+/* ==================================================================
+   Policy arrows
+   ================================================================== */
+
+.policy-arrow {
+  font-size: 1.125rem;
+  line-height: 1;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* ==================================================================
+   Q-value table
+   ================================================================== */
+
 .q-table {
-  width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  width: 100%;
 }
 
 .q-table th {
+  border-bottom: 1px solid var(--tl-line);
+  color: var(--tl-faint);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0 0.5rem 0.4rem 0;
   text-align: left;
-  padding: 4px 8px;
-  border-bottom: 2px solid var(--card-border);
-  font-weight: 600;
-  color: var(--text-secondary);
+  text-transform: uppercase;
 }
 
 .q-table td {
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--tl-line-soft);
+  color: var(--tl-muted);
+  padding: 0.4rem 0.5rem 0.4rem 0;
+}
+
+.q-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .q-table tr.winner td {
+  color: var(--tl-teal);
   font-weight: 600;
-  color: var(--accent);
 }
 
-/* Sandbox direction toggle buttons */
-.sandbox-dir-btn:hover {
-  background-color: var(--accent) !important;
-  color: white !important;
-  border-color: var(--accent) !important;
+/* ==================================================================
+   Buttons
+   ================================================================== */
+
+.tl-btn {
+  align-items: center;
+  background: var(--tl-paper);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+  color: var(--tl-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  gap: 0.4rem;
+  justify-content: center;
+  line-height: 1;
+  padding: 0.6rem 0.9rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
 }
 
-/* Verdict card */
+.tl-btn:hover:not(:disabled) {
+  background: var(--tl-surface);
+  border-color: var(--tl-ink);
+}
+
+.tl-btn:disabled {
+  color: var(--tl-faint);
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tl-btn-primary {
+  background: var(--tl-ink);
+  border-color: var(--tl-ink);
+  color: #fff;
+  font-weight: 600;
+  padding-inline: 1.25rem;
+}
+
+.tl-btn-primary:hover:not(:disabled) {
+  background: var(--tl-teal);
+  border-color: var(--tl-teal);
+  color: #fff;
+}
+
+.tl-btn-icon {
+  padding-inline: 0.7rem;
+}
+
+/* Direction toggles in the sandbox */
+.sandbox-dir-btn {
+  align-items: center;
+  background: var(--tl-paper);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+  color: var(--tl-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 500;
+  gap: 0.35rem;
+  line-height: 1;
+  padding: 0.5rem 0.6rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sandbox-dir-btn:hover:not(:disabled) {
+  border-color: var(--tl-ink);
+  color: var(--tl-ink);
+}
+
+.sandbox-dir-btn[aria-pressed="true"] {
+  background: var(--tl-ink);
+  border-color: var(--tl-ink);
+  color: #fff;
+}
+
+.sandbox-dir-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ==================================================================
+   Verdict
+   ================================================================== */
+
 .verdict-card {
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  border-left: 2px solid var(--tl-line);
+  padding-left: 1rem;
+  transition: border-color 0.3s ease;
 }
 
+/* ==================================================================
+   Masthead
+   ================================================================== */
+
+.tl-masthead {
+  background: var(--tl-ink);
+  color: #fff;
+}
+
+.tl-masthead a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.tl-masthead a:hover {
+  color: #fff;
+}

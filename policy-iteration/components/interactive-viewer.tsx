@@ -321,50 +321,50 @@ function GridCell({
 }) {
   return (
     <div
-      className={`grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square ${focused ? "cell-focused" : ""}`}
+      className={`grid-cell relative flex flex-col items-center justify-center border aspect-square rounded-[var(--tl-radius)] ${focused ? "cell-focused" : ""}`}
       style={{
         backgroundColor: isGoal ? "var(--cell-green)" : cellBg(value),
-        borderColor: focused ? "var(--accent)" : "var(--card-border)",
+        borderColor: focused ? "var(--tl-teal)" : "var(--tl-line)",
       }}
     >
       {/* State label */}
-      <span
-        className="absolute top-1.5 left-2 text-xs font-semibold"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {label}
-      </span>
+      <span className="tl-label absolute top-1.5 left-2">{label}</span>
 
       {/* Goal badge */}
       {isGoal && (
-        <span className="absolute top-1 right-1.5 text-base" title="Goal">
+        <span
+          className="absolute top-1 right-1.5 text-sm"
+          style={{ color: "var(--tl-teal)" }}
+          title="Goal"
+        >
           &#9733;
         </span>
       )}
 
       {/* Value display */}
       <span
-        className={`font-bold tabular-nums ${
+        className={`tl-mono font-semibold ${
           value !== null && value <= -10 ? "text-xl" : "text-2xl"
         }`}
-        style={{ fontFamily: "var(--font-mono), monospace" }}
       >
         {isGoal ? "0" : value !== null ? value : "?"}
       </span>
 
       {/* Small label for -10 */}
       {!isGoal && value !== null && value <= -10 && (
-        <span
-          className="text-[9px] font-medium uppercase tracking-wide"
-          style={{ color: "#B91C1C" }}
-        >
+        <span className="tl-label mt-1" style={{ color: "var(--tl-rose)" }}>
           stuck
         </span>
       )}
 
       {/* Policy arrow */}
       {!isGoal && (value === null || value > -10) && (
-        <span className="policy-arrow mt-0.5" style={{ color: arrow ? "var(--foreground)" : "var(--text-secondary)" }}>
+        <span
+          className="policy-arrow mt-1"
+          style={{
+            color: arrow ? "var(--tl-ink)" : "var(--tl-faint)",
+          }}
+        >
           {arrowChar(arrow)}
         </span>
       )}
@@ -429,21 +429,15 @@ export default function InteractiveViewer() {
   }, [next, prev]);
 
   return (
-    <div
-      className="rounded-xl border overflow-hidden"
-      style={{
-        backgroundColor: "var(--card-bg)",
-        borderColor: "var(--card-border)",
-      }}
-    >
+    <div className="tl-panel overflow-hidden">
       {/* Split panel */}
       <div className="flex flex-col lg:flex-row">
         {/* Left — Grid */}
         <div
           className="flex-shrink-0 flex items-center justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
-          style={{ borderColor: "var(--card-border)" }}
+          style={{ borderColor: "var(--tl-line)" }}
         >
-          <div className="grid grid-cols-2 gap-3 w-full max-w-[240px]">
+          <div className="grid grid-cols-2 gap-2.5 w-full max-w-[240px]">
             <GridCell
               label="A"
               value={step.values.A}
@@ -475,33 +469,24 @@ export default function InteractiveViewer() {
           </div>
         </div>
 
-        {/* Right — Explanation */}
-        <div className="flex-1 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
+        {/* Right — Explanation. min-w-0 lets the pre-formatted equation
+            block scroll inside this column instead of stretching it. */}
+        <div className="flex-1 min-w-0 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
           {/* Phase badge */}
           <div>
             <span
               className="phase-badge"
-              style={{ backgroundColor: phaseColor(step.phase) }}
+              style={{ color: phaseColor(step.phase) }}
             >
               {phaseLabel(step.phase)}
             </span>
           </div>
 
           {/* Title */}
-          <h3
-            className="text-xl font-semibold leading-tight"
-            style={{ fontFamily: "var(--font-serif), serif" }}
-          >
-            {step.title}
-          </h3>
+          <h3 className="tl-h3">{step.title}</h3>
 
           {/* Explanation */}
-          <p
-            className="text-sm leading-relaxed"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {step.explanation}
-          </p>
+          <p className="tl-body">{step.explanation}</p>
 
           {/* Equation */}
           {step.equation && (
@@ -526,11 +511,14 @@ export default function InteractiveViewer() {
                       className={row.winner ? "winner" : ""}
                     >
                       <td>{row.action}</td>
-                      <td style={{ fontFamily: "var(--font-mono), monospace" }}>
-                        {row.formula}
-                      </td>
-                      <td style={{ fontFamily: "var(--font-mono), monospace" }}>
+                      <td className="tl-mono">{row.formula}</td>
+                      <td className="tl-mono">
                         {row.value}
+                        {row.winner && (
+                          <span className="tl-label ml-2 align-middle">
+                            best
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -544,23 +532,17 @@ export default function InteractiveViewer() {
       {/* Bottom — Controls */}
       <div
         className="px-6 py-4 flex flex-col gap-3"
-        style={{ borderTop: "1px solid var(--card-border)" }}
+        style={{ borderTop: "1px solid var(--tl-line)" }}
       >
         {/* Progress bar */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span
-              className="w-2 h-2 rounded-full shrink-0"
+              className="w-[7px] h-[7px] shrink-0"
               style={{ backgroundColor: phaseColor(step.phase) }}
             />
-            <span
-              className="text-xs font-medium tabular-nums whitespace-nowrap"
-              style={{
-                color: "var(--text-secondary)",
-                fontFamily: "var(--font-mono), monospace",
-              }}
-            >
-              {currentStep + 1}/{total}
+            <span className="tl-label whitespace-nowrap">
+              {String(currentStep + 1).padStart(2, "0")} / {total}
             </span>
           </div>
           <div className="flex-1">
@@ -570,8 +552,9 @@ export default function InteractiveViewer() {
               max={total - 1}
               value={currentStep}
               onChange={(e) => goTo(Number(e.target.value))}
-              className="w-full accent-[#E07A2F] cursor-pointer"
+              className="w-full cursor-pointer"
               style={{ height: "6px" }}
+              aria-label="Step"
             />
           </div>
         </div>
@@ -597,16 +580,7 @@ export default function InteractiveViewer() {
                 setPlaying(true);
               }
             }}
-            className="flex items-center justify-center gap-1.5 rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{
-              backgroundColor: "var(--accent)",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
+            className="tl-btn tl-btn-primary"
             aria-label={playing ? "Pause" : "Play"}
           >
             {playing ? "\u23F8 Pause" : "\u25B6 Play"}
@@ -628,10 +602,7 @@ export default function InteractiveViewer() {
         </div>
 
         {currentStep === 0 && (
-          <p
-            className="text-xs text-center"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <p className="tl-note text-center">
             Press Play to watch the algorithm run, or step through one at a time
           </p>
         )}
@@ -660,18 +631,7 @@ function ControlButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="flex items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-      style={{
-        borderColor: "var(--card-border)",
-        color: disabled ? "var(--text-secondary)" : "var(--foreground)",
-        backgroundColor: "var(--card-bg)",
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled) e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--card-bg)";
-      }}
+      className="tl-btn tl-btn-icon"
     >
       {children}
     </button>

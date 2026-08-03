@@ -220,44 +220,35 @@ function Results({
     <div className="space-y-4">
       {/* Verdict banner */}
       <div
-        className="verdict-card rounded-lg border-2 p-5"
+        className="verdict-card"
         style={{
-          borderColor: optimal ? "#10B981" : reaches ? "#F59E0B" : "#EF4444",
-          backgroundColor: optimal
-            ? "rgba(16, 185, 129, 0.06)"
+          borderLeftColor: optimal
+            ? "var(--tl-teal)"
             : reaches
-              ? "rgba(245, 158, 11, 0.06)"
-              : "rgba(239, 68, 68, 0.06)",
+              ? "var(--tl-gold)"
+              : "var(--tl-rose)",
         }}
       >
-        <div className="flex items-center gap-3 mb-2">
-          <span
-            className="flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold"
-            style={{
-              backgroundColor: optimal
-                ? "#10B981"
-                : reaches
-                  ? "#F59E0B"
-                  : "#EF4444",
-            }}
-          >
-            {optimal ? "\u2713" : reaches ? "!" : "\u2717"}
-          </span>
-          <h4
-            className="text-base font-semibold"
-            style={{ fontFamily: "var(--font-serif), serif" }}
-          >
-            {optimal
-              ? "Optimal Policy!"
-              : reaches
-                ? "It works, but it\u2019s not optimal"
-                : "Some states are stuck"}
-          </h4>
-        </div>
         <p
-          className="text-sm leading-relaxed ml-11"
-          style={{ color: "var(--text-secondary)" }}
+          className="tl-callout-index mb-1.5"
+          style={{
+            color: optimal
+              ? "var(--tl-teal)"
+              : reaches
+                ? "var(--tl-gold)"
+                : "var(--tl-rose)",
+          }}
         >
+          {optimal ? "\u2713 Optimal" : reaches ? "! Suboptimal" : "\u2717 Incomplete"}
+        </p>
+        <h4 className="tl-h4 mb-1.5">
+          {optimal
+            ? "Optimal policy"
+            : reaches
+              ? "It works, but it\u2019s not optimal"
+              : "Some states are stuck"}
+        </h4>
+        <p className="tl-body">
           {optimal
             ? "Every state reaches the goal by the shortest possible path. This is the best policy for this grid."
             : reaches
@@ -275,52 +266,42 @@ function Results({
           return (
             <div
               key={s}
-              className="rounded-lg border p-3"
+              className="border p-3 rounded-[var(--tl-radius)]"
               style={{
                 borderColor: p.reachesGoal
-                  ? "var(--card-border)"
-                  : "rgba(239, 68, 68, 0.3)",
+                  ? "var(--tl-line)"
+                  : "var(--tl-rose)",
                 backgroundColor: p.reachesGoal
-                  ? "var(--card-bg)"
-                  : "rgba(239, 68, 68, 0.04)",
+                  ? "var(--tl-paper)"
+                  : "var(--tl-rose-wash)",
               }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold">State {s}</span>
+                <span className="tl-label">State {s}</span>
                 <span
-                  className="text-lg font-bold tabular-nums"
+                  className="tl-mono text-base font-semibold"
                   style={{
-                    fontFamily: "var(--font-mono), monospace",
                     color:
                       values[s] <= -9.99
-                        ? "#EF4444"
+                        ? "var(--tl-rose)"
                         : values[s] < -0.01
-                          ? "var(--foreground)"
-                          : "#10B981",
+                          ? "var(--tl-ink)"
+                          : "var(--tl-teal)",
                   }}
                 >
                   {formatValue(values[s])}
                 </span>
               </div>
               <div
-                className="text-xs leading-relaxed"
+                className="tl-mono text-xs leading-relaxed"
                 style={{
-                  color: p.reachesGoal
-                    ? "var(--text-secondary)"
-                    : "#EF4444",
-                  fontFamily: "var(--font-mono), monospace",
+                  color: p.reachesGoal ? "var(--tl-muted)" : "var(--tl-rose)",
                 }}
               >
                 {p.reachesGoal ? (
                   <>
                     {p.path.join(" \u2192 ")}
-                    <span
-                      className="block mt-1 font-sans"
-                      style={{
-                        color: "var(--text-secondary)",
-                        fontFamily: "var(--font-sans), system-ui, sans-serif",
-                      }}
-                    >
+                    <span className="tl-note block mt-1.5">
                       {stepCount} step{stepCount !== 1 ? "s" : ""} to goal
                     </span>
                   </>
@@ -328,10 +309,8 @@ function Results({
                   <>
                     {p.path.slice(0, 5).join(" \u2192 ")} {"\u2192"} ...
                     <span
-                      className="block mt-1 font-sans"
-                      style={{
-                        fontFamily: "var(--font-sans), system-ui, sans-serif",
-                      }}
+                      className="tl-note block mt-1.5"
+                      style={{ color: "var(--tl-rose)" }}
                     >
                       loops forever
                     </span>
@@ -345,25 +324,13 @@ function Results({
 
       {/* Hints */}
       {(loopingStates.length > 0 || suboptimalStates.length > 0) && (
-        <div
-          className="rounded-lg border p-4"
-          style={{
-            borderColor: "var(--card-border)",
-            backgroundColor: "var(--equation-bg)",
-          }}
-        >
-          <p
-            className="text-xs font-semibold mb-2"
-            style={{ color: "var(--accent)" }}
-          >
+        <div className="tl-inset p-4">
+          <p className="tl-label mb-2.5" style={{ color: "var(--tl-teal)" }}>
             How to improve
           </p>
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {loopingStates.length > 0 && (
-              <li
-                className="text-xs leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <li className="tl-note">
                 {loopingStates.length <= 5
                   ? `States ${loopingStates.join(", ")} never reach the goal.`
                   : `${loopingStates.length} states never reach the goal.`}{" "}
@@ -371,10 +338,7 @@ function Results({
               </li>
             )}
             {suboptimalStates.length > 0 && (
-              <li
-                className="text-xs leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <li className="tl-note">
                 {suboptimalStates.length <= 5
                   ? `States ${suboptimalStates.join(", ")} reach`
                   : `${suboptimalStates.length} states reach`}{" "}
@@ -498,13 +462,7 @@ export default function PolicySandbox() {
   const selectedHitsWall = selectedNext === selected;
 
   return (
-    <div
-      className="rounded-xl border overflow-hidden"
-      style={{
-        backgroundColor: "var(--card-bg)",
-        borderColor: "var(--card-border)",
-      }}
-    >
+    <div className="tl-panel overflow-hidden">
       {/* ---- Top: Grid + Direction Picker ---- */}
       <div className="p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
@@ -526,50 +484,45 @@ export default function PolicySandbox() {
                     onClick={() => {
                       if (!isGoal && !running) setSelected(s);
                     }}
-                    className={`grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square${!isGoal && !running ? " cursor-pointer" : ""}`}
+                    className={`grid-cell relative flex flex-col items-center justify-center border aspect-square rounded-[var(--tl-radius)]${!isGoal && !running ? " cursor-pointer" : ""}`}
                     style={{
                       backgroundColor: isGoal
                         ? "var(--cell-green)"
                         : cellBg(val, showValues),
                       borderColor: isSelected
-                        ? "var(--accent)"
-                        : "var(--card-border)",
+                        ? "var(--tl-ink)"
+                        : "var(--tl-line)",
                       boxShadow: isSelected
-                        ? "0 0 0 1px var(--accent)"
+                        ? "0 0 0 1px var(--tl-ink)"
                         : "none",
                     }}
                   >
                     <span
-                      className="absolute top-0.5 left-1 text-[9px] font-semibold"
-                      style={{ color: "var(--text-secondary)" }}
+                      className="tl-mono absolute top-0.5 left-1 text-[9px]"
+                      style={{ color: "var(--tl-faint)" }}
                     >
                       {s}
                     </span>
 
                     {isGoal && (
-                      <span className="absolute top-0 right-0.5 text-xs">
+                      <span
+                        className="absolute top-0 right-0.5 text-xs"
+                        style={{ color: "var(--tl-teal)" }}
+                      >
                         &#9733;
                       </span>
                     )}
 
                     {isGoal ? (
-                      <span
-                        className="text-sm font-bold tabular-nums"
-                        style={{ fontFamily: "var(--font-mono), monospace" }}
-                      >
-                        0
-                      </span>
+                      <span className="tl-mono text-sm font-semibold">0</span>
                     ) : showValues && val !== null ? (
-                      <span
-                        className="text-sm font-bold tabular-nums"
-                        style={{ fontFamily: "var(--font-mono), monospace" }}
-                      >
+                      <span className="tl-mono text-sm font-semibold">
                         {formatValue(val)}
                       </span>
                     ) : (
                       <span
                         className="text-lg leading-none"
-                        style={{ color: "var(--foreground)" }}
+                        style={{ color: "var(--tl-ink)" }}
                       >
                         {dir ? ARROW_CHARS[dir] : ""}
                       </span>
@@ -578,7 +531,7 @@ export default function PolicySandbox() {
                     {!isGoal && showValues && val !== null && dir && (
                       <span
                         className="text-xs leading-none"
-                        style={{ color: "var(--text-secondary)" }}
+                        style={{ color: "var(--tl-faint)" }}
                       >
                         {ARROW_CHARS[dir]}
                       </span>
@@ -590,16 +543,11 @@ export default function PolicySandbox() {
 
             {/* Iteration counter */}
             {showValues && (
-              <div
-                className="mt-2 text-center"
-                style={{ fontFamily: "var(--font-mono), monospace" }}
-              >
+              <div className="mt-3 text-center">
                 <span
-                  className="text-xs font-semibold tabular-nums"
+                  className="tl-label"
                   style={{
-                    color: running
-                      ? "var(--accent)"
-                      : "var(--text-secondary)",
+                    color: running ? "var(--tl-teal)" : "var(--tl-muted)",
                   }}
                 >
                   {converged
@@ -610,24 +558,16 @@ export default function PolicySandbox() {
             )}
 
             {!showValues && (
-              <p
-                className="text-[10px] text-center mt-2"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Click a cell to select it, then choose a direction
+              <p className="tl-label text-center mt-3 leading-relaxed">
+                Click a cell, then choose a direction
               </p>
             )}
           </div>
 
           {/* Direction picker for selected cell + info */}
           <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              Direction for state {selected}
-            </p>
-            <div className="flex gap-1.5 mb-4">
+            <p className="tl-label mb-3">Direction for state {selected}</p>
+            <div className="flex flex-wrap gap-1.5 mb-5">
               {ALL_DIRS.map((dir) => {
                 const active = policy[selected] === dir;
                 return (
@@ -635,16 +575,7 @@ export default function PolicySandbox() {
                     key={dir}
                     onClick={() => setDirection(selected, dir)}
                     disabled={running}
-                    className="sandbox-dir-btn flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: active
-                        ? "var(--accent)"
-                        : "var(--equation-bg)",
-                      color: active ? "white" : "var(--text-secondary)",
-                      border: active
-                        ? "1px solid var(--accent)"
-                        : "1px solid var(--card-border)",
-                    }}
+                    className="sandbox-dir-btn"
                     aria-label={`Set state ${selected} to ${dir}`}
                     aria-pressed={active}
                   >
@@ -659,49 +590,31 @@ export default function PolicySandbox() {
 
             {/* Bellman equation for selected cell (during evaluation) */}
             {showValues && (
-              <div className="equation-block mt-4 text-[11px]">
-                <p
-                  className="font-sans text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                  style={{
-                    color: "var(--text-secondary)",
-                    fontFamily: "var(--font-sans), system-ui, sans-serif",
-                  }}
-                >
+              <div>
+                <p className="tl-label mb-2">
                   Score calculation for room {selected}
                 </p>
-                <div>
+                <div className="equation-block text-[11px]">
                   V({selected}) ={" "}
                   {selectedNext === GOAL ? "0" : "-1"} + 0.9 {"\u00d7"} V(
                   {selectedNext}) ={" "}
-                  <strong>{formatValue(values[selected])}</strong>
+                  <strong style={{ color: "var(--tl-ink)" }}>
+                    {formatValue(values[selected])}
+                  </strong>
                 </div>
               </div>
             )}
 
             {/* Transition info for selected cell (before evaluation) */}
             {!showValues && (
-              <div
-                className="mt-2 rounded-md p-3"
-                style={{ backgroundColor: "var(--equation-bg)" }}
-              >
-                <p
-                  className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Where does this direction go?
-                </p>
-                <div
-                  className="text-[11px]"
-                  style={{
-                    color: "var(--text-secondary)",
-                    fontFamily: "var(--font-mono), monospace",
-                  }}
-                >
+              <div>
+                <p className="tl-label mb-2">Where does this direction go?</p>
+                <div className="equation-block text-[11px]">
                   {selected}
                   {ARROW_CHARS[policy[selected]]}
                   {selectedNext}
                   {selectedHitsWall && (
-                    <span style={{ color: "#EF4444" }}>
+                    <span style={{ color: "var(--tl-rose)" }}>
                       {" "}
                       (wall — stays put!)
                     </span>
@@ -711,20 +624,9 @@ export default function PolicySandbox() {
             )}
 
             {/* Current policy summary grid */}
-            <div
-              className="mt-3 rounded-md p-3"
-              style={{ backgroundColor: "var(--equation-bg)" }}
-            >
-              <p
-                className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Current policy
-              </p>
-              <div
-                className="grid grid-cols-4 gap-1 text-center"
-                style={{ fontFamily: "var(--font-mono), monospace" }}
-              >
+            <div className="mt-5">
+              <p className="tl-label mb-2">Current policy</p>
+              <div className="tl-mono tl-inset grid grid-cols-4 gap-1 p-3 text-center">
                 {ALL_CELLS.map((s) => (
                   <span
                     key={s}
@@ -732,10 +634,10 @@ export default function PolicySandbox() {
                     style={{
                       color:
                         s === GOAL
-                          ? "var(--text-secondary)"
+                          ? "var(--tl-teal)"
                           : selected === s
-                            ? "var(--accent)"
-                            : "var(--text-secondary)",
+                            ? "var(--tl-ink)"
+                            : "var(--tl-faint)",
                       fontWeight: selected === s ? 700 : 400,
                     }}
                   >
@@ -750,79 +652,25 @@ export default function PolicySandbox() {
 
       {/* ---- Middle: Action buttons ---- */}
       <div
-        className="px-6 sm:px-8 py-4 flex flex-wrap items-center justify-center gap-3"
+        className="px-6 sm:px-8 py-4 flex flex-wrap items-center justify-center gap-2.5"
         style={{
-          borderTop: "1px solid var(--card-border)",
-          borderBottom: converged ? "1px solid var(--card-border)" : "none",
+          borderTop: "1px solid var(--tl-line)",
+          borderBottom: converged ? "1px solid var(--tl-line)" : "none",
         }}
       >
         {running ? (
-          <button
-            onClick={skipToEnd}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{ backgroundColor: "var(--accent)" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
-          >
+          <button onClick={skipToEnd} className="tl-btn tl-btn-primary">
             Skip to End
           </button>
         ) : (
-          <button
-            onClick={startEvaluation}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{ backgroundColor: "var(--accent)" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
-          >
+          <button onClick={startEvaluation} className="tl-btn tl-btn-primary">
             Test My Policy
           </button>
         )}
-        <button
-          onClick={reset}
-          disabled={running}
-          className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            borderColor: "var(--card-border)",
-            color: "var(--foreground)",
-            backgroundColor: "var(--card-bg)",
-          }}
-          onMouseEnter={(e) => {
-            if (!running)
-              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--card-bg)";
-          }}
-        >
+        <button onClick={reset} disabled={running} className="tl-btn">
           Reset
         </button>
-        <button
-          onClick={showOptimal}
-          disabled={running}
-          className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            borderColor: "var(--card-border)",
-            color: "var(--foreground)",
-            backgroundColor: "var(--card-bg)",
-          }}
-          onMouseEnter={(e) => {
-            if (!running)
-              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--card-bg)";
-          }}
-        >
+        <button onClick={showOptimal} disabled={running} className="tl-btn">
           Show Optimal
         </button>
       </div>
