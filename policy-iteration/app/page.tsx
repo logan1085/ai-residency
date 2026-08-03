@@ -108,16 +108,24 @@ export default function Home() {
       <main className="flex-1 w-full max-w-3xl mx-auto px-6 py-14 sm:py-20">
         {/* ---- Masthead article header ---- */}
         <header className="mb-16">
-          <p className="tl-eyebrow mb-6">Reinforcement Learning</p>
-          <h1 className="tl-display mb-5">Policy Iteration</h1>
-          <p className="tl-lede mb-6">
-            An interactive guide to how AI learns the best strategy. How does an
-            AI figure out the best way to do something? One of the oldest and
-            most elegant answers is <strong>policy iteration</strong>: try a
-            strategy, honestly evaluate how well it performs, make it a little
-            better, and repeat. Same loop you&apos;d use to improve a recipe.
-            Cook it, taste it, adjust, cook again. Below, you&apos;ll step
-            through a concrete example and watch it converge on the optimal
+          <div className="mb-7 flex items-center gap-3">
+            <span
+              aria-hidden="true"
+              className="h-px w-8 shrink-0 bg-[var(--tl-teal)]"
+            />
+            <p className="tl-eyebrow">Reinforcement Learning</p>
+          </div>
+          <h1 className="tl-display mb-4">Policy Iteration</h1>
+          <p className="tl-deck mb-7">
+            An interactive guide to how AI learns the best strategy
+          </p>
+          <p className="tl-lede mb-7">
+            How does an AI figure out the best way to do something? One of the
+            oldest and most elegant answers is <strong>policy iteration</strong>
+            : try a strategy, honestly evaluate how well it performs, make it a
+            little better, and repeat. Same loop you&apos;d use to improve a
+            recipe. Cook it, taste it, adjust, cook again. Below, you&apos;ll
+            step through a concrete example and watch it converge on the optimal
             answer.
           </p>
 
