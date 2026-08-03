@@ -1,12 +1,22 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Spectral } from "next/font/google";
 import "./globals.css";
 
+// Serif carries the whole document — display and body alike.
+const spectral = Spectral({
+  variable: "--font-spectral",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600"],
+  style: ["normal", "italic"],
+});
+
+// Sans is reserved for small tracked-caps labels.
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
+// Mono only for numeric and equation data.
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
@@ -26,12 +36,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
+      className={`${spectral.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <div className="tl-masthead">
-          <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 py-3">
-            <span className="tl-eyebrow" style={{ color: "#ffffff" }}>
+          <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 pt-8 pb-2">
+            <span
+              className="tl-eyebrow"
+              style={{ color: "var(--tl-ink)", letterSpacing: "0.2em" }}
+            >
               AI Research Residency
             </span>
             <a

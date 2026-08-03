@@ -223,20 +223,20 @@ function Results({
         className="verdict-card"
         style={{
           borderLeftColor: optimal
-            ? "var(--tl-teal)"
+            ? "var(--tl-good)"
             : reaches
-              ? "var(--tl-gold)"
-              : "var(--tl-rose)",
+              ? "var(--tl-mid)"
+              : "var(--tl-bad)",
         }}
       >
         <p
           className="tl-callout-index mb-1.5"
           style={{
             color: optimal
-              ? "var(--tl-teal)"
+              ? "var(--tl-good)"
               : reaches
-                ? "var(--tl-gold)"
-                : "var(--tl-rose)",
+                ? "var(--tl-mid)"
+                : "var(--tl-bad)",
           }}
         >
           {optimal ? "\u2713 Optimal" : reaches ? "! Suboptimal" : "\u2717 Incomplete"}
@@ -270,10 +270,10 @@ function Results({
               style={{
                 borderColor: p.reachesGoal
                   ? "var(--tl-line)"
-                  : "var(--tl-rose)",
+                  : "var(--tl-bad)",
                 backgroundColor: p.reachesGoal
                   ? "var(--tl-paper)"
-                  : "var(--tl-rose-wash)",
+                  : "var(--tl-bad-wash)",
               }}
             >
               <div className="flex items-center justify-between mb-2">
@@ -283,10 +283,10 @@ function Results({
                   style={{
                     color:
                       values[s] <= -9.99
-                        ? "var(--tl-rose)"
+                        ? "var(--tl-bad)"
                         : values[s] < -0.01
                           ? "var(--tl-ink)"
-                          : "var(--tl-teal)",
+                          : "var(--tl-good)",
                   }}
                 >
                   {formatValue(values[s])}
@@ -295,7 +295,7 @@ function Results({
               <div
                 className="tl-mono text-xs leading-relaxed"
                 style={{
-                  color: p.reachesGoal ? "var(--tl-muted)" : "var(--tl-rose)",
+                  color: p.reachesGoal ? "var(--tl-muted)" : "var(--tl-bad)",
                 }}
               >
                 {p.reachesGoal ? (
@@ -310,7 +310,7 @@ function Results({
                     {p.path.slice(0, 5).join(" \u2192 ")} {"\u2192"} ...
                     <span
                       className="tl-note block mt-1.5"
-                      style={{ color: "var(--tl-rose)" }}
+                      style={{ color: "var(--tl-bad)" }}
                     >
                       loops forever
                     </span>
@@ -325,7 +325,7 @@ function Results({
       {/* Hints */}
       {(loopingStates.length > 0 || suboptimalStates.length > 0) && (
         <div className="tl-inset p-4">
-          <p className="tl-label mb-2.5" style={{ color: "var(--tl-teal)" }}>
+          <p className="tl-label mb-2.5" style={{ color: "var(--tl-ink)" }}>
             How to improve
           </p>
           <ul className="space-y-1.5">
@@ -507,7 +507,7 @@ export default function PolicySandbox() {
                     {isGoal && (
                       <span
                         className="absolute top-0 right-0.5 text-xs"
-                        style={{ color: "var(--tl-teal)" }}
+                        style={{ color: "var(--tl-good)" }}
                       >
                         &#9733;
                       </span>
@@ -547,7 +547,7 @@ export default function PolicySandbox() {
                 <span
                   className="tl-label"
                   style={{
-                    color: running ? "var(--tl-teal)" : "var(--tl-muted)",
+                    color: running ? "var(--tl-ink)" : "var(--tl-muted)",
                   }}
                 >
                   {converged
@@ -614,7 +614,7 @@ export default function PolicySandbox() {
                   {ARROW_CHARS[policy[selected]]}
                   {selectedNext}
                   {selectedHitsWall && (
-                    <span style={{ color: "var(--tl-rose)" }}>
+                    <span style={{ color: "var(--tl-bad)" }}>
                       {" "}
                       (wall — stays put!)
                     </span>
@@ -634,7 +634,7 @@ export default function PolicySandbox() {
                     style={{
                       color:
                         s === GOAL
-                          ? "var(--tl-teal)"
+                          ? "var(--tl-good)"
                           : selected === s
                             ? "var(--tl-ink)"
                             : "var(--tl-faint)",

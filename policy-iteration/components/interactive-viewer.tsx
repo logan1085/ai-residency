@@ -324,7 +324,7 @@ function GridCell({
       className={`grid-cell relative flex flex-col items-center justify-center border aspect-square rounded-[var(--tl-radius)] ${focused ? "cell-focused" : ""}`}
       style={{
         backgroundColor: isGoal ? "var(--cell-green)" : cellBg(value),
-        borderColor: focused ? "var(--tl-teal)" : "var(--tl-line)",
+        borderColor: focused ? "var(--tl-ink)" : "var(--tl-line)",
       }}
     >
       {/* State label */}
@@ -334,7 +334,7 @@ function GridCell({
       {isGoal && (
         <span
           className="absolute top-1 right-1.5 text-sm"
-          style={{ color: "var(--tl-teal)" }}
+          style={{ color: "var(--tl-good)" }}
           title="Goal"
         >
           &#9733;
@@ -352,7 +352,7 @@ function GridCell({
 
       {/* Small label for -10 */}
       {!isGoal && value !== null && value <= -10 && (
-        <span className="tl-label mt-1" style={{ color: "var(--tl-rose)" }}>
+        <span className="tl-label mt-1" style={{ color: "var(--tl-bad)" }}>
           stuck
         </span>
       )}

@@ -108,18 +108,36 @@ export default function Home() {
       <main className="flex-1 w-full max-w-3xl mx-auto px-6 py-14 sm:py-20">
         {/* ---- Masthead article header ---- */}
         <header className="mb-16">
-          <div className="mb-7 flex items-center gap-3">
-            <span
-              aria-hidden="true"
-              className="h-px w-8 shrink-0 bg-[var(--tl-teal)]"
-            />
-            <p className="tl-eyebrow">Reinforcement Learning</p>
-          </div>
-          <h1 className="tl-display mb-4">Policy Iteration</h1>
-          <p className="tl-deck mb-7">
+          <p className="tl-eyebrow mb-10">Reinforcement Learning</p>
+          <h1 className="tl-display mb-6">Policy Iteration</h1>
+          <p className="tl-deck mb-20">
             An interactive guide to how AI learns the best strategy
           </p>
-          <p className="tl-lede mb-7">
+
+          {/* Byline-style run parameters */}
+          <dl className="tl-eyebrow mb-8 flex flex-wrap gap-x-5 gap-y-2">
+            <div className="flex gap-1.5">
+              <dt>World</dt>
+              <dd className="text-[var(--tl-ink)]">2&times;2 grid</dd>
+            </div>
+            <span aria-hidden="true">&middot;</span>
+            <div className="flex gap-1.5">
+              <dt>Step cost</dt>
+              <dd className="text-[var(--tl-ink)]">&minus;1</dd>
+            </div>
+            <span aria-hidden="true">&middot;</span>
+            <div className="flex gap-1.5">
+              <dt>Discount</dt>
+              <dd className="text-[var(--tl-ink)]">0.9</dd>
+            </div>
+            <span aria-hidden="true">&middot;</span>
+            <div className="flex gap-1.5">
+              <dt>Converges in</dt>
+              <dd className="text-[var(--tl-ink)]">2 rounds</dd>
+            </div>
+          </dl>
+
+          <p className="tl-lede">
             How does an AI figure out the best way to do something? One of the
             oldest and most elegant answers is <strong>policy iteration</strong>
             : try a strategy, honestly evaluate how well it performs, make it a
@@ -129,35 +147,15 @@ export default function Home() {
             answer.
           </p>
 
-          {/* Run parameters */}
-          <dl className="tl-mono flex flex-wrap gap-x-6 gap-y-2 border-y border-[var(--tl-line)] py-3 text-[11px] uppercase tracking-[0.1em] text-[var(--tl-faint)]">
-            <div className="flex gap-2">
-              <dt>World</dt>
-              <dd className="text-[var(--tl-ink)]">2&times;2 grid</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt>Step cost</dt>
-              <dd className="text-[var(--tl-ink)]">&minus;1</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt>Discount</dt>
-              <dd className="text-[var(--tl-ink)]">0.9</dd>
-            </div>
-            <div className="flex gap-2">
-              <dt>Rounds to converge</dt>
-              <dd className="text-[var(--tl-ink)]">2</dd>
-            </div>
-          </dl>
-
           {/* Contents */}
-          <nav aria-label="Contents" className="mt-8">
+          <nav aria-label="Contents" className="mt-12">
             <p className="tl-label mb-3">Contents</p>
             <ol className="grid gap-x-8 gap-y-1 sm:grid-cols-2">
               {CONTENTS.map((c) => (
                 <li key={c.id} className="flex gap-3 text-sm">
                   <span className="tl-section-index">{c.index}</span>
                   <a
-                    className="text-[var(--tl-muted)] underline decoration-[var(--tl-line)] underline-offset-4 transition-colors hover:text-[var(--tl-ink)] hover:decoration-[var(--tl-teal)]"
+                    className="text-[var(--tl-muted)] underline decoration-[var(--tl-line)] underline-offset-4 transition-colors hover:text-[var(--tl-ink)] hover:decoration-[var(--tl-ink)]"
                     href={`#${c.id}`}
                   >
                     {c.title}
@@ -214,7 +212,7 @@ export default function Home() {
                 <div className="tl-callout tl-callout-eval">
                   <p
                     className="tl-callout-index mb-1.5"
-                    style={{ color: "var(--tl-teal)" }}
+                    style={{ color: "var(--tl-good)" }}
                   >
                     Phase 01 &middot; Evaluate
                   </p>
@@ -230,7 +228,7 @@ export default function Home() {
                 <div className="tl-callout tl-callout-improve">
                   <p
                     className="tl-callout-index mb-1.5"
-                    style={{ color: "var(--tl-gold)" }}
+                    style={{ color: "var(--tl-mid)" }}
                   >
                     Phase 02 &middot; Improve
                   </p>
@@ -254,12 +252,12 @@ export default function Home() {
                   {
                     label: "Evaluate",
                     sub: "Score each state",
-                    color: "var(--tl-teal)",
+                    color: "var(--tl-good)",
                   },
                   {
                     label: "Improve",
                     sub: "Pick better actions",
-                    color: "var(--tl-gold)",
+                    color: "var(--tl-mid)",
                     arrowH: "⇄",
                     arrowV: "⇅",
                   },
@@ -319,7 +317,7 @@ export default function Home() {
                     {cell.label === "G" && (
                       <span
                         className="absolute top-1 right-1.5 text-xs"
-                        style={{ color: "var(--tl-teal)" }}
+                        style={{ color: "var(--tl-good)" }}
                         aria-hidden="true"
                       >
                         &#9733;
@@ -435,7 +433,7 @@ export default function Home() {
             {/* ---- Example 1: RLHF ---- */}
             <article className="border-t border-[var(--tl-line)] pt-6">
               <p className="mb-4">
-                <span className="tl-tag" style={{ color: "var(--tl-teal)" }}>
+                <span className="tl-tag" style={{ color: "var(--tl-muted)" }}>
                   Language Models
                 </span>
               </p>
@@ -473,12 +471,12 @@ export default function Home() {
                     {
                       label: "Humans rate them",
                       sub: "Evaluate",
-                      color: "var(--tl-teal)",
+                      color: "var(--tl-good)",
                     },
                     {
                       label: "Update model",
                       sub: "Improve",
-                      color: "var(--tl-gold)",
+                      color: "var(--tl-mid)",
                     },
                     { label: "Repeat", sub: "Until stable" },
                   ]}
@@ -500,7 +498,7 @@ export default function Home() {
             {/* ---- Example 2: AlphaGo ---- */}
             <article className="border-t border-[var(--tl-line)] pt-6">
               <p className="mb-4">
-                <span className="tl-tag" style={{ color: "var(--tl-rose)" }}>
+                <span className="tl-tag" style={{ color: "var(--tl-muted)" }}>
                   Games
                 </span>
               </p>
@@ -532,12 +530,12 @@ export default function Home() {
                     {
                       label: "Evaluate position",
                       sub: "Value network",
-                      color: "var(--tl-teal)",
+                      color: "var(--tl-good)",
                     },
                     {
                       label: "Select best move",
                       sub: "Policy network",
-                      color: "var(--tl-gold)",
+                      color: "var(--tl-mid)",
                     },
                     {
                       label: "Play game",
@@ -578,7 +576,7 @@ export default function Home() {
             {/* ---- Example 3: Self-Driving Cars ---- */}
             <article className="border-t border-[var(--tl-line)] pt-6">
               <p className="mb-4">
-                <span className="tl-tag" style={{ color: "var(--tl-gold)" }}>
+                <span className="tl-tag" style={{ color: "var(--tl-muted)" }}>
                   Transportation
                 </span>
               </p>
@@ -617,12 +615,12 @@ export default function Home() {
                     {
                       label: "Simulate drive",
                       sub: "Evaluate",
-                      color: "var(--tl-teal)",
+                      color: "var(--tl-good)",
                     },
                     {
                       label: "Score & update",
                       sub: "Improve",
-                      color: "var(--tl-gold)",
+                      color: "var(--tl-mid)",
                     },
                   ]}
                 />

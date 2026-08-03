@@ -2,56 +2,57 @@
 
 /* ==================================================================
    Thoughtful Lab design tokens
-   Editorial, hairline-ruled, near-black ink on paper. Single teal
-   accent, with gold and rose as the secondary semantic colors.
-   Mirrors docs/stylesheets/extra.css in the parent residency site.
+   Warm paper, serif throughout, no chromatic accent. Sans is reserved
+   for small tracked-caps labels; mono only for numeric/equation data.
+   Color appears solely where it carries meaning in the visualization.
    ================================================================== */
 
 :root {
-  /* Ink */
-  --tl-ink: #151515;
-  --tl-ink-soft: #33383b;
-  --tl-muted: #5f6468;
-  --tl-faint: #767c81;
+  /* Ink — warm near-black, not neutral gray */
+  --tl-ink: #1f1e1b;
+  --tl-ink-soft: #3a3833;
+  --tl-muted: #6b6862;
+  --tl-faint: #8c887f;
 
-  /* Paper */
-  --tl-paper: #ffffff;
-  --tl-surface: #f6f7f8;
-  --tl-surface-strong: #eceff1;
+  /* Paper — warm off-white */
+  --tl-paper: #f7f6f2;
+  --tl-raised: #fdfcfa;
+  --tl-surface: #f1efe8;
+  --tl-surface-strong: #e8e5db;
 
-  /* Rules */
-  --tl-line: #d8dee2;
-  --tl-line-soft: #e8ecee;
+  /* Rules — warm hairlines */
+  --tl-line: #ddd9cd;
+  --tl-line-soft: #e9e6dc;
 
-  /* Accents */
-  --tl-teal: #007f73;
-  --tl-teal-strong: #00625a;
-  --tl-teal-wash: #edf5f4;
-  --tl-gold: #b26a00;
-  --tl-gold-wash: #f9f3e9;
-  --tl-rose: #b4235a;
-  --tl-rose-wash: #f9edf1;
+  /* Data-state colors. Muted and warm so they read as part of the
+     paper rather than as UI chrome. Not used for decoration. */
+  --tl-good: #4f6b52;
+  --tl-good-wash: #e9eee8;
+  --tl-mid: #a07533;
+  --tl-mid-wash: #f4ede0;
+  --tl-bad: #a04a3d;
+  --tl-bad-wash: #f2e6e2;
 
-  --tl-radius: 3px;
+  --tl-radius: 2px;
 
   /* ---- Semantic aliases consumed by the components ---- */
   --background: var(--tl-paper);
   --foreground: var(--tl-ink);
   --text-secondary: var(--tl-muted);
-  --accent: var(--tl-teal);
-  --accent-hover: var(--tl-teal-strong);
-  --card-bg: var(--tl-paper);
+  --accent: var(--tl-ink);
+  --accent-hover: var(--tl-ink-soft);
+  --card-bg: var(--tl-raised);
   --card-border: var(--tl-line);
   --equation-bg: var(--tl-surface);
 
   --cell-unknown: var(--tl-surface);
-  --cell-red: var(--tl-rose-wash);
-  --cell-amber: var(--tl-gold-wash);
-  --cell-green: var(--tl-teal-wash);
+  --cell-red: var(--tl-bad-wash);
+  --cell-amber: var(--tl-mid-wash);
+  --cell-green: var(--tl-good-wash);
 
   --phase-setup: var(--tl-muted);
-  --phase-eval: var(--tl-teal);
-  --phase-improve: var(--tl-gold);
+  --phase-eval: var(--tl-good);
+  --phase-improve: var(--tl-mid);
   --phase-converge: var(--tl-ink);
 }
 
@@ -59,75 +60,89 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-spectral);
   --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-serif), Georgia, serif;
 }
 
 ::selection {
-  background: var(--tl-teal-wash);
+  background: var(--tl-surface-strong);
+}
+
+/* Editorial links: ink, underlined, never colored */
+.tl-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--tl-line);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.tl-link:hover {
+  text-decoration-color: var(--tl-ink);
 }
 
 /* ==================================================================
    Typography
    ================================================================== */
 
+/* Tracked caps — the only place sans appears */
 .tl-eyebrow {
   color: var(--tl-muted);
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .tl-display {
-  font-size: clamp(2.5rem, 7vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1;
+  font-size: clamp(2.5rem, 6.5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+  max-width: 18ch;
 }
 
 .tl-h2 {
-  font-size: clamp(1.375rem, 3.2vw, 1.75rem);
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  line-height: 1.15;
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
 }
 
 .tl-h3 {
-  font-size: 1.0625rem;
+  font-size: 1.1875rem;
   font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 1.3;
-}
-
-.tl-h4 {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: -0.008em;
+  letter-spacing: -0.006em;
   line-height: 1.35;
 }
 
+.tl-h4 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .tl-deck {
-  color: var(--tl-muted);
-  font-size: clamp(1.125rem, 2.6vw, 1.375rem);
+  color: var(--tl-ink-soft);
+  font-size: clamp(1.1875rem, 2.4vw, 1.375rem);
   font-weight: 400;
-  letter-spacing: -0.015em;
-  line-height: 1.3;
-  max-width: 44ch;
+  line-height: 1.5;
+  max-width: 40ch;
 }
 
 .tl-lede {
   color: var(--tl-ink-soft);
-  font-size: 1.0625rem;
-  line-height: 1.65;
-  max-width: 62ch;
+  font-size: 1.125rem;
+  line-height: 1.68;
+  max-width: 60ch;
 }
 
 .tl-lede strong {
@@ -136,10 +151,10 @@ body {
 }
 
 .tl-body {
-  color: var(--tl-muted);
-  font-size: 0.9375rem;
+  color: var(--tl-ink-soft);
+  font-size: 1.0625rem;
   line-height: 1.72;
-  max-width: 68ch;
+  max-width: 64ch;
 }
 
 .tl-body strong {
@@ -152,8 +167,8 @@ body {
 }
 
 .tl-note {
-  color: var(--tl-faint);
-  font-size: 0.8125rem;
+  color: var(--tl-muted);
+  font-size: 0.9375rem;
   line-height: 1.6;
 }
 
@@ -168,19 +183,19 @@ body {
 
 .tl-section-head {
   align-items: baseline;
-  border-top: 1px solid var(--tl-ink);
+  border-top: 1px solid var(--tl-line);
   display: flex;
-  gap: 1rem;
-  padding-top: 0.875rem;
+  gap: 1.125rem;
+  padding-top: 1.125rem;
 }
 
 .tl-section-index {
-  color: var(--tl-teal);
+  color: var(--tl-faint);
   flex-shrink: 0;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
 }
 
 .tl-rule {
@@ -200,7 +215,7 @@ body {
    ================================================================== */
 
 .tl-panel {
-  background: var(--tl-paper);
+  background: var(--tl-raised);
   border: 1px solid var(--tl-line);
   border-radius: var(--tl-radius);
 }
@@ -218,15 +233,15 @@ body {
 }
 
 .tl-callout-eval {
-  border-left-color: var(--tl-teal);
+  border-left-color: var(--tl-good);
 }
 
 .tl-callout-improve {
-  border-left-color: var(--tl-gold);
+  border-left-color: var(--tl-mid);
 }
 
 .tl-callout-index {
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -236,7 +251,7 @@ body {
 /* Small uppercase label sitting above a block of data */
 .tl-label {
   color: var(--tl-faint);
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.14em;
@@ -246,10 +261,10 @@ body {
 
 /* Category tag on the real-world examples */
 .tl-tag {
-  border: 1px solid currentColor;
+  border: 1px solid var(--tl-line);
   border-radius: 999px;
   display: inline-block;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -261,7 +276,7 @@ kbd {
   border: 1px solid var(--tl-line);
   border-bottom-width: 2px;
   border-radius: var(--tl-radius);
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   padding: 0.1rem 0.35rem;
 }
@@ -293,7 +308,7 @@ kbd {
 .tl-flow-node-sub {
   color: var(--tl-faint);
   display: block;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   letter-spacing: 0.1em;
   margin-top: 0.3rem;
@@ -302,7 +317,7 @@ kbd {
 
 .tl-flow-arrow {
   align-items: center;
-  color: var(--tl-teal);
+  color: var(--tl-faint);
   display: flex;
   flex-shrink: 0;
   justify-content: center;
@@ -344,7 +359,7 @@ kbd {
 .tl-map th {
   border-bottom: 1px solid var(--tl-line);
   color: var(--tl-faint);
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -372,7 +387,7 @@ kbd {
 }
 
 .tl-map-arrow {
-  color: var(--tl-teal);
+  color: var(--tl-faint);
   padding-right: 0.75rem !important;
   width: 1rem;
 }
@@ -391,16 +406,16 @@ kbd {
 @keyframes tl-focus-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 127, 115, 0.28);
+    box-shadow: 0 0 0 0 rgba(31, 30, 27, 0.22);
   }
   50% {
-    box-shadow: 0 0 0 3px rgba(0, 127, 115, 0.13);
+    box-shadow: 0 0 0 3px rgba(31, 30, 27, 0.10);
   }
 }
 
 .cell-focused {
   animation: tl-focus-ring 2.2s ease-in-out infinite;
-  border-color: var(--tl-teal) !important;
+  border-color: var(--tl-ink) !important;
 }
 
 /* ==================================================================
@@ -431,7 +446,7 @@ kbd {
 .phase-badge {
   align-items: center;
   display: inline-flex;
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 500;
   gap: 0.5rem;
@@ -493,7 +508,7 @@ input[type="range"] {
 .q-table th {
   border-bottom: 1px solid var(--tl-line);
   color: var(--tl-faint);
-  font-family: var(--font-mono), monospace;
+  font-family: var(--font-sans), system-ui, sans-serif;
   font-size: 0.625rem;
   font-weight: 500;
   letter-spacing: 0.12em;
@@ -513,7 +528,7 @@ input[type="range"] {
 }
 
 .q-table tr.winner td {
-  color: var(--tl-teal);
+  color: var(--tl-good);
   font-weight: 600;
 }
 
@@ -562,8 +577,8 @@ input[type="range"] {
 }
 
 .tl-btn-primary:hover:not(:disabled) {
-  background: var(--tl-teal);
-  border-color: var(--tl-teal);
+  background: var(--tl-ink-soft);
+  border-color: var(--tl-ink-soft);
   color: #fff;
 }
 
@@ -622,16 +637,16 @@ input[type="range"] {
    ================================================================== */
 
 .tl-masthead {
-  background: var(--tl-ink);
-  color: #fff;
+  background: transparent;
+  color: var(--tl-ink);
 }
 
 .tl-masthead a {
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--tl-muted);
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
 .tl-masthead a:hover {
-  color: #fff;
+  color: var(--tl-ink);
 }
