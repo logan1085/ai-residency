@@ -11,7 +11,14 @@ type Policy = Record<string, Direction>;
 type Values = Record<string, number>;
 
 /** What the sandbox is currently doing. */
-type Mode = "idle" | "evaluating" | "iterating" | "settled";
+type Mode = "idle" | "running" | "settled";
+/** Which half of the loop is on screen. */
+type Phase = "eval" | "improve" | null;
+
+/** Animation pacing for the run. */
+const SWEEP_MS = 40;
+const PHASE_PAUSE_MS = 650;
+const ANIM_SWEEP_CAP = 24;
 
 interface PathResult {
   path: string[];
@@ -95,11 +102,11 @@ function evaluatePolicy(policy: Policy): Values {
  * Evaluate to convergence and report how many sweeps it actually took,
  * so the UI can state a real number rather than a fixed horizon.
  */
-function evaluatePolicyCounted(policy: Policy): {
-  values: Values;
-  sweeps: number;
-} {
-  let v = initValues();
+function evaluateFrom(
+  policy: Policy,
+  start: Values
+): { values: Values; sweeps: number } {
+  let v = start;
   let sweeps = 0;
   for (let i = 0; i < 500; i++) {
     const next = bellmanStep(policy, v);
@@ -109,6 +116,13 @@ function evaluatePolicyCounted(policy: Policy): {
     if (done) break;
   }
   return { values: v, sweeps };
+}
+
+function evaluatePolicyCounted(policy: Policy): {
+  values: Values;
+  sweeps: number;
+} {
+  return evaluateFrom(policy, initValues());
 }
 
 /* ------------------------------------------------------------------ */
@@ -436,37 +450,135 @@ export default function PolicySandbox() {
   });
   const [values, setValues] = useState<Values>(initValues);
   const [mode, setMode] = useState<Mode>("idle");
+  const [phase, setPhase] = useState<Phase>(null);
   const [sweeps, setSweeps] = useState(0);
+  const [totalSweeps, setTotalSweeps] = useState(0);
   const [round, setRound] = useState(0);
   const [changed, setChanged] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("1");
 
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const valuesRef = useRef<Values>(initValues());
-  const policyRef = useRef<Policy>(policy);
+  // Machine state lives in refs so the scheduler never reads a stale closure.
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tickRef = useRef<() => void>(() => {});
+  const mPolicy = useRef<Policy>(policy);
+  const mValues = useRef<Values>(initValues());
+  const mPhase = useRef<Phase>(null);
+  const mSweeps = useRef(0);
+  const mTotal = useRef(0);
+  const mRound = useRef(0);
+  const mFull = useRef(false);
 
-  policyRef.current = policy;
-
-  const running = mode === "evaluating" || mode === "iterating";
+  const running = mode === "running";
   const showValues = mode !== "idle";
 
   const stopTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
     timerRef.current = null;
   }, []);
 
   useEffect(() => stopTimer, [stopTimer]);
 
+  // Mirror policy into the ref for the scheduler, without writing during render.
+  useEffect(() => {
+    mPolicy.current = policy;
+  }, [policy]);
+
+  const finish = useCallback(() => {
+    stopTimer();
+    mPhase.current = null;
+    setPhase(null);
+    setMode("settled");
+  }, [stopTimer]);
+
+  /**
+   * One tick of the evaluate/improve machine. Evaluation is animated sweep
+   * by sweep so the values visibly propagate out from the goal; improvement
+   * gets its own beat so the changed actions are readable before the next
+   * evaluation starts.
+   */
+  const tick = useCallback(() => {
+    if (mPhase.current === "eval") {
+      const prev = mValues.current;
+      const next = bellmanStep(mPolicy.current, prev);
+      mSweeps.current += 1;
+      mTotal.current += 1;
+      mValues.current = next;
+      setValues({ ...next });
+      setSweeps(mSweeps.current);
+      setTotalSweeps(mTotal.current);
+
+      const converged = hasConverged(prev, next);
+
+      // Past the animation budget, jump to the exact fixed point rather than
+      // grinding through ~60 more visually identical frames. The remaining
+      // sweeps still count, so the reported totals stay true.
+      if (!converged && mSweeps.current >= ANIM_SWEEP_CAP) {
+        const exact = evaluateFrom(mPolicy.current, next);
+        mValues.current = exact.values;
+        mSweeps.current += exact.sweeps;
+        mTotal.current += exact.sweeps;
+        setValues({ ...exact.values });
+        setSweeps(mSweeps.current);
+        setTotalSweeps(mTotal.current);
+      } else if (!converged) {
+        timerRef.current = setTimeout(() => tickRef.current(), SWEEP_MS);
+        return;
+      }
+
+      if (!mFull.current) {
+        finish();
+        return;
+      }
+      mPhase.current = "improve";
+      setPhase("improve");
+      timerRef.current = setTimeout(() => tickRef.current(), PHASE_PAUSE_MS);
+      return;
+    }
+
+    if (mPhase.current === "improve") {
+      const { policy: improved, changed: diff } = improvePolicy(
+        mPolicy.current,
+        mValues.current
+      );
+      mRound.current += 1;
+      setRound(mRound.current);
+      setChanged(diff);
+
+      if (diff.length === 0 || mRound.current >= 25) {
+        finish();
+        return;
+      }
+
+      mPolicy.current = improved;
+      setPolicy(improved);
+      mPhase.current = "eval";
+      setPhase("eval");
+      mSweeps.current = 0;
+      setSweeps(0);
+      timerRef.current = setTimeout(() => tickRef.current(), PHASE_PAUSE_MS);
+    }
+  }, [finish]);
+
+  useEffect(() => {
+    tickRef.current = tick;
+  }, [tick]);
+
   /** Editing the policy invalidates every computed number. */
   const resetComputed = useCallback(() => {
     stopTimer();
     setMode("idle");
+    setPhase(null);
+    mPhase.current = null;
     setSweeps(0);
+    setTotalSweeps(0);
     setRound(0);
     setChanged([]);
     const init = initValues();
     setValues(init);
-    valuesRef.current = init;
+    mValues.current = init;
+    mSweeps.current = 0;
+    mTotal.current = 0;
+    mRound.current = 0;
   }, [stopTimer]);
 
   const setDirection = useCallback(
@@ -480,131 +592,100 @@ export default function PolicySandbox() {
   /** Clicking the already-selected cell cycles its direction. */
   const cycleDirection = useCallback(
     (state: string) => {
-      const cur = policyRef.current[state];
+      const cur = mPolicy.current[state];
       const next = ALL_DIRS[(ALL_DIRS.indexOf(cur) + 1) % ALL_DIRS.length];
       setDirection(state, next);
     },
     [setDirection]
   );
 
-  /* ---- Phase 1: evaluate the current policy, sweep by sweep ---- */
-  const runEvaluation = useCallback(() => {
-    stopTimer();
-    const init = initValues();
-    setValues(init);
-    valuesRef.current = init;
-    setSweeps(0);
-    setRound(0);
-    setChanged([]);
-    setMode("evaluating");
+  const start = useCallback(
+    (full: boolean) => {
+      stopTimer();
+      const init = initValues();
+      mValues.current = init;
+      setValues(init);
+      mSweeps.current = 0;
+      mTotal.current = 0;
+      mRound.current = 0;
+      setSweeps(0);
+      setTotalSweeps(0);
+      setRound(0);
+      setChanged([]);
+      mFull.current = full;
+      mPhase.current = "eval";
+      setPhase("eval");
+      setMode("running");
+      timerRef.current = setTimeout(() => tickRef.current(), SWEEP_MS);
+    },
+    [stopTimer]
+  );
 
-    let n = 0;
-    timerRef.current = setInterval(() => {
-      const prev = valuesRef.current;
-      const next = bellmanStep(policyRef.current, prev);
-      n++;
-      valuesRef.current = next;
-      setValues({ ...next });
-      setSweeps(n);
+  const runPolicyIteration = useCallback(() => start(true), [start]);
+  const runEvaluation = useCallback(() => start(false), [start]);
 
-      if (hasConverged(prev, next) || n >= 200) {
-        stopTimer();
-        setMode("settled");
-      }
-    }, 45);
-  }, [stopTimer]);
-
-  /* ---- Phase 2: one greedy improvement sweep ---- */
+  /** A single improvement sweep against the current values. */
   const runImprovement = useCallback(() => {
     stopTimer();
-    // Improvement is only meaningful against evaluated values.
     const base =
       mode === "idle"
-        ? evaluatePolicyCounted(policyRef.current)
-        : { values: valuesRef.current, sweeps };
+        ? evaluatePolicyCounted(mPolicy.current)
+        : { values: mValues.current, sweeps: 0 };
     const { policy: improved, changed: diff } = improvePolicy(
-      policyRef.current,
+      mPolicy.current,
       base.values
     );
 
     setPolicy(improved);
-    policyRef.current = improved;
+    mPolicy.current = improved;
     setChanged(diff);
 
-    // The old values describe the old policy, so re-score the new one.
-    const re = evaluatePolicyCounted(improved);
+    // Old values describe the old policy, so re-score the new one.
+    const re = evaluateFrom(improved, base.values);
+    mValues.current = re.values;
     setValues(re.values);
-    valuesRef.current = re.values;
+    mTotal.current += base.sweeps + re.sweeps;
+    setTotalSweeps(mTotal.current);
     setSweeps(re.sweeps);
-    setRound((r) => r + 1);
+    mRound.current += 1;
+    setRound(mRound.current);
     setMode("settled");
-  }, [mode, sweeps, stopTimer]);
-
-  /* ---- The full loop: evaluate → improve → repeat until stable ---- */
-  const runPolicyIteration = useCallback(() => {
-    stopTimer();
-    setChanged([]);
-    setRound(0);
-    setMode("iterating");
-
-    let current = policyRef.current;
-    let n = 0;
-
-    // Animate at the round level — the outer loop is the thing worth
-    // watching here, and it converges in only a handful of rounds.
-    timerRef.current = setInterval(() => {
-      const { values: v, sweeps: s } = evaluatePolicyCounted(current);
-      setValues(v);
-      valuesRef.current = v;
-      setSweeps(s);
-
-      const { policy: improved, changed: diff } = improvePolicy(current, v);
-      n++;
-      setRound(n);
-      setChanged(diff);
-
-      if (diff.length === 0 || n >= 25) {
-        stopTimer();
-        setMode("settled");
-        return;
-      }
-
-      current = improved;
-      policyRef.current = improved;
-      setPolicy(improved);
-    }, 900);
-  }, [stopTimer]);
+    setPhase(null);
+    mPhase.current = null;
+  }, [mode, stopTimer]);
 
   const skipToEnd = useCallback(() => {
     stopTimer();
-    let current = policyRef.current;
-    let n = 0;
-    let last = evaluatePolicyCounted(current);
-    for (; n < 25; ) {
-      last = evaluatePolicyCounted(current);
-      const { policy: improved, changed: diff } = improvePolicy(
-        current,
-        last.values
-      );
-      n++;
+    let current = mPolicy.current;
+    let v = mValues.current;
+    let total = mTotal.current;
+    let n = mRound.current;
+    for (let i = 0; i < 25; i++) {
+      const ev = evaluateFrom(current, v);
+      v = ev.values;
+      total += ev.sweeps;
+      const { policy: improved, changed: diff } = improvePolicy(current, v);
+      n += 1;
       if (diff.length === 0) break;
       current = improved;
     }
-    policyRef.current = current;
+    mPolicy.current = current;
     setPolicy(current);
-    setValues(last.values);
-    valuesRef.current = last.values;
-    setSweeps(last.sweeps);
+    mValues.current = v;
+    setValues(v);
+    mTotal.current = total;
+    setTotalSweeps(total);
+    mRound.current = n;
     setRound(n);
     setChanged([]);
-    setMode("settled");
-  }, [stopTimer]);
+    finish();
+  }, [finish, stopTimer]);
 
   const reset = useCallback(() => {
     const p: Policy = {};
     for (const s of STATES) p[s] = "up";
     setPolicy(p);
-    policyRef.current = p;
+    mPolicy.current = p;
     resetComputed();
   }, [resetComputed]);
 
@@ -612,15 +693,18 @@ export default function PolicySandbox() {
     stopTimer();
     const optPolicy = getOptimalPolicy();
     setPolicy(optPolicy);
-    policyRef.current = optPolicy;
+    mPolicy.current = optPolicy;
     const { values: v, sweeps: s } = evaluatePolicyCounted(optPolicy);
+    mValues.current = v;
     setValues(v);
-    valuesRef.current = v;
     setSweeps(s);
+    setTotalSweeps(s);
+    mTotal.current = s;
     setRound(0);
+    mRound.current = 0;
     setChanged([]);
-    setMode("settled");
-  }, [stopTimer]);
+    finish();
+  }, [finish, stopTimer]);
 
   /** Arrow keys steer the selected cell — scoped to this widget only. */
   const onKeyDown = useCallback(
@@ -639,14 +723,26 @@ export default function PolicySandbox() {
   const selectedNext = transition(selected, policy[selected]);
   const selectedHitsWall = selectedNext === selected;
 
+  // Per-action scores for the selected state — this is exactly what the
+  // improvement step compares, so showing it makes "improve" legible.
+  const selectedQ = ALL_DIRS.map((d) => ({
+    dir: d,
+    next: transition(selected, d),
+    q: qValue(selected, d, values),
+  }));
+  const bestQ = Math.max(...selectedQ.map((r) => r.q));
+
   const statusLine = () => {
     if (mode === "idle") return "Click a cell to cycle its direction";
-    if (mode === "evaluating") return `Scoring · sweep ${sweeps}`;
-    if (mode === "iterating")
-      return `Round ${round} · ${changed.length} action${changed.length === 1 ? "" : "s"} changed`;
+    if (mode === "running") {
+      if (phase === "improve") return `Round ${round + 1} · improving`;
+      return sweeps === 0
+        ? `Round ${round + 1} · scoring`
+        : `Round ${round + 1} · scoring · sweep ${sweeps}`;
+    }
     if (round > 0)
-      return `Stable after ${round} round${round === 1 ? "" : "s"} · ${sweeps} scoring sweeps`;
-    return `Scored in ${sweeps} sweep${sweeps === 1 ? "" : "s"}`;
+      return `Stable after ${round} round${round === 1 ? "" : "s"} · ${totalSweeps} sweeps total`;
+    return `Scored in ${totalSweeps} sweep${totalSweeps === 1 ? "" : "s"}`;
   };
 
   return (
@@ -742,10 +838,23 @@ export default function PolicySandbox() {
               })}
             </div>
 
-            {/* Status */}
-            <div className="mt-3 text-center">
+            {/* Phase + status */}
+            <div className="mt-3 flex flex-col items-center gap-1.5">
+              {phase && (
+                <span
+                  className="phase-badge"
+                  style={{
+                    color:
+                      phase === "eval"
+                        ? "var(--phase-eval)"
+                        : "var(--phase-improve)",
+                  }}
+                >
+                  {phase === "eval" ? "Scoring" : "Improving"}
+                </span>
+              )}
               <span
-                className="tl-label"
+                className="tl-label text-center leading-relaxed"
                 style={{
                   color: running ? "var(--tl-ink)" : "var(--tl-muted)",
                 }}
@@ -782,19 +891,49 @@ export default function PolicySandbox() {
               Click a selected cell to cycle it, or use the arrow keys.
             </p>
 
-            {/* Bellman equation for selected cell (during evaluation) */}
+            {/* Per-action scores — what the improvement step compares */}
             {showValues && (
               <div>
                 <p className="tl-label mb-2">
-                  Score calculation for room {selected}
+                  Options from state {selected}
                 </p>
-                <div className="equation-block text-[11px]">
-                  V({selected}) = {selectedNext === GOAL ? "0" : "-1"} + 0.9{" "}
-                  {"×"} V({selectedNext}) ={" "}
-                  <strong style={{ color: "var(--tl-ink)" }}>
-                    {formatValue(values[selected])}
-                  </strong>
-                </div>
+                <table className="q-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Direction</th>
+                      <th scope="col">Leads to</th>
+                      <th scope="col">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedQ.map((row) => {
+                      const isBest = row.q >= bestQ - 1e-9;
+                      const isCurrent = policy[selected] === row.dir;
+                      return (
+                        <tr
+                          key={row.dir}
+                          className={isBest ? "winner" : ""}
+                        >
+                          <td>
+                            {ARROW_CHARS[row.dir]} {DIR_LABELS[row.dir]}
+                            {isCurrent && (
+                              <span className="tl-label ml-2">current</span>
+                            )}
+                          </td>
+                          <td className="tl-mono">
+                            {row.next === selected ? "wall" : row.next}
+                          </td>
+                          <td className="tl-mono">
+                            {formatValue(row.q)}
+                            {isBest && (
+                              <span className="tl-label ml-2">best</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
 

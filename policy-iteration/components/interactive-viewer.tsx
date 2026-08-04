@@ -341,14 +341,21 @@ function GridCell({
         </span>
       )}
 
-      {/* Value display */}
+      {/* Value display. An em-dash reads as "no number yet"; a question
+          mark reads as "what goes here?", which is a different question. */}
       <span
         className={`tl-mono font-semibold ${
           value !== null && value <= -10 ? "text-xl" : "text-2xl"
         }`}
+        style={value === null && !isGoal ? { color: "var(--tl-faint)" } : undefined}
       >
-        {isGoal ? "0" : value !== null ? value : "?"}
+        {isGoal ? "0" : value !== null ? value : "—"}
       </span>
+
+      {/* Spell out what the dash means, in the cell itself */}
+      {!isGoal && value === null && (
+        <span className="tl-label mt-1">unscored</span>
+      )}
 
       {/* Small label for -10 */}
       {!isGoal && value !== null && value <= -10 && (
@@ -357,14 +364,10 @@ function GridCell({
         </span>
       )}
 
-      {/* Policy arrow */}
-      {!isGoal && (value === null || value > -10) && (
-        <span
-          className="policy-arrow mt-1"
-          style={{
-            color: arrow ? "var(--tl-ink)" : "var(--tl-faint)",
-          }}
-        >
+      {/* Policy arrow — omitted entirely when no action is assigned yet,
+          rather than drawn as a dot that looks like a state marker. */}
+      {!isGoal && arrow !== null && (value === null || value > -10) && (
+        <span className="policy-arrow mt-1" style={{ color: "var(--tl-ink)" }}>
           {arrowChar(arrow)}
         </span>
       )}
@@ -443,7 +446,7 @@ export default function InteractiveViewer() {
       <div className="flex flex-col lg:flex-row">
         {/* Left — Grid */}
         <div
-          className="flex-shrink-0 flex items-center lg:items-start justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
+          className="flex-shrink-0 flex flex-col items-center lg:items-start p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
           style={{ borderColor: "var(--tl-line)" }}
         >
           <div className="grid grid-cols-2 gap-2.5 w-full max-w-[240px]">
@@ -476,6 +479,42 @@ export default function InteractiveViewer() {
               focused={isFocused("G", step.focus)}
             />
           </div>
+
+          {/* Legend — states the cell encoding once, so the dash and the
+              colour bands don't have to be guessed at. */}
+          <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1.5 text-left">
+            <dt className="tl-mono text-sm" style={{ color: "var(--tl-faint)" }}>
+              —
+            </dt>
+            <dd className="tl-label leading-relaxed">not scored yet</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-red)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">stuck &mdash; never reaches the goal</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-amber)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">reaches the goal at a cost</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-green)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">at the goal, or free to reach</dd>
+          </dl>
         </div>
 
         {/* Right — Explanation. min-w-0 lets the pre-formatted equation
