@@ -413,9 +413,13 @@ export default function InteractiveViewer() {
     };
   }, [playing, next]);
 
-  // Keyboard controls
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
+  // Keyboard controls, scoped to the widget. A window listener would
+  // swallow arrow keys and space for the whole page, including scrolling.
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // Leave the controls alone — space on a focused button should press
+      // it, not advance the step.
+      if ((e.target as HTMLElement).closest("button, input, a, select")) return;
       if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
         next();
@@ -423,18 +427,23 @@ export default function InteractiveViewer() {
         e.preventDefault();
         prev();
       }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
+    },
+    [next, prev]
+  );
 
   return (
-    <div className="tl-panel overflow-hidden">
+    <div
+      className="tl-panel overflow-hidden"
+      onKeyDown={onKeyDown}
+      tabIndex={0}
+      role="group"
+      aria-label="Policy iteration walkthrough"
+    >
       {/* Split panel */}
       <div className="flex flex-col lg:flex-row">
         {/* Left — Grid */}
         <div
-          className="flex-shrink-0 flex items-center justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
+          className="flex-shrink-0 flex items-center lg:items-start justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
           style={{ borderColor: "var(--tl-line)" }}
         >
           <div className="grid grid-cols-2 gap-2.5 w-full max-w-[240px]">

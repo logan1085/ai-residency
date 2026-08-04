@@ -351,7 +351,8 @@ export default function Home() {
             action. Use the buttons to navigate, or hit Play to auto-advance.
             <span className="hidden sm:inline">
               {" "}
-              You can also use <kbd>&larr;</kbd> <kbd>&rarr;</kbd> keys.
+              Click the panel first and the <kbd>&larr;</kbd> <kbd>&rarr;</kbd>{" "}
+              keys will step it too.
             </span>
           </p>
           <InteractiveViewer />
@@ -665,9 +666,18 @@ export default function Home() {
           <SectionHead id="sandbox" />
           <p className="tl-body mb-6">
             Now try a bigger challenge. Below is a 4&times;4 grid with 15 states
-            and a goal in the bottom-right corner. Click any cell to select it,
-            choose a direction, and see how the values converge when you test
-            your policy.
+            and a goal in the bottom-right corner. Click a cell to select it,
+            then click again (or use the arrow keys) to cycle its direction.
+          </p>
+          <p className="tl-body mb-6">
+            Then run the algorithm on whatever policy you wrote.{" "}
+            <strong>Evaluate only</strong> scores it without changing anything.{" "}
+            <strong>Improve once</strong> runs a single greedy sweep, switching
+            each state to its best-looking action — the changed cells are
+            outlined. <strong>Run policy iteration</strong> alternates the two
+            until nothing changes, which is the entire algorithm. However bad
+            your starting policy, it lands on the optimal one in a handful of
+            rounds.
           </p>
           <PolicySandbox />
         </section>
