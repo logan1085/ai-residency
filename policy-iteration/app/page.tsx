@@ -220,7 +220,7 @@ export default function Home() {
                   <p className="tl-body">
                     &ldquo;If I follow this plan forever, how much total cost
                     will I rack up from each starting point?&rdquo; This gives
-                    every room a score — a single number capturing how good or
+                    every room a score: a single number capturing how good or
                     bad it is to be there.
                   </p>
                 </div>
@@ -384,7 +384,7 @@ export default function Home() {
                     produce a strategy at least as good as the one before. Since
                     there are only so many possible strategies, the algorithm
                     must eventually land on the best one. You can&apos;t get
-                    worse — only better or the same.
+                    worse, only better or the same.
                   </>
                 ),
               },
@@ -446,17 +446,17 @@ export default function Home() {
                 internet, but they need refinement to be genuinely helpful. The
                 method is called{" "}
                 <strong>Reinforcement Learning from Human Feedback</strong>{" "}
-                (RLHF) — and it&apos;s the evaluate-improve loop in disguise.
+                (RLHF), and it&apos;s the evaluate-improve loop in disguise.
               </p>
               <p className="tl-body mb-6">
                 The model generates responses to thousands of prompts. Human
-                raters read pairs of responses and pick the better one —
-                that&apos;s <strong>evaluation</strong>. Then the model is
-                updated to produce more responses like the preferred ones —
-                that&apos;s <strong>improvement</strong>. One common algorithm
+                raters read pairs of responses and pick the better one. That&apos;s
+                <strong> evaluation</strong>. Then the model is
+                updated to produce more responses like the preferred ones. That&apos;s
+                <strong> improvement</strong>. One common algorithm
                 for this update is <strong>PPO</strong> (Proximal Policy
                 Optimization), which makes small, careful changes to avoid
-                breaking what already works — like adjusting a recipe one
+                breaking what already works, like adjusting a recipe one
                 ingredient at a time. The cycle repeats until the model&apos;s
                 responses consistently score well.
               </p>
@@ -508,14 +508,14 @@ export default function Home() {
               </h3>
               <p className="tl-body mb-3">
                 In 2016, DeepMind&apos;s AlphaGo defeated the world champion at
-                Go — a game with more possible board positions than atoms in the
+                Go, a game with more possible board positions than atoms in the
                 observable universe. Brute-force search was impossible. Instead,
                 AlphaGo used policy iteration.
               </p>
               <p className="tl-body mb-3">
                 It trained two neural networks: a <strong>policy network</strong>{" "}
                 (which move to play) and a <strong>value network</strong> (how
-                good is this board position — just like our V-values). It played
+                good is this board position, just like our V-values). It played
                 millions of games against itself. After each batch of games, it
                 evaluated positions with the value network, improved the policy
                 network based on which moves led to wins, and repeated.
@@ -593,8 +593,8 @@ export default function Home() {
               <p className="tl-body mb-6">
                 The car&apos;s sensors read the road (the <strong>state</strong>
                 ). The policy decides what to do (the <strong>action</strong>).
-                A simulator scores the outcome — was the ride safe? efficient?
-                comfortable? (the <strong>reward</strong>). The policy is
+                A simulator scores the outcome. Was the ride safe? Efficient?
+                Comfortable? That is the <strong>reward</strong>. The policy is
                 updated based on millions of simulated drives, improving its
                 decision-making for every scenario it might encounter. This is
                 policy iteration at industrial scale.
@@ -651,7 +651,7 @@ export default function Home() {
 
           {/* Closing insight */}
           <p className="tl-body mt-12 border-l-2 border-[var(--tl-ink)] pl-4">
-            The deepest lesson isn&apos;t the math — it&apos;s the structure.{" "}
+            The deepest lesson isn&apos;t the math. It&apos;s the structure.{" "}
             <em>
               Evaluate honestly, improve incrementally, repeat until stable.
             </em>{" "}
@@ -673,7 +673,7 @@ export default function Home() {
             Then run the algorithm on whatever policy you wrote.{" "}
             <strong>Evaluate only</strong> scores it without changing anything.{" "}
             <strong>Improve once</strong> runs a single greedy sweep, switching
-            each state to its best-looking action — the changed cells are
+            each state to its best-looking action, and the changed cells are
             outlined. <strong>Run policy iteration</strong> alternates the two
             until nothing changes, which is the entire algorithm. However bad
             your starting policy, it lands on the optimal one in a handful of

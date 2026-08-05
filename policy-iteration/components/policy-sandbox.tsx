@@ -89,7 +89,7 @@ function hasConverged(prev: Values, next: Values): boolean {
   return true;
 }
 
-/** Run evaluation to a fixed horizon — used for exact comparisons. */
+/** Run evaluation to a fixed horizon, for exact comparisons. */
 function evaluatePolicy(policy: Policy): Values {
   let v = initValues();
   for (let i = 0; i < 200; i++) {
@@ -126,7 +126,7 @@ function evaluatePolicyCounted(policy: Policy): {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Policy improvement — the half the sandbox was missing              */
+/*  Policy improvement: the half the sandbox was missing              */
 /* ------------------------------------------------------------------ */
 
 const ALL_DIRS: Direction[] = ["up", "right", "down", "left"];
@@ -706,12 +706,12 @@ export default function PolicySandbox() {
     finish();
   }, [finish, stopTimer]);
 
-  /** Arrow keys steer the selected cell — scoped to this widget only. */
+  /** Arrow keys steer the selected cell, scoped to this widget only. */
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       const dir = KEY_TO_DIR[e.key];
       if (!dir || running) return;
-      // Don't hijack arrows while a control has focus — otherwise tabbing
+      // Don't hijack arrows while a control has focus, otherwise tabbing
       // to a button and pressing an arrow silently rewrites the policy.
       if ((e.target as HTMLElement).closest("button, input, a, select")) return;
       e.preventDefault();
@@ -723,7 +723,7 @@ export default function PolicySandbox() {
   const selectedNext = transition(selected, policy[selected]);
   const selectedHitsWall = selectedNext === selected;
 
-  // Per-action scores for the selected state — this is exactly what the
+  // Per-action scores for the selected state. This is exactly what the
   // improvement step compares, so showing it makes "improve" legible.
   const selectedQ = ALL_DIRS.map((d) => ({
     dir: d,
@@ -891,7 +891,7 @@ export default function PolicySandbox() {
               Click a selected cell to cycle it, or use the arrow keys.
             </p>
 
-            {/* Per-action scores — what the improvement step compares */}
+            {/* Per-action scores: what the improvement step compares */}
             {showValues && (
               <div>
                 <p className="tl-label mb-2">
@@ -948,7 +948,7 @@ export default function PolicySandbox() {
                   {selectedHitsWall && (
                     <span style={{ color: "var(--tl-bad)" }}>
                       {" "}
-                      (wall — stays put!)
+                      (wall, stays put)
                     </span>
                   )}
                 </div>

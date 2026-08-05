@@ -52,7 +52,7 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: "all",
     explanation:
-      "Here\u2019s a simple 2\u00d72 grid with four rooms: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal \u2014 it has a score of 0 because you\u2019re already there. Our job: figure out which direction each room should point so you reach the goal as fast as possible.",
+      "Here\u2019s a simple 2\u00d72 grid with four rooms: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal, and it has a score of 0 because you\u2019re already there. Our job: figure out which direction each room should point so you reach the goal as fast as possible.",
   },
   {
     phase: "setup",
@@ -71,7 +71,7 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: "A,B,C",
     explanation:
-      "We start with a deliberately bad strategy: A points Up, B points Up, C points Left. Look at the grid \u2014 every room is pointing straight into a wall! Nobody can reach the goal. Let\u2019s score this strategy to see how bad it really is.",
+      "We start with a deliberately bad strategy: A points Up, B points Up, C points Left. Look at the grid: every room is pointing straight into a wall. Nobody can reach the goal. Let\u2019s score this strategy to see how bad it really is.",
   },
   {
     phase: "eval-0",
@@ -80,7 +80,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: null, C: null, G: 0 },
     focus: "A",
     explanation:
-      "Room A says \"go Up,\" but that\u2019s a wall. So you stay in A, lose 1 point, and face the exact same situation again. You\u2019re stuck in an endless loop, losing 1 point over and over. The penalties add up to \u221210 \u2014 the worst possible score.",
+      "Room A says \"go Up,\" but that\u2019s a wall. So you stay in A, lose 1 point, and face the exact same situation again. You\u2019re stuck in an endless loop, losing 1 point over and over. The penalties add up to \u221210, the worst possible score.",
     equation:
       "Score(A) = cost + 0.9 \u00d7 Score(where you end up)\nScore(A) = \u22121 + 0.9 \u00d7 Score(A)    \u2190 you end up back in A!\nSolving: Score(A) = \u221210",
   },
@@ -102,7 +102,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "all",
     explanation:
-      "Scoring is done. Every room has a score of \u221210 \u2014 the worst it can get. All three rooms just bump into walls forever. This strategy is clearly terrible. Now let\u2019s see if we can do better.",
+      "Scoring is done. Every room has a score of \u221210, the worst it can get. All three rooms just bump into walls forever. This strategy is clearly terrible. Now let\u2019s see if we can do better.",
   },
   {
     phase: "improve-0",
@@ -121,7 +121,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "A",
     explanation:
-      "From A, every direction either hits a wall (staying in A) or leads to B or C \u2014 but they all have a score of \u221210. So every option gives the same result. No improvement possible yet \u2014 we keep A pointing Up.",
+      "From A, every direction either hits a wall (staying in A) or leads to B or C, but they all have a score of \u221210. So every option gives the same result. No improvement possible yet, so we keep A pointing Up.",
     equation:
       "Try Up:    \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(\u221210) = \u221210\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
@@ -138,7 +138,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "B",
     explanation:
-      "From B, going Down leads straight to the goal G (score 0), and reaching the goal is free. That gives a score of 0 \u2014 massively better than \u221210! We switch B\u2019s direction to Down.",
+      "From B, going Down leads straight to the goal G (score 0), and reaching the goal is free. That gives a score of 0, massively better than \u221210. We switch B\u2019s direction to Down.",
     equation:
       "Try Up:    \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:   0 + 0.9 \u00d7 Score(G) =  0 + 0.9(0) = 0  \u2190 best!\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
@@ -181,7 +181,7 @@ const STEPS: Step[] = [
     values: { A: null, B: 0, C: 0, G: 0 },
     focus: "B,C",
     explanation:
-      "With the updated strategy, B goes Down to the goal (free!) and C goes Right to the goal (free!). Both reach the goal in one step. Their scores are now 0 \u2014 as good as it gets.",
+      "With the updated strategy, B goes Down to the goal (free!) and C goes Right to the goal (free!). Both reach the goal in one step. Their scores are now 0, as good as it gets.",
     equation: "Score(B) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0\nScore(C) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0",
   },
   {
@@ -191,7 +191,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: 0, C: 0, G: 0 },
     focus: "A",
     explanation:
-      "Room A still goes Up (wall), bouncing in place forever. Its score stays at \u221210. We haven\u2019t changed A\u2019s direction yet \u2014 it still needs help.",
+      "Room A still goes Up (wall), bouncing in place forever. Its score stays at \u221210. We haven\u2019t changed A\u2019s direction yet, so it still needs help.",
     equation:
       "Score(A) = \u22121 + 0.9 \u00d7 Score(A)\nSolving: Score(A) = \u221210",
   },
@@ -239,7 +239,7 @@ const STEPS: Step[] = [
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "We check one more time: at every room, is there a better direction? Nope \u2014 each room is already pointing the best way. The strategy is stable, so we\u2019re done!",
+      "We check one more time: at every room, is there a better direction? Nope. Each room is already pointing the best way. The strategy is stable, so we\u2019re done!",
     equation:
       "For each room, the best direction\nmatches what we already have.\n\nNo changes \u2192 strategy is final!",
   },
@@ -341,20 +341,18 @@ function GridCell({
         </span>
       )}
 
-      {/* Value display. An em-dash reads as "no number yet"; a question
-          mark reads as "what goes here?", which is a different question. */}
-      <span
-        className={`tl-mono font-semibold ${
-          value !== null && value <= -10 ? "text-xl" : "text-2xl"
-        }`}
-        style={value === null && !isGoal ? { color: "var(--tl-faint)" } : undefined}
-      >
-        {isGoal ? "0" : value !== null ? value : "—"}
-      </span>
-
-      {/* Spell out what the dash means, in the cell itself */}
-      {!isGoal && value === null && (
-        <span className="tl-label mt-1">unscored</span>
+      {/* Value display. Unscored states say so in words rather than
+          standing in a glyph the reader has to decode. */}
+      {isGoal || value !== null ? (
+        <span
+          className={`tl-mono font-semibold ${
+            value !== null && value <= -10 ? "text-xl" : "text-2xl"
+          }`}
+        >
+          {isGoal ? "0" : value}
+        </span>
+      ) : (
+        <span className="tl-label">unscored</span>
       )}
 
       {/* Small label for -10 */}
@@ -364,7 +362,7 @@ function GridCell({
         </span>
       )}
 
-      {/* Policy arrow — omitted entirely when no action is assigned yet,
+      {/* Policy arrow, omitted entirely when no action is assigned yet,
           rather than drawn as a dot that looks like a state marker. */}
       {!isGoal && arrow !== null && (value === null || value > -10) && (
         <span className="policy-arrow mt-1" style={{ color: "var(--tl-ink)" }}>
@@ -420,7 +418,7 @@ export default function InteractiveViewer() {
   // swallow arrow keys and space for the whole page, including scrolling.
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      // Leave the controls alone — space on a focused button should press
+      // Leave the controls alone: space on a focused button should press
       // it, not advance the step.
       if ((e.target as HTMLElement).closest("button, input, a, select")) return;
       if (e.key === "ArrowRight" || e.key === " ") {
@@ -444,7 +442,7 @@ export default function InteractiveViewer() {
     >
       {/* Split panel */}
       <div className="flex flex-col lg:flex-row">
-        {/* Left — Grid */}
+        {/* Left: grid */}
         <div
           className="flex-shrink-0 flex flex-col items-center lg:items-start p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
           style={{ borderColor: "var(--tl-line)" }}
@@ -480,12 +478,15 @@ export default function InteractiveViewer() {
             />
           </div>
 
-          {/* Legend — states the cell encoding once, so the dash and the
-              colour bands don't have to be guessed at. */}
+          {/* Legend, so the colour bands don't have to be guessed at. */}
           <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1.5 text-left">
-            <dt className="tl-mono text-sm" style={{ color: "var(--tl-faint)" }}>
-              —
-            </dt>
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-unknown)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
             <dd className="tl-label leading-relaxed">not scored yet</dd>
 
             <dt
@@ -495,7 +496,7 @@ export default function InteractiveViewer() {
                 borderColor: "var(--tl-line)",
               }}
             />
-            <dd className="tl-label leading-relaxed">stuck &mdash; never reaches the goal</dd>
+            <dd className="tl-label leading-relaxed">stuck: never reaches the goal</dd>
 
             <dt
               className="mt-0.5 h-3 w-3 self-start border"
@@ -517,7 +518,7 @@ export default function InteractiveViewer() {
           </dl>
         </div>
 
-        {/* Right — Explanation. min-w-0 lets the pre-formatted equation
+        {/* Right: explanation. min-w-0 lets the pre-formatted equation
             block scroll inside this column instead of stretching it. */}
         <div className="flex-1 min-w-0 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
           {/* Phase badge */}
@@ -577,7 +578,7 @@ export default function InteractiveViewer() {
         </div>
       </div>
 
-      {/* Bottom — Controls */}
+      {/* Bottom: controls */}
       <div
         className="px-6 py-4 flex flex-col gap-3"
         style={{ borderTop: "1px solid var(--tl-line)" }}

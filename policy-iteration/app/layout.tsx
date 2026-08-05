@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Spectral } from "next/font/google";
 import "./globals.css";
 
-// Serif carries the whole document — display and body alike.
+// Serif carries the whole document: display and body alike.
 const spectral = Spectral({
   variable: "--font-spectral",
   subsets: ["latin"],
@@ -23,7 +23,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Policy Iteration — Interactive Walkthrough",
+  title: "Policy Iteration: An Interactive Walkthrough",
   description:
     "An interactive visualization of the Policy Iteration algorithm for dynamic programming in reinforcement learning, based on George A. Lentzas's example.",
 };
