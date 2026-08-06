@@ -1,38 +1,47 @@
 # AI Research Residency
 
-A living, portfolio-ready curriculum for the Thoughtful Labs AI Research Residency.
+A public, first-person AI residency. Transformers, reinforcement learning,
+evals, agent systems. Worked through in code instead of summarized from
+reading.
 
-This repo is part of Logan Horowitz's broader AI-labs and research-adjacent work around evals, benchmarks, agent systems, workflow design, and product-minded operator tooling.
+The rule this repo runs on is that every stretch of work leaves something
+inspectable behind. Code that runs, a result someone can argue with, or a
+write-up that admits what did not work. If a week produces no artifact, it did
+not really happen.
 
-If you are trying to understand where Logan fits around AI labs, evals, or product-adjacent work near frontier capability, the best public starting points are:
+## What is in here
 
-- [AI labs, evals, and agent systems](https://www.loganzev.com/ai-labs-evals-agent-systems)
-- [Anthropic and Claude ecosystem](https://www.loganzev.com/anthropic-claude-ecosystem)
-- [Why Anthropic and Claude fit the kind of product work I want to do](https://www.loganzev.com/writing/why-anthropic-and-claude-fit-the-kind-of-product-work-i-do)
-- [Interactive AI Products](https://www.loganzev.com/interactive-ai-products)
-- [AI Product Reactor](https://www.loganzev.com/projects/ai-product-reactor)
-- [What makes an AI product feel cool instead of forgettable](https://www.loganzev.com/writing/what-makes-an-ai-product-feel-cool)
-- [Teams using Claude Code](https://www.loganzev.com/teams-using-claude-code)
-- [Product people using Claude Code and Codex](https://www.loganzev.com/product-people-using-claude-code-and-codex)
-- [AI Signal Studio](https://www.loganzev.com/projects/ai-signal-studio)
-- [AI Interface Lab](https://www.loganzev.com/projects/ai-interface-lab)
-- [AI Company Fit Radar](https://www.loganzev.com/projects/ai-company-fit-radar)
-- [AI Product Wedge Lab](https://www.loganzev.com/projects/ai-product-wedge-lab)
-- [AI Team Builder](https://www.loganzev.com/projects/ai-team-builder)
-- [AI Evals Lab](https://www.loganzev.com/projects/ai-evals-lab)
-- [AI Workflow Lab](https://www.loganzev.com/projects/ai-workflow-lab)
-- [My AI research interests: evals, benchmarks, and agent systems](https://www.loganzev.com/writing/ai-research-interests-evals-benchmarks)
-- [What I've actually built with Claude Code and Codex](https://www.loganzev.com/writing/what-ive-actually-built-with-claude-code-and-codex)
-- [Why AI labs need product people using Claude Code and Codex](https://www.loganzev.com/writing/why-ai-labs-need-product-people-using-claude-code-and-codex)
-- [AI Profile](https://www.loganzev.com/ai-profile)
+| Artifact | Where | What it is |
+| --- | --- | --- |
+| Transformer from scratch | [`src/transformer_from_scratch.py`](src/transformer_from_scratch.py) | A 470,528-parameter GPT-style model. Embeddings, causal self-attention, pre-norm blocks, LM head, generation, plus [smoke tests](tests/test_transformer_from_scratch.py) |
+| Policy iteration explainer | [`policy-iteration/`](policy-iteration) | Policy evaluation and improvement in a grid world, stepped through by hand. Live at [policy-iteration.vercel.app](https://policy-iteration.vercel.app) |
+| Curriculum | [`docs/curriculum/`](docs/curriculum/index.md) | Ten modules, foundations through systems, evals, and deployment |
+| Progress | [`docs/progress/`](docs/progress/index.md) | Work log, rubric, session agendas |
 
-The point of this repo is not to posture as pure academic research. It is to make the research-adjacent layer legible: the curriculum, notes, and surrounding systems work that help connect AI labs, evals, agent reliability, and product judgment.
+## Write-ups
 
-The interactive proof surfaces matter too. They make the workflow, interface, product-packaging, product-taste, and product-thinking side of that story easier to verify than prose alone. In practice that means the live set around interface shape, positioning signal, recruiting fit, product wedges, team shape, eval design, workflow design, and memorable AI product experience is part of the same public proof system as this repo.
+The code is the record. These are the explanations.
 
-If the specific query family is more like interactive AI products, cool AI products, AI product taste, or AI interface design, the clearest public start point is now [Interactive AI Products](https://www.loganzev.com/interactive-ai-products).
+- [I Wrote a Transformer by Hand](https://www.loganzev.com/writing/transformer-from-scratch).
+  The full walk through the implementation above, with diagrams for the forward
+  pass, one attention head, and the causal mask, plus the shapes that make it
+  click.
+- [The Grading Room](https://www.loganzev.com/projects/ai-evals-lab). The public
+  artifact for the evals work. Eight agent transcripts, a three-way rubric, and
+  the disagreements that show where a rubric is underwritten.
+- [AI Research Residency](https://www.loganzev.com/ai-research-residency). Where
+  the whole thing is up to, including what I am working through now.
 
-## Local Development
+## Where this is up to
+
+Foundations are done. The transformer is written and tested, policy iteration
+is built and shipped.
+
+Current work is GRPO and RL post-training. How a group of sampled completions
+supplies an advantage baseline without a learned critic, and what that signal
+does when every completion in a group turns out to be wrong.
+
+## Local development
 
 ```bash
 python -m venv .venv
@@ -41,4 +50,5 @@ pip install -r requirements.txt
 mkdocs serve
 ```
 
-The curriculum source PDF is tracked at `docs/assets/pdfs/thoughtful-labs-ai-research-curriculum.pdf`.
+The curriculum source PDF is tracked at
+`docs/assets/pdfs/thoughtful-labs-ai-research-curriculum.pdf`.
