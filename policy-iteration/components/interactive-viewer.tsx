@@ -52,7 +52,7 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: "all",
     explanation:
-      "Here\u2019s a simple 2\u00d72 grid with four rooms: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal \u2014 it has a score of 0 because you\u2019re already there. Our job: figure out which direction each room should point so you reach the goal as fast as possible.",
+      "Here\u2019s a simple 2\u00d72 grid with four rooms: A (top-left), B (top-right), C (bottom-left), and G (bottom-right). G is the goal, and it has a score of 0 because you\u2019re already there. Our job: figure out which direction each room should point so you reach the goal as fast as possible.",
   },
   {
     phase: "setup",
@@ -71,7 +71,7 @@ const STEPS: Step[] = [
     values: { A: null, B: null, C: null, G: 0 },
     focus: "A,B,C",
     explanation:
-      "We start with a deliberately bad strategy: A points Up, B points Up, C points Left. Look at the grid \u2014 every room is pointing straight into a wall! Nobody can reach the goal. Let\u2019s score this strategy to see how bad it really is.",
+      "We start with a deliberately bad strategy: A points Up, B points Up, C points Left. Look at the grid: every room is pointing straight into a wall. Nobody can reach the goal. Let\u2019s score this strategy to see how bad it really is.",
   },
   {
     phase: "eval-0",
@@ -80,7 +80,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: null, C: null, G: 0 },
     focus: "A",
     explanation:
-      "Room A says \"go Up,\" but that\u2019s a wall. So you stay in A, lose 1 point, and face the exact same situation again. You\u2019re stuck in an endless loop, losing 1 point over and over. The penalties add up to \u221210 \u2014 the worst possible score.",
+      "Room A says \"go Up,\" but that\u2019s a wall. So you stay in A, lose 1 point, and face the exact same situation again. You\u2019re stuck in an endless loop, losing 1 point over and over. The penalties add up to \u221210, the worst possible score.",
     equation:
       "Score(A) = cost + 0.9 \u00d7 Score(where you end up)\nScore(A) = \u22121 + 0.9 \u00d7 Score(A)    \u2190 you end up back in A!\nSolving: Score(A) = \u221210",
   },
@@ -102,7 +102,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "all",
     explanation:
-      "Scoring is done. Every room has a score of \u221210 \u2014 the worst it can get. All three rooms just bump into walls forever. This strategy is clearly terrible. Now let\u2019s see if we can do better.",
+      "Scoring is done. Every room has a score of \u221210, the worst it can get. All three rooms just bump into walls forever. This strategy is clearly terrible. Now let\u2019s see if we can do better.",
   },
   {
     phase: "improve-0",
@@ -121,7 +121,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "A",
     explanation:
-      "From A, every direction either hits a wall (staying in A) or leads to B or C \u2014 but they all have a score of \u221210. So every option gives the same result. No improvement possible yet \u2014 we keep A pointing Up.",
+      "From A, every direction either hits a wall (staying in A) or leads to B or C, but they all have a score of \u221210. So every option gives the same result. No improvement possible yet, so we keep A pointing Up.",
     equation:
       "Try Up:    \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:  \u22121 + 0.9 \u00d7 Score(C) = \u22121 + 0.9(\u221210) = \u221210\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
@@ -138,7 +138,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: -10, C: -10, G: 0 },
     focus: "B",
     explanation:
-      "From B, going Down leads straight to the goal G (score 0), and reaching the goal is free. That gives a score of 0 \u2014 massively better than \u221210! We switch B\u2019s direction to Down.",
+      "From B, going Down leads straight to the goal G (score 0), and reaching the goal is free. That gives a score of 0, massively better than \u221210. We switch B\u2019s direction to Down.",
     equation:
       "Try Up:    \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210\nTry Down:   0 + 0.9 \u00d7 Score(G) =  0 + 0.9(0) = 0  \u2190 best!\nTry Left:  \u22121 + 0.9 \u00d7 Score(A) = \u22121 + 0.9(\u221210) = \u221210\nTry Right: \u22121 + 0.9 \u00d7 Score(B) = \u22121 + 0.9(\u221210) = \u221210",
     qTable: [
@@ -181,7 +181,7 @@ const STEPS: Step[] = [
     values: { A: null, B: 0, C: 0, G: 0 },
     focus: "B,C",
     explanation:
-      "With the updated strategy, B goes Down to the goal (free!) and C goes Right to the goal (free!). Both reach the goal in one step. Their scores are now 0 \u2014 as good as it gets.",
+      "With the updated strategy, B goes Down to the goal (free!) and C goes Right to the goal (free!). Both reach the goal in one step. Their scores are now 0, as good as it gets.",
     equation: "Score(B) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0\nScore(C) = 0 + 0.9 \u00d7 Score(G) = 0 + 0 = 0",
   },
   {
@@ -191,7 +191,7 @@ const STEPS: Step[] = [
     values: { A: -10, B: 0, C: 0, G: 0 },
     focus: "A",
     explanation:
-      "Room A still goes Up (wall), bouncing in place forever. Its score stays at \u221210. We haven\u2019t changed A\u2019s direction yet \u2014 it still needs help.",
+      "Room A still goes Up (wall), bouncing in place forever. Its score stays at \u221210. We haven\u2019t changed A\u2019s direction yet, so it still needs help.",
     equation:
       "Score(A) = \u22121 + 0.9 \u00d7 Score(A)\nSolving: Score(A) = \u221210",
   },
@@ -239,7 +239,7 @@ const STEPS: Step[] = [
     values: { A: -1, B: 0, C: 0, G: 0 },
     focus: "all",
     explanation:
-      "We check one more time: at every room, is there a better direction? Nope \u2014 each room is already pointing the best way. The strategy is stable, so we\u2019re done!",
+      "We check one more time: at every room, is there a better direction? Nope. Each room is already pointing the best way. The strategy is stable, so we\u2019re done!",
     equation:
       "For each room, the best direction\nmatches what we already have.\n\nNo changes \u2192 strategy is final!",
   },
@@ -321,50 +321,51 @@ function GridCell({
 }) {
   return (
     <div
-      className={`grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square ${focused ? "cell-focused" : ""}`}
+      className={`grid-cell relative flex flex-col items-center justify-center border aspect-square rounded-[var(--tl-radius)] ${focused ? "cell-focused" : ""}`}
       style={{
         backgroundColor: isGoal ? "var(--cell-green)" : cellBg(value),
-        borderColor: focused ? "var(--accent)" : "var(--card-border)",
+        borderColor: focused ? "var(--tl-ink)" : "var(--tl-line)",
       }}
     >
       {/* State label */}
-      <span
-        className="absolute top-1.5 left-2 text-xs font-semibold"
-        style={{ color: "var(--text-secondary)" }}
-      >
-        {label}
-      </span>
+      <span className="tl-label absolute top-1.5 left-2">{label}</span>
 
       {/* Goal badge */}
       {isGoal && (
-        <span className="absolute top-1 right-1.5 text-base" title="Goal">
+        <span
+          className="absolute top-1 right-1.5 text-sm"
+          style={{ color: "var(--tl-good)" }}
+          title="Goal"
+        >
           &#9733;
         </span>
       )}
 
-      {/* Value display */}
-      <span
-        className={`font-bold tabular-nums ${
-          value !== null && value <= -10 ? "text-xl" : "text-2xl"
-        }`}
-        style={{ fontFamily: "var(--font-mono), monospace" }}
-      >
-        {isGoal ? "0" : value !== null ? value : "?"}
-      </span>
+      {/* Value display. Unscored states say so in words rather than
+          standing in a glyph the reader has to decode. */}
+      {isGoal || value !== null ? (
+        <span
+          className={`tl-mono font-semibold ${
+            value !== null && value <= -10 ? "text-xl" : "text-2xl"
+          }`}
+        >
+          {isGoal ? "0" : value}
+        </span>
+      ) : (
+        <span className="tl-label">unscored</span>
+      )}
 
       {/* Small label for -10 */}
       {!isGoal && value !== null && value <= -10 && (
-        <span
-          className="text-[9px] font-medium uppercase tracking-wide"
-          style={{ color: "#B91C1C" }}
-        >
+        <span className="tl-label mt-1" style={{ color: "var(--tl-bad)" }}>
           stuck
         </span>
       )}
 
-      {/* Policy arrow */}
-      {!isGoal && (value === null || value > -10) && (
-        <span className="policy-arrow mt-0.5" style={{ color: arrow ? "var(--foreground)" : "var(--text-secondary)" }}>
+      {/* Policy arrow, omitted entirely when no action is assigned yet,
+          rather than drawn as a dot that looks like a state marker. */}
+      {!isGoal && arrow !== null && (value === null || value > -10) && (
+        <span className="policy-arrow mt-1" style={{ color: "var(--tl-ink)" }}>
           {arrowChar(arrow)}
         </span>
       )}
@@ -413,9 +414,13 @@ export default function InteractiveViewer() {
     };
   }, [playing, next]);
 
-  // Keyboard controls
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
+  // Keyboard controls, scoped to the widget. A window listener would
+  // swallow arrow keys and space for the whole page, including scrolling.
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // Leave the controls alone: space on a focused button should press
+      // it, not advance the step.
+      if ((e.target as HTMLElement).closest("button, input, a, select")) return;
       if (e.key === "ArrowRight" || e.key === " ") {
         e.preventDefault();
         next();
@@ -423,27 +428,26 @@ export default function InteractiveViewer() {
         e.preventDefault();
         prev();
       }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
+    },
+    [next, prev]
+  );
 
   return (
     <div
-      className="rounded-xl border overflow-hidden"
-      style={{
-        backgroundColor: "var(--card-bg)",
-        borderColor: "var(--card-border)",
-      }}
+      className="tl-panel overflow-hidden"
+      onKeyDown={onKeyDown}
+      tabIndex={0}
+      role="group"
+      aria-label="Policy iteration walkthrough"
     >
       {/* Split panel */}
       <div className="flex flex-col lg:flex-row">
-        {/* Left — Grid */}
+        {/* Left: grid */}
         <div
-          className="flex-shrink-0 flex items-center justify-center p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
-          style={{ borderColor: "var(--card-border)" }}
+          className="flex-shrink-0 flex flex-col items-center lg:items-start p-6 lg:p-8 lg:w-[340px] border-b lg:border-b-0 lg:border-r"
+          style={{ borderColor: "var(--tl-line)" }}
         >
-          <div className="grid grid-cols-2 gap-3 w-full max-w-[240px]">
+          <div className="grid grid-cols-2 gap-2.5 w-full max-w-[240px]">
             <GridCell
               label="A"
               value={step.values.A}
@@ -473,35 +477,65 @@ export default function InteractiveViewer() {
               focused={isFocused("G", step.focus)}
             />
           </div>
+
+          {/* Legend, so the colour bands don't have to be guessed at. */}
+          <dl className="mt-5 grid grid-cols-[auto_1fr] gap-x-2.5 gap-y-1.5 text-left">
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-unknown)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">not scored yet</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-red)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">stuck: never reaches the goal</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-amber)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">reaches the goal at a cost</dd>
+
+            <dt
+              className="mt-0.5 h-3 w-3 self-start border"
+              style={{
+                backgroundColor: "var(--cell-green)",
+                borderColor: "var(--tl-line)",
+              }}
+            />
+            <dd className="tl-label leading-relaxed">at the goal, or free to reach</dd>
+          </dl>
         </div>
 
-        {/* Right — Explanation */}
-        <div className="flex-1 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
+        {/* Right: explanation. min-w-0 lets the pre-formatted equation
+            block scroll inside this column instead of stretching it. */}
+        <div className="flex-1 min-w-0 p-6 lg:p-8 flex flex-col gap-4 lg:min-h-[320px]">
           {/* Phase badge */}
           <div>
             <span
               className="phase-badge"
-              style={{ backgroundColor: phaseColor(step.phase) }}
+              style={{ color: phaseColor(step.phase) }}
             >
               {phaseLabel(step.phase)}
             </span>
           </div>
 
           {/* Title */}
-          <h3
-            className="text-xl font-semibold leading-tight"
-            style={{ fontFamily: "var(--font-serif), serif" }}
-          >
-            {step.title}
-          </h3>
+          <h3 className="tl-h3">{step.title}</h3>
 
           {/* Explanation */}
-          <p
-            className="text-sm leading-relaxed"
-            style={{ color: "var(--text-secondary)" }}
-          >
-            {step.explanation}
-          </p>
+          <p className="tl-body">{step.explanation}</p>
 
           {/* Equation */}
           {step.equation && (
@@ -526,11 +560,14 @@ export default function InteractiveViewer() {
                       className={row.winner ? "winner" : ""}
                     >
                       <td>{row.action}</td>
-                      <td style={{ fontFamily: "var(--font-mono), monospace" }}>
-                        {row.formula}
-                      </td>
-                      <td style={{ fontFamily: "var(--font-mono), monospace" }}>
+                      <td className="tl-mono">{row.formula}</td>
+                      <td className="tl-mono">
                         {row.value}
+                        {row.winner && (
+                          <span className="tl-label ml-2 align-middle">
+                            best
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -541,26 +578,20 @@ export default function InteractiveViewer() {
         </div>
       </div>
 
-      {/* Bottom — Controls */}
+      {/* Bottom: controls */}
       <div
         className="px-6 py-4 flex flex-col gap-3"
-        style={{ borderTop: "1px solid var(--card-border)" }}
+        style={{ borderTop: "1px solid var(--tl-line)" }}
       >
         {/* Progress bar */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <span
-              className="w-2 h-2 rounded-full shrink-0"
+              className="w-[7px] h-[7px] shrink-0"
               style={{ backgroundColor: phaseColor(step.phase) }}
             />
-            <span
-              className="text-xs font-medium tabular-nums whitespace-nowrap"
-              style={{
-                color: "var(--text-secondary)",
-                fontFamily: "var(--font-mono), monospace",
-              }}
-            >
-              {currentStep + 1}/{total}
+            <span className="tl-label whitespace-nowrap">
+              {String(currentStep + 1).padStart(2, "0")} / {total}
             </span>
           </div>
           <div className="flex-1">
@@ -570,8 +601,9 @@ export default function InteractiveViewer() {
               max={total - 1}
               value={currentStep}
               onChange={(e) => goTo(Number(e.target.value))}
-              className="w-full accent-[#E07A2F] cursor-pointer"
+              className="w-full cursor-pointer"
               style={{ height: "6px" }}
+              aria-label="Step"
             />
           </div>
         </div>
@@ -597,16 +629,7 @@ export default function InteractiveViewer() {
                 setPlaying(true);
               }
             }}
-            className="flex items-center justify-center gap-1.5 rounded-lg px-5 py-2 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{
-              backgroundColor: "var(--accent)",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
+            className="tl-btn tl-btn-primary"
             aria-label={playing ? "Pause" : "Play"}
           >
             {playing ? "\u23F8 Pause" : "\u25B6 Play"}
@@ -628,10 +651,7 @@ export default function InteractiveViewer() {
         </div>
 
         {currentStep === 0 && (
-          <p
-            className="text-xs text-center"
-            style={{ color: "var(--text-secondary)" }}
-          >
+          <p className="tl-note text-center">
             Press Play to watch the algorithm run, or step through one at a time
           </p>
         )}
@@ -660,18 +680,7 @@ function ControlButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
-      className="flex items-center justify-center rounded-lg border px-3 py-2 text-sm transition-colors disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
-      style={{
-        borderColor: "var(--card-border)",
-        color: disabled ? "var(--text-secondary)" : "var(--foreground)",
-        backgroundColor: "var(--card-bg)",
-      }}
-      onMouseEnter={(e) => {
-        if (!disabled) e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = "var(--card-bg)";
-      }}
+      className="tl-btn tl-btn-icon"
     >
       {children}
     </button>

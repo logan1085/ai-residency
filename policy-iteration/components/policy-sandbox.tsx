@@ -10,6 +10,16 @@ type Direction = "up" | "down" | "left" | "right";
 type Policy = Record<string, Direction>;
 type Values = Record<string, number>;
 
+/** What the sandbox is currently doing. */
+type Mode = "idle" | "running" | "settled";
+/** Which half of the loop is on screen. */
+type Phase = "eval" | "improve" | null;
+
+/** Animation pacing for the run. */
+const SWEEP_MS = 40;
+const PHASE_PAUSE_MS = 650;
+const ANIM_SWEEP_CAP = 24;
+
 interface PathResult {
   path: string[];
   reachesGoal: boolean;
@@ -20,6 +30,7 @@ const GRID = 4;
 const STATES = Array.from({ length: 15 }, (_, i) => String(i + 1));
 const GOAL = "G";
 const ALL_CELLS = [...STATES, GOAL];
+const GAMMA = 0.9;
 
 /* ------------------------------------------------------------------ */
 /*  Position helpers                                                   */
@@ -52,7 +63,7 @@ function transition(state: string, dir: Direction): string {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Bellman iteration                                                  */
+/*  Policy evaluation                                                  */
 /* ------------------------------------------------------------------ */
 
 function initValues(): Values {
@@ -66,7 +77,7 @@ function bellmanStep(policy: Policy, v: Values): Values {
   for (const s of STATES) {
     const next = transition(s, policy[s]);
     const reward = next === GOAL ? 0 : -1;
-    newV[s] = reward + 0.9 * v[next];
+    newV[s] = reward + GAMMA * v[next];
   }
   return newV;
 }
@@ -78,12 +89,80 @@ function hasConverged(prev: Values, next: Values): boolean {
   return true;
 }
 
+/** Run evaluation to a fixed horizon, for exact comparisons. */
 function evaluatePolicy(policy: Policy): Values {
   let v = initValues();
   for (let i = 0; i < 200; i++) {
     v = bellmanStep(policy, v);
   }
   return v;
+}
+
+/**
+ * Evaluate to convergence and report how many sweeps it actually took,
+ * so the UI can state a real number rather than a fixed horizon.
+ */
+function evaluateFrom(
+  policy: Policy,
+  start: Values
+): { values: Values; sweeps: number } {
+  let v = start;
+  let sweeps = 0;
+  for (let i = 0; i < 500; i++) {
+    const next = bellmanStep(policy, v);
+    sweeps++;
+    const done = hasConverged(v, next);
+    v = next;
+    if (done) break;
+  }
+  return { values: v, sweeps };
+}
+
+function evaluatePolicyCounted(policy: Policy): {
+  values: Values;
+  sweeps: number;
+} {
+  return evaluateFrom(policy, initValues());
+}
+
+/* ------------------------------------------------------------------ */
+/*  Policy improvement: the half the sandbox was missing              */
+/* ------------------------------------------------------------------ */
+
+const ALL_DIRS: Direction[] = ["up", "right", "down", "left"];
+
+/** Score of taking `dir` from `state`, then following the current values. */
+function qValue(state: string, dir: Direction, v: Values): number {
+  const next = transition(state, dir);
+  const reward = next === GOAL ? 0 : -1;
+  return reward + GAMMA * v[next];
+}
+
+/**
+ * One greedy improvement sweep: at every state, switch to the best-scoring
+ * action. Ties keep the incumbent action, which is what makes the loop
+ * terminate instead of oscillating between equally good policies.
+ */
+function improvePolicy(
+  policy: Policy,
+  v: Values
+): { policy: Policy; changed: string[] } {
+  const next: Policy = {};
+  const changed: string[] = [];
+  for (const s of STATES) {
+    let best = policy[s];
+    let bestQ = qValue(s, policy[s], v);
+    for (const d of ALL_DIRS) {
+      const q = qValue(s, d, v);
+      if (q > bestQ + 1e-9) {
+        bestQ = q;
+        best = d;
+      }
+    }
+    next[s] = best;
+    if (best !== policy[s]) changed.push(s);
+  }
+  return { policy: next, changed };
 }
 
 /* ------------------------------------------------------------------ */
@@ -153,10 +232,10 @@ function formatValue(v: number): string {
 }
 
 const ARROW_CHARS: Record<Direction, string> = {
-  up: "\u2191",
-  down: "\u2193",
-  left: "\u2190",
-  right: "\u2192",
+  up: "↑",
+  down: "↓",
+  left: "←",
+  right: "→",
 };
 
 const DIR_LABELS: Record<Direction, string> = {
@@ -166,6 +245,13 @@ const DIR_LABELS: Record<Direction, string> = {
   right: "Right",
 };
 
+const KEY_TO_DIR: Record<string, Direction> = {
+  ArrowUp: "up",
+  ArrowDown: "down",
+  ArrowLeft: "left",
+  ArrowRight: "right",
+};
+
 function cellBg(value: number | null, showValues: boolean): string {
   if (!showValues || value === null) return "var(--cell-unknown)";
   if (value <= -9.99) return "var(--cell-red)";
@@ -173,21 +259,13 @@ function cellBg(value: number | null, showValues: boolean): string {
   return "var(--cell-green)";
 }
 
-const ALL_DIRS: Direction[] = ["up", "right", "down", "left"];
-
 /* ------------------------------------------------------------------ */
 /*  Results section                                                    */
 /* ------------------------------------------------------------------ */
 
 const TRACE_STATES = ["1", "4", "13", "11"];
 
-function Results({
-  values,
-  policy,
-}: {
-  values: Values;
-  policy: Policy;
-}) {
+function Results({ values, policy }: { values: Values; policy: Policy }) {
   const optimal = isOptimal(values);
   const reaches = allReachGoal(policy);
 
@@ -220,44 +298,39 @@ function Results({
     <div className="space-y-4">
       {/* Verdict banner */}
       <div
-        className="verdict-card rounded-lg border-2 p-5"
+        className="verdict-card"
         style={{
-          borderColor: optimal ? "#10B981" : reaches ? "#F59E0B" : "#EF4444",
-          backgroundColor: optimal
-            ? "rgba(16, 185, 129, 0.06)"
+          borderLeftColor: optimal
+            ? "var(--tl-good)"
             : reaches
-              ? "rgba(245, 158, 11, 0.06)"
-              : "rgba(239, 68, 68, 0.06)",
+              ? "var(--tl-mid)"
+              : "var(--tl-bad)",
         }}
       >
-        <div className="flex items-center gap-3 mb-2">
-          <span
-            className="flex items-center justify-center w-8 h-8 rounded-full text-white text-sm font-bold"
-            style={{
-              backgroundColor: optimal
-                ? "#10B981"
-                : reaches
-                  ? "#F59E0B"
-                  : "#EF4444",
-            }}
-          >
-            {optimal ? "\u2713" : reaches ? "!" : "\u2717"}
-          </span>
-          <h4
-            className="text-base font-semibold"
-            style={{ fontFamily: "var(--font-serif), serif" }}
-          >
-            {optimal
-              ? "Optimal Policy!"
-              : reaches
-                ? "It works, but it\u2019s not optimal"
-                : "Some states are stuck"}
-          </h4>
-        </div>
         <p
-          className="text-sm leading-relaxed ml-11"
-          style={{ color: "var(--text-secondary)" }}
+          className="tl-callout-index mb-1.5"
+          style={{
+            color: optimal
+              ? "var(--tl-good)"
+              : reaches
+                ? "var(--tl-mid)"
+                : "var(--tl-bad)",
+          }}
         >
+          {optimal
+            ? "✓ Optimal"
+            : reaches
+              ? "! Suboptimal"
+              : "✗ Incomplete"}
+        </p>
+        <h4 className="tl-h4 mb-1.5">
+          {optimal
+            ? "Optimal policy"
+            : reaches
+              ? "It works, but it’s not optimal"
+              : "Some states are stuck"}
+        </h4>
+        <p className="tl-body">
           {optimal
             ? "Every state reaches the goal by the shortest possible path. This is the best policy for this grid."
             : reaches
@@ -275,63 +348,51 @@ function Results({
           return (
             <div
               key={s}
-              className="rounded-lg border p-3"
+              className="border p-3 rounded-[var(--tl-radius)]"
               style={{
                 borderColor: p.reachesGoal
-                  ? "var(--card-border)"
-                  : "rgba(239, 68, 68, 0.3)",
+                  ? "var(--tl-line)"
+                  : "var(--tl-bad)",
                 backgroundColor: p.reachesGoal
-                  ? "var(--card-bg)"
-                  : "rgba(239, 68, 68, 0.04)",
+                  ? "var(--tl-paper)"
+                  : "var(--tl-bad-wash)",
               }}
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold">State {s}</span>
+                <span className="tl-label">State {s}</span>
                 <span
-                  className="text-lg font-bold tabular-nums"
+                  className="tl-mono text-base font-semibold"
                   style={{
-                    fontFamily: "var(--font-mono), monospace",
                     color:
                       values[s] <= -9.99
-                        ? "#EF4444"
+                        ? "var(--tl-bad)"
                         : values[s] < -0.01
-                          ? "var(--foreground)"
-                          : "#10B981",
+                          ? "var(--tl-ink)"
+                          : "var(--tl-good)",
                   }}
                 >
                   {formatValue(values[s])}
                 </span>
               </div>
               <div
-                className="text-xs leading-relaxed"
+                className="tl-mono text-xs leading-relaxed"
                 style={{
-                  color: p.reachesGoal
-                    ? "var(--text-secondary)"
-                    : "#EF4444",
-                  fontFamily: "var(--font-mono), monospace",
+                  color: p.reachesGoal ? "var(--tl-muted)" : "var(--tl-bad)",
                 }}
               >
                 {p.reachesGoal ? (
                   <>
-                    {p.path.join(" \u2192 ")}
-                    <span
-                      className="block mt-1 font-sans"
-                      style={{
-                        color: "var(--text-secondary)",
-                        fontFamily: "var(--font-sans), system-ui, sans-serif",
-                      }}
-                    >
+                    {p.path.join(" → ")}
+                    <span className="tl-note block mt-1.5">
                       {stepCount} step{stepCount !== 1 ? "s" : ""} to goal
                     </span>
                   </>
                 ) : (
                   <>
-                    {p.path.slice(0, 5).join(" \u2192 ")} {"\u2192"} ...
+                    {p.path.slice(0, 5).join(" → ")} {"→"} ...
                     <span
-                      className="block mt-1 font-sans"
-                      style={{
-                        fontFamily: "var(--font-sans), system-ui, sans-serif",
-                      }}
+                      className="tl-note block mt-1.5"
+                      style={{ color: "var(--tl-bad)" }}
                     >
                       loops forever
                     </span>
@@ -345,25 +406,13 @@ function Results({
 
       {/* Hints */}
       {(loopingStates.length > 0 || suboptimalStates.length > 0) && (
-        <div
-          className="rounded-lg border p-4"
-          style={{
-            borderColor: "var(--card-border)",
-            backgroundColor: "var(--equation-bg)",
-          }}
-        >
-          <p
-            className="text-xs font-semibold mb-2"
-            style={{ color: "var(--accent)" }}
-          >
+        <div className="tl-inset p-4">
+          <p className="tl-label mb-2.5" style={{ color: "var(--tl-ink)" }}>
             How to improve
           </p>
-          <ul className="space-y-1">
+          <ul className="space-y-1.5">
             {loopingStates.length > 0 && (
-              <li
-                className="text-xs leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <li className="tl-note">
                 {loopingStates.length <= 5
                   ? `States ${loopingStates.join(", ")} never reach the goal.`
                   : `${loopingStates.length} states never reach the goal.`}{" "}
@@ -371,16 +420,17 @@ function Results({
               </li>
             )}
             {suboptimalStates.length > 0 && (
-              <li
-                className="text-xs leading-relaxed"
-                style={{ color: "var(--text-secondary)" }}
-              >
+              <li className="tl-note">
                 {suboptimalStates.length <= 5
                   ? `States ${suboptimalStates.join(", ")} reach`
                   : `${suboptimalStates.length} states reach`}{" "}
                 the goal but take a longer path than necessary.
               </li>
             )}
+            <li className="tl-note">
+              Or press <strong>Run policy iteration</strong> and let the
+              algorithm fix it for you.
+            </li>
           </ul>
         </div>
       )}
@@ -399,111 +449,309 @@ export default function PolicySandbox() {
     return p;
   });
   const [values, setValues] = useState<Values>(initValues);
-  const [iteration, setIteration] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [converged, setConverged] = useState(false);
+  const [mode, setMode] = useState<Mode>("idle");
+  const [phase, setPhase] = useState<Phase>(null);
+  const [sweeps, setSweeps] = useState(0);
+  const [totalSweeps, setTotalSweeps] = useState(0);
+  const [round, setRound] = useState(0);
+  const [changed, setChanged] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("1");
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const valuesRef = useRef<Values>(initValues());
 
-  const showValues = running || converged;
+  // Machine state lives in refs so the scheduler never reads a stale closure.
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tickRef = useRef<() => void>(() => {});
+  const mPolicy = useRef<Policy>(policy);
+  const mValues = useRef<Values>(initValues());
+  const mPhase = useRef<Phase>(null);
+  const mSweeps = useRef(0);
+  const mTotal = useRef(0);
+  const mRound = useRef(0);
+  const mFull = useRef(false);
+
+  const running = mode === "running";
+  const showValues = mode !== "idle";
+
+  const stopTimer = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+  }, []);
+
+  useEffect(() => stopTimer, [stopTimer]);
+
+  // Mirror policy into the ref for the scheduler, without writing during render.
+  useEffect(() => {
+    mPolicy.current = policy;
+  }, [policy]);
+
+  const finish = useCallback(() => {
+    stopTimer();
+    mPhase.current = null;
+    setPhase(null);
+    setMode("settled");
+  }, [stopTimer]);
+
+  /**
+   * One tick of the evaluate/improve machine. Evaluation is animated sweep
+   * by sweep so the values visibly propagate out from the goal; improvement
+   * gets its own beat so the changed actions are readable before the next
+   * evaluation starts.
+   */
+  const tick = useCallback(() => {
+    if (mPhase.current === "eval") {
+      const prev = mValues.current;
+      const next = bellmanStep(mPolicy.current, prev);
+      mSweeps.current += 1;
+      mTotal.current += 1;
+      mValues.current = next;
+      setValues({ ...next });
+      setSweeps(mSweeps.current);
+      setTotalSweeps(mTotal.current);
+
+      const converged = hasConverged(prev, next);
+
+      // Past the animation budget, jump to the exact fixed point rather than
+      // grinding through ~60 more visually identical frames. The remaining
+      // sweeps still count, so the reported totals stay true.
+      if (!converged && mSweeps.current >= ANIM_SWEEP_CAP) {
+        const exact = evaluateFrom(mPolicy.current, next);
+        mValues.current = exact.values;
+        mSweeps.current += exact.sweeps;
+        mTotal.current += exact.sweeps;
+        setValues({ ...exact.values });
+        setSweeps(mSweeps.current);
+        setTotalSweeps(mTotal.current);
+      } else if (!converged) {
+        timerRef.current = setTimeout(() => tickRef.current(), SWEEP_MS);
+        return;
+      }
+
+      if (!mFull.current) {
+        finish();
+        return;
+      }
+      mPhase.current = "improve";
+      setPhase("improve");
+      timerRef.current = setTimeout(() => tickRef.current(), PHASE_PAUSE_MS);
+      return;
+    }
+
+    if (mPhase.current === "improve") {
+      const { policy: improved, changed: diff } = improvePolicy(
+        mPolicy.current,
+        mValues.current
+      );
+      mRound.current += 1;
+      setRound(mRound.current);
+      setChanged(diff);
+
+      if (diff.length === 0 || mRound.current >= 25) {
+        finish();
+        return;
+      }
+
+      mPolicy.current = improved;
+      setPolicy(improved);
+      mPhase.current = "eval";
+      setPhase("eval");
+      mSweeps.current = 0;
+      setSweeps(0);
+      timerRef.current = setTimeout(() => tickRef.current(), PHASE_PAUSE_MS);
+    }
+  }, [finish]);
 
   useEffect(() => {
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, []);
+    tickRef.current = tick;
+  }, [tick]);
+
+  /** Editing the policy invalidates every computed number. */
+  const resetComputed = useCallback(() => {
+    stopTimer();
+    setMode("idle");
+    setPhase(null);
+    mPhase.current = null;
+    setSweeps(0);
+    setTotalSweeps(0);
+    setRound(0);
+    setChanged([]);
+    const init = initValues();
+    setValues(init);
+    mValues.current = init;
+    mSweeps.current = 0;
+    mTotal.current = 0;
+    mRound.current = 0;
+  }, [stopTimer]);
 
   const setDirection = useCallback(
     (state: string, dir: Direction) => {
       setPolicy((prev) => ({ ...prev, [state]: dir }));
-      if (timerRef.current) clearInterval(timerRef.current);
-      setRunning(false);
-      setConverged(false);
-      setIteration(0);
-      const init = initValues();
-      setValues(init);
-      valuesRef.current = init;
+      resetComputed();
     },
-    []
+    [resetComputed]
   );
 
-  const startEvaluation = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    const init = initValues();
-    setValues(init);
-    valuesRef.current = init;
-    setIteration(0);
-    setConverged(false);
-    setRunning(true);
+  /** Clicking the already-selected cell cycles its direction. */
+  const cycleDirection = useCallback(
+    (state: string) => {
+      const cur = mPolicy.current[state];
+      const next = ALL_DIRS[(ALL_DIRS.indexOf(cur) + 1) % ALL_DIRS.length];
+      setDirection(state, next);
+    },
+    [setDirection]
+  );
 
-    let iter = 0;
-    timerRef.current = setInterval(() => {
-      const prev = valuesRef.current;
-      const next = bellmanStep(policy, prev);
-      iter++;
+  const start = useCallback(
+    (full: boolean) => {
+      stopTimer();
+      const init = initValues();
+      mValues.current = init;
+      setValues(init);
+      mSweeps.current = 0;
+      mTotal.current = 0;
+      mRound.current = 0;
+      setSweeps(0);
+      setTotalSweeps(0);
+      setRound(0);
+      setChanged([]);
+      mFull.current = full;
+      mPhase.current = "eval";
+      setPhase("eval");
+      setMode("running");
+      timerRef.current = setTimeout(() => tickRef.current(), SWEEP_MS);
+    },
+    [stopTimer]
+  );
 
-      valuesRef.current = next;
-      setValues({ ...next });
-      setIteration(iter);
+  const runPolicyIteration = useCallback(() => start(true), [start]);
+  const runEvaluation = useCallback(() => start(false), [start]);
 
-      if (hasConverged(prev, next) || iter >= 100) {
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = null;
-        const final = evaluatePolicy(policy);
-        valuesRef.current = final;
-        setValues({ ...final });
-        setRunning(false);
-        setConverged(true);
-      }
-    }, 120);
-  }, [policy]);
+  /** A single improvement sweep against the current values. */
+  const runImprovement = useCallback(() => {
+    stopTimer();
+    const base =
+      mode === "idle"
+        ? evaluatePolicyCounted(mPolicy.current)
+        : { values: mValues.current, sweeps: 0 };
+    const { policy: improved, changed: diff } = improvePolicy(
+      mPolicy.current,
+      base.values
+    );
+
+    setPolicy(improved);
+    mPolicy.current = improved;
+    setChanged(diff);
+
+    // Old values describe the old policy, so re-score the new one.
+    const re = evaluateFrom(improved, base.values);
+    mValues.current = re.values;
+    setValues(re.values);
+    mTotal.current += base.sweeps + re.sweeps;
+    setTotalSweeps(mTotal.current);
+    setSweeps(re.sweeps);
+    mRound.current += 1;
+    setRound(mRound.current);
+    setMode("settled");
+    setPhase(null);
+    mPhase.current = null;
+  }, [mode, stopTimer]);
 
   const skipToEnd = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    const final = evaluatePolicy(policy);
-    setValues(final);
-    valuesRef.current = final;
-    setIteration(200);
-    setRunning(false);
-    setConverged(true);
-  }, [policy]);
+    stopTimer();
+    let current = mPolicy.current;
+    let v = mValues.current;
+    let total = mTotal.current;
+    let n = mRound.current;
+    for (let i = 0; i < 25; i++) {
+      const ev = evaluateFrom(current, v);
+      v = ev.values;
+      total += ev.sweeps;
+      const { policy: improved, changed: diff } = improvePolicy(current, v);
+      n += 1;
+      if (diff.length === 0) break;
+      current = improved;
+    }
+    mPolicy.current = current;
+    setPolicy(current);
+    mValues.current = v;
+    setValues(v);
+    mTotal.current = total;
+    setTotalSweeps(total);
+    mRound.current = n;
+    setRound(n);
+    setChanged([]);
+    finish();
+  }, [finish, stopTimer]);
 
   const reset = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    setRunning(false);
-    setConverged(false);
-    setIteration(0);
-    const init = initValues();
-    setValues(init);
-    valuesRef.current = init;
-  }, []);
+    const p: Policy = {};
+    for (const s of STATES) p[s] = "up";
+    setPolicy(p);
+    mPolicy.current = p;
+    resetComputed();
+  }, [resetComputed]);
 
   const showOptimal = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
+    stopTimer();
     const optPolicy = getOptimalPolicy();
     setPolicy(optPolicy);
-    const v = evaluatePolicy(optPolicy);
+    mPolicy.current = optPolicy;
+    const { values: v, sweeps: s } = evaluatePolicyCounted(optPolicy);
+    mValues.current = v;
     setValues(v);
-    valuesRef.current = v;
-    setIteration(200);
-    setRunning(false);
-    setConverged(true);
-  }, []);
+    setSweeps(s);
+    setTotalSweeps(s);
+    mTotal.current = s;
+    setRound(0);
+    mRound.current = 0;
+    setChanged([]);
+    finish();
+  }, [finish, stopTimer]);
+
+  /** Arrow keys steer the selected cell, scoped to this widget only. */
+  const onKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const dir = KEY_TO_DIR[e.key];
+      if (!dir || running) return;
+      // Don't hijack arrows while a control has focus, otherwise tabbing
+      // to a button and pressing an arrow silently rewrites the policy.
+      if ((e.target as HTMLElement).closest("button, input, a, select")) return;
+      e.preventDefault();
+      setDirection(selected, dir);
+    },
+    [running, selected, setDirection]
+  );
 
   const selectedNext = transition(selected, policy[selected]);
   const selectedHitsWall = selectedNext === selected;
 
+  // Per-action scores for the selected state. This is exactly what the
+  // improvement step compares, so showing it makes "improve" legible.
+  const selectedQ = ALL_DIRS.map((d) => ({
+    dir: d,
+    next: transition(selected, d),
+    q: qValue(selected, d, values),
+  }));
+  const bestQ = Math.max(...selectedQ.map((r) => r.q));
+
+  const statusLine = () => {
+    if (mode === "idle") return "Click a cell to cycle its direction";
+    if (mode === "running") {
+      if (phase === "improve") return `Round ${round + 1} · improving`;
+      return sweeps === 0
+        ? `Round ${round + 1} · scoring`
+        : `Round ${round + 1} · scoring · sweep ${sweeps}`;
+    }
+    if (round > 0)
+      return `Stable after ${round} round${round === 1 ? "" : "s"} · ${totalSweeps} sweeps total`;
+    return `Scored in ${totalSweeps} sweep${totalSweeps === 1 ? "" : "s"}`;
+  };
+
   return (
     <div
-      className="rounded-xl border overflow-hidden"
-      style={{
-        backgroundColor: "var(--card-bg)",
-        borderColor: "var(--card-border)",
-      }}
+      className="tl-panel overflow-hidden"
+      onKeyDown={onKeyDown}
+      tabIndex={0}
+      role="group"
+      aria-label="Policy iteration sandbox"
     >
       {/* ---- Top: Grid + Direction Picker ---- */}
       <div className="p-6 sm:p-8">
@@ -519,57 +767,59 @@ export default function PolicySandbox() {
                 const dir = isGoal ? null : policy[s];
                 const val = showValues ? values[s] : null;
                 const isSelected = !isGoal && selected === s;
+                const justChanged = changed.includes(s);
 
                 return (
                   <div
                     key={s}
                     onClick={() => {
-                      if (!isGoal && !running) setSelected(s);
+                      if (isGoal || running) return;
+                      if (selected === s) cycleDirection(s);
+                      else setSelected(s);
                     }}
-                    className={`grid-cell relative flex flex-col items-center justify-center rounded-lg border-2 aspect-square${!isGoal && !running ? " cursor-pointer" : ""}`}
+                    className={`grid-cell relative flex flex-col items-center justify-center border aspect-square rounded-[var(--tl-radius)]${!isGoal && !running ? " cursor-pointer" : ""}`}
                     style={{
                       backgroundColor: isGoal
                         ? "var(--cell-green)"
                         : cellBg(val, showValues),
                       borderColor: isSelected
-                        ? "var(--accent)"
-                        : "var(--card-border)",
+                        ? "var(--tl-ink)"
+                        : justChanged
+                          ? "var(--tl-mid)"
+                          : "var(--tl-line)",
                       boxShadow: isSelected
-                        ? "0 0 0 1px var(--accent)"
-                        : "none",
+                        ? "0 0 0 1px var(--tl-ink)"
+                        : justChanged
+                          ? "0 0 0 1px var(--tl-mid)"
+                          : "none",
                     }}
                   >
                     <span
-                      className="absolute top-0.5 left-1 text-[9px] font-semibold"
-                      style={{ color: "var(--text-secondary)" }}
+                      className="tl-mono absolute top-0.5 left-1 text-[9px]"
+                      style={{ color: "var(--tl-faint)" }}
                     >
                       {s}
                     </span>
 
                     {isGoal && (
-                      <span className="absolute top-0 right-0.5 text-xs">
+                      <span
+                        className="absolute top-0 right-0.5 text-xs"
+                        style={{ color: "var(--tl-good)" }}
+                      >
                         &#9733;
                       </span>
                     )}
 
                     {isGoal ? (
-                      <span
-                        className="text-sm font-bold tabular-nums"
-                        style={{ fontFamily: "var(--font-mono), monospace" }}
-                      >
-                        0
-                      </span>
+                      <span className="tl-mono text-sm font-semibold">0</span>
                     ) : showValues && val !== null ? (
-                      <span
-                        className="text-sm font-bold tabular-nums"
-                        style={{ fontFamily: "var(--font-mono), monospace" }}
-                      >
+                      <span className="tl-mono text-sm font-semibold">
                         {formatValue(val)}
                       </span>
                     ) : (
                       <span
                         className="text-lg leading-none"
-                        style={{ color: "var(--foreground)" }}
+                        style={{ color: "var(--tl-ink)" }}
                       >
                         {dir ? ARROW_CHARS[dir] : ""}
                       </span>
@@ -578,7 +828,7 @@ export default function PolicySandbox() {
                     {!isGoal && showValues && val !== null && dir && (
                       <span
                         className="text-xs leading-none"
-                        style={{ color: "var(--text-secondary)" }}
+                        style={{ color: "var(--tl-faint)" }}
                       >
                         {ARROW_CHARS[dir]}
                       </span>
@@ -588,46 +838,36 @@ export default function PolicySandbox() {
               })}
             </div>
 
-            {/* Iteration counter */}
-            {showValues && (
-              <div
-                className="mt-2 text-center"
-                style={{ fontFamily: "var(--font-mono), monospace" }}
-              >
+            {/* Phase + status */}
+            <div className="mt-3 flex flex-col items-center gap-1.5">
+              {phase && (
                 <span
-                  className="text-xs font-semibold tabular-nums"
+                  className="phase-badge"
                   style={{
-                    color: running
-                      ? "var(--accent)"
-                      : "var(--text-secondary)",
+                    color:
+                      phase === "eval"
+                        ? "var(--phase-eval)"
+                        : "var(--phase-improve)",
                   }}
                 >
-                  {converged
-                    ? `Settled after ${iteration} rounds`
-                    : `Round ${iteration}`}
+                  {phase === "eval" ? "Scoring" : "Improving"}
                 </span>
-              </div>
-            )}
-
-            {!showValues && (
-              <p
-                className="text-[10px] text-center mt-2"
-                style={{ color: "var(--text-secondary)" }}
+              )}
+              <span
+                className="tl-label text-center leading-relaxed"
+                style={{
+                  color: running ? "var(--tl-ink)" : "var(--tl-muted)",
+                }}
               >
-                Click a cell to select it, then choose a direction
-              </p>
-            )}
+                {statusLine()}
+              </span>
+            </div>
           </div>
 
           {/* Direction picker for selected cell + info */}
           <div className="flex-1 min-w-0">
-            <p
-              className="text-xs font-semibold uppercase tracking-wider mb-3"
-              style={{ color: "var(--text-secondary)" }}
-            >
-              Direction for state {selected}
-            </p>
-            <div className="flex gap-1.5 mb-4">
+            <p className="tl-label mb-3">Direction for state {selected}</p>
+            <div className="flex flex-wrap gap-1.5 mb-2">
               {ALL_DIRS.map((dir) => {
                 const active = policy[selected] === dir;
                 return (
@@ -635,16 +875,7 @@ export default function PolicySandbox() {
                     key={dir}
                     onClick={() => setDirection(selected, dir)}
                     disabled={running}
-                    className="sandbox-dir-btn flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: active
-                        ? "var(--accent)"
-                        : "var(--equation-bg)",
-                      color: active ? "white" : "var(--text-secondary)",
-                      border: active
-                        ? "1px solid var(--accent)"
-                        : "1px solid var(--card-border)",
-                    }}
+                    className="sandbox-dir-btn"
                     aria-label={`Set state ${selected} to ${dir}`}
                     aria-pressed={active}
                   >
@@ -656,54 +887,68 @@ export default function PolicySandbox() {
                 );
               })}
             </div>
+            <p className="tl-note mb-5 text-[13px]">
+              Click a selected cell to cycle it, or use the arrow keys.
+            </p>
 
-            {/* Bellman equation for selected cell (during evaluation) */}
+            {/* Per-action scores: what the improvement step compares */}
             {showValues && (
-              <div className="equation-block mt-4 text-[11px]">
-                <p
-                  className="font-sans text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                  style={{
-                    color: "var(--text-secondary)",
-                    fontFamily: "var(--font-sans), system-ui, sans-serif",
-                  }}
-                >
-                  Score calculation for room {selected}
+              <div>
+                <p className="tl-label mb-2">
+                  Options from state {selected}
                 </p>
-                <div>
-                  V({selected}) ={" "}
-                  {selectedNext === GOAL ? "0" : "-1"} + 0.9 {"\u00d7"} V(
-                  {selectedNext}) ={" "}
-                  <strong>{formatValue(values[selected])}</strong>
-                </div>
+                <table className="q-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Direction</th>
+                      <th scope="col">Leads to</th>
+                      <th scope="col">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedQ.map((row) => {
+                      const isBest = row.q >= bestQ - 1e-9;
+                      const isCurrent = policy[selected] === row.dir;
+                      return (
+                        <tr
+                          key={row.dir}
+                          className={isBest ? "winner" : ""}
+                        >
+                          <td>
+                            {ARROW_CHARS[row.dir]} {DIR_LABELS[row.dir]}
+                            {isCurrent && (
+                              <span className="tl-label ml-2">current</span>
+                            )}
+                          </td>
+                          <td className="tl-mono">
+                            {row.next === selected ? "wall" : row.next}
+                          </td>
+                          <td className="tl-mono">
+                            {formatValue(row.q)}
+                            {isBest && (
+                              <span className="tl-label ml-2">best</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             )}
 
             {/* Transition info for selected cell (before evaluation) */}
             {!showValues && (
-              <div
-                className="mt-2 rounded-md p-3"
-                style={{ backgroundColor: "var(--equation-bg)" }}
-              >
-                <p
-                  className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Where does this direction go?
-                </p>
-                <div
-                  className="text-[11px]"
-                  style={{
-                    color: "var(--text-secondary)",
-                    fontFamily: "var(--font-mono), monospace",
-                  }}
-                >
+              <div>
+                <p className="tl-label mb-2">Where does this direction go?</p>
+                <div className="equation-block text-[11px]">
                   {selected}
                   {ARROW_CHARS[policy[selected]]}
                   {selectedNext}
                   {selectedHitsWall && (
-                    <span style={{ color: "#EF4444" }}>
+                    <span style={{ color: "var(--tl-bad)" }}>
                       {" "}
-                      (wall — stays put!)
+                      (wall, stays put)
                     </span>
                   )}
                 </div>
@@ -711,20 +956,9 @@ export default function PolicySandbox() {
             )}
 
             {/* Current policy summary grid */}
-            <div
-              className="mt-3 rounded-md p-3"
-              style={{ backgroundColor: "var(--equation-bg)" }}
-            >
-              <p
-                className="text-[10px] font-semibold uppercase tracking-wider mb-1.5"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                Current policy
-              </p>
-              <div
-                className="grid grid-cols-4 gap-1 text-center"
-                style={{ fontFamily: "var(--font-mono), monospace" }}
-              >
+            <div className="mt-5">
+              <p className="tl-label mb-2">Current policy</p>
+              <div className="tl-mono tl-inset grid grid-cols-4 gap-1 p-3 text-center">
                 {ALL_CELLS.map((s) => (
                   <span
                     key={s}
@@ -732,14 +966,16 @@ export default function PolicySandbox() {
                     style={{
                       color:
                         s === GOAL
-                          ? "var(--text-secondary)"
+                          ? "var(--tl-good)"
                           : selected === s
-                            ? "var(--accent)"
-                            : "var(--text-secondary)",
+                            ? "var(--tl-ink)"
+                            : changed.includes(s)
+                              ? "var(--tl-mid)"
+                              : "var(--tl-faint)",
                       fontWeight: selected === s ? 700 : 400,
                     }}
                   >
-                    {s === GOAL ? "\u2605" : ARROW_CHARS[policy[s]]}
+                    {s === GOAL ? "★" : ARROW_CHARS[policy[s]]}
                   </span>
                 ))}
               </div>
@@ -750,85 +986,41 @@ export default function PolicySandbox() {
 
       {/* ---- Middle: Action buttons ---- */}
       <div
-        className="px-6 sm:px-8 py-4 flex flex-wrap items-center justify-center gap-3"
+        className="px-6 sm:px-8 py-4 flex flex-wrap items-center justify-center gap-2.5"
         style={{
-          borderTop: "1px solid var(--card-border)",
-          borderBottom: converged ? "1px solid var(--card-border)" : "none",
+          borderTop: "1px solid var(--tl-line)",
+          borderBottom:
+            mode === "settled" ? "1px solid var(--tl-line)" : "none",
         }}
       >
         {running ? (
-          <button
-            onClick={skipToEnd}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{ backgroundColor: "var(--accent)" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
-          >
-            Skip to End
+          <button onClick={skipToEnd} className="tl-btn tl-btn-primary">
+            Skip to end
           </button>
         ) : (
           <button
-            onClick={startEvaluation}
-            className="rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors cursor-pointer"
-            style={{ backgroundColor: "var(--accent)" }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                "var(--accent-hover)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor = "var(--accent)")
-            }
+            onClick={runPolicyIteration}
+            className="tl-btn tl-btn-primary"
           >
-            Test My Policy
+            Run policy iteration
           </button>
         )}
-        <button
-          onClick={reset}
-          disabled={running}
-          className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            borderColor: "var(--card-border)",
-            color: "var(--foreground)",
-            backgroundColor: "var(--card-bg)",
-          }}
-          onMouseEnter={(e) => {
-            if (!running)
-              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--card-bg)";
-          }}
-        >
-          Reset
+        <button onClick={runEvaluation} disabled={running} className="tl-btn">
+          Evaluate only
         </button>
-        <button
-          onClick={showOptimal}
-          disabled={running}
-          className="rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{
-            borderColor: "var(--card-border)",
-            color: "var(--foreground)",
-            backgroundColor: "var(--card-bg)",
-          }}
-          onMouseEnter={(e) => {
-            if (!running)
-              e.currentTarget.style.backgroundColor = "var(--equation-bg)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "var(--card-bg)";
-          }}
-        >
-          Show Optimal
+        <button onClick={runImprovement} disabled={running} className="tl-btn">
+          Improve once
+        </button>
+        <button onClick={showOptimal} disabled={running} className="tl-btn">
+          Show optimal
+        </button>
+        <button onClick={reset} disabled={running} className="tl-btn">
+          Reset
         </button>
       </div>
 
-      {/* ---- Bottom: Results (only when converged) ---- */}
-      {converged && (
+      {/* ---- Bottom: Results ---- */}
+      {mode === "settled" && (
         <div className="p-6 sm:p-8">
           <Results values={values} policy={policy} />
         </div>

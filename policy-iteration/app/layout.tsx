@@ -1,26 +1,29 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Lora } from "next/font/google";
+import { Inter, JetBrains_Mono, Spectral } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Serif carries the whole document: display and body alike.
+const spectral = Spectral({
+  variable: "--font-spectral",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
   style: ["normal", "italic"],
 });
 
+// Sans is reserved for small tracked-caps labels.
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+// Mono only for numeric and equation data.
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
-  title: "Policy Iteration — Interactive Walkthrough",
+  title: "Policy Iteration: An Interactive Walkthrough",
   description:
     "An interactive visualization of the Policy Iteration algorithm for dynamic programming in reinforcement learning, based on George A. Lentzas's example.",
 };
@@ -33,9 +36,27 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${lora.variable} h-full antialiased`}
+      className={`${spectral.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <div className="tl-masthead">
+          <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-6 pt-8 pb-2">
+            <span
+              className="tl-eyebrow"
+              style={{ color: "var(--tl-ink)", letterSpacing: "0.2em" }}
+            >
+              AI Research Residency
+            </span>
+            <a
+              className="tl-eyebrow"
+              href="https://logan1085.github.io/ai-residency/"
+            >
+              Curriculum &#8599;
+            </a>
+          </div>
+        </div>
+        {children}
+      </body>
     </html>
   );
 }

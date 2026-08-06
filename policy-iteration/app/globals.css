@@ -1,136 +1,652 @@
 @import "tailwindcss";
 
+/* ==================================================================
+   Thoughtful Lab design tokens
+   Warm paper, serif throughout, no chromatic accent. Sans is reserved
+   for small tracked-caps labels; mono only for numeric/equation data.
+   Color appears solely where it carries meaning in the visualization.
+   ================================================================== */
+
 :root {
-  --background: #FFFBF5;
-  --foreground: #1C1917;
-  --text-secondary: #78716C;
-  --accent: #E07A2F;
-  --accent-hover: #C2410C;
-  --card-bg: #FFFFFF;
-  --card-border: #E8E0D8;
-  --equation-bg: #FFF7ED;
-  --cell-unknown: #F5F0EB;
-  --cell-red: #FCA5A5;
-  --cell-amber: #FCD34D;
-  --cell-green: #6EE7B7;
-  --phase-setup: #3B82F6;
-  --phase-eval: #8B5CF6;
-  --phase-improve: #F59E0B;
-  --phase-converge: #10B981;
+  /* Ink: warm near-black, not neutral gray */
+  --tl-ink: #1f1e1b;
+  --tl-ink-soft: #3a3833;
+  --tl-muted: #6b6862;
+  --tl-faint: #8c887f;
+
+  /* Paper: warm off-white */
+  --tl-paper: #f7f6f2;
+  --tl-raised: #fdfcfa;
+  --tl-surface: #f1efe8;
+  --tl-surface-strong: #e8e5db;
+
+  /* Rules: warm hairlines */
+  --tl-line: #ddd9cd;
+  --tl-line-soft: #e9e6dc;
+
+  /* Data-state colors. Muted and warm so they read as part of the
+     paper rather than as UI chrome. Not used for decoration. */
+  --tl-good: #4f6b52;
+  --tl-good-wash: #e9eee8;
+  --tl-mid: #a07533;
+  --tl-mid-wash: #f4ede0;
+  --tl-bad: #a04a3d;
+  --tl-bad-wash: #f2e6e2;
+
+  --tl-radius: 2px;
+
+  /* ---- Semantic aliases consumed by the components ---- */
+  --background: var(--tl-paper);
+  --foreground: var(--tl-ink);
+  --text-secondary: var(--tl-muted);
+  --accent: var(--tl-ink);
+  --accent-hover: var(--tl-ink-soft);
+  --card-bg: var(--tl-raised);
+  --card-border: var(--tl-line);
+  --equation-bg: var(--tl-surface);
+
+  --cell-unknown: var(--tl-surface);
+  --cell-red: var(--tl-bad-wash);
+  --cell-amber: var(--tl-mid-wash);
+  --cell-green: var(--tl-good-wash);
+
+  --phase-setup: var(--tl-muted);
+  --phase-eval: var(--tl-good);
+  --phase-improve: var(--tl-mid);
+  --phase-converge: var(--tl-ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-lora);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-spectral);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-family: var(--font-serif), Georgia, serif;
+}
+
+::selection {
+  background: var(--tl-surface-strong);
+}
+
+/* Editorial links: ink, underlined, never colored */
+.tl-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--tl-line);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.tl-link:hover {
+  text-decoration-color: var(--tl-ink);
+}
+
+/* ==================================================================
+   Typography
+   ================================================================== */
+
+/* Tracked caps: the only place sans appears */
+.tl-eyebrow {
+  color: var(--tl-muted);
   font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
-/* Grid cell value transitions */
+.tl-display {
+  font-size: clamp(2.5rem, 6.5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.018em;
+  line-height: 1.08;
+  max-width: 18ch;
+}
+
+.tl-h2 {
+  font-size: clamp(1.5rem, 3.4vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+.tl-h3 {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.006em;
+  line-height: 1.35;
+}
+
+.tl-h4 {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.tl-deck {
+  color: var(--tl-ink-soft);
+  font-size: clamp(1.1875rem, 2.4vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 40ch;
+}
+
+.tl-lede {
+  color: var(--tl-ink-soft);
+  font-size: 1.125rem;
+  line-height: 1.68;
+  max-width: 60ch;
+}
+
+.tl-lede strong {
+  color: var(--tl-ink);
+  font-weight: 600;
+}
+
+.tl-body {
+  color: var(--tl-ink-soft);
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  max-width: 64ch;
+}
+
+.tl-body strong {
+  color: var(--tl-ink);
+  font-weight: 600;
+}
+
+.tl-body em {
+  color: var(--tl-ink-soft);
+}
+
+.tl-note {
+  color: var(--tl-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.tl-mono {
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==================================================================
+   Structure: section heads and rules
+   ================================================================== */
+
+.tl-section-head {
+  align-items: baseline;
+  border-top: 1px solid var(--tl-line);
+  display: flex;
+  gap: 1.125rem;
+  padding-top: 1.125rem;
+}
+
+.tl-section-index {
+  color: var(--tl-faint);
+  flex-shrink: 0;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.tl-rule {
+  border: 0;
+  border-top: 1px solid var(--tl-line);
+  margin: 0;
+}
+
+.tl-rule-soft {
+  border: 0;
+  border-top: 1px solid var(--tl-line-soft);
+  margin: 0;
+}
+
+/* ==================================================================
+   Surfaces
+   ================================================================== */
+
+.tl-panel {
+  background: var(--tl-raised);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+}
+
+.tl-inset {
+  background: var(--tl-surface);
+  border: 1px solid var(--tl-line-soft);
+  border-radius: var(--tl-radius);
+}
+
+/* A step or claim called out with a colored left rule rather than a box */
+.tl-callout {
+  border-left: 2px solid var(--tl-line);
+  padding-left: 1rem;
+}
+
+.tl-callout-eval {
+  border-left-color: var(--tl-good);
+}
+
+.tl-callout-improve {
+  border-left-color: var(--tl-mid);
+}
+
+.tl-callout-index {
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Small uppercase label sitting above a block of data */
+.tl-label {
+  color: var(--tl-faint);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Category tag on the real-world examples */
+.tl-tag {
+  border: 1px solid var(--tl-line);
+  border-radius: 999px;
+  display: inline-block;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0.2rem 0.5rem;
+  text-transform: uppercase;
+}
+
+kbd {
+  border: 1px solid var(--tl-line);
+  border-bottom-width: 2px;
+  border-radius: var(--tl-radius);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  padding: 0.1rem 0.35rem;
+}
+
+/* ==================================================================
+   Flow diagrams: labels joined by hairline rules, not pills
+   ================================================================== */
+
+.tl-flow {
+  align-items: stretch;
+  border-block: 1px solid var(--tl-line);
+  display: flex;
+  flex-direction: column;
+}
+
+.tl-flow-node {
+  flex: 1;
+  padding: 0.875rem 1rem;
+  text-align: center;
+}
+
+.tl-flow-node-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+}
+
+.tl-flow-node-sub {
+  color: var(--tl-faint);
+  display: block;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  margin-top: 0.3rem;
+  text-transform: uppercase;
+}
+
+.tl-flow-arrow {
+  align-items: center;
+  color: var(--tl-faint);
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 0.35rem 0;
+}
+
+@media (min-width: 640px) {
+  .tl-flow {
+    flex-direction: row;
+  }
+
+  .tl-flow-arrow {
+    padding: 0 0.5rem;
+  }
+
+  .tl-flow-node + .tl-flow-arrow,
+  .tl-flow-arrow + .tl-flow-node {
+    border-left: 1px solid var(--tl-line-soft);
+  }
+}
+
+@media (max-width: 639px) {
+  .tl-flow-node + .tl-flow-arrow,
+  .tl-flow-arrow + .tl-flow-node {
+    border-top: 1px solid var(--tl-line-soft);
+  }
+}
+
+/* ==================================================================
+   Concept mapping table: grid world left, real system right
+   ================================================================== */
+
+.tl-map {
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  width: 100%;
+}
+
+.tl-map th {
+  border-bottom: 1px solid var(--tl-line);
+  color: var(--tl-faint);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0 0 0.5rem;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.tl-map td {
+  border-bottom: 1px solid var(--tl-line-soft);
+  color: var(--tl-muted);
+  line-height: 1.5;
+  padding: 0.55rem 0;
+  vertical-align: top;
+}
+
+.tl-map tr:last-child td {
+  border-bottom: 0;
+}
+
+.tl-map td:first-child {
+  color: var(--tl-ink-soft);
+  padding-right: 0.75rem;
+  width: 42%;
+}
+
+.tl-map-arrow {
+  color: var(--tl-faint);
+  padding-right: 0.75rem !important;
+  width: 1rem;
+}
+
+/* ==================================================================
+   Grid cells
+   ================================================================== */
+
 .grid-cell {
-  transition: background-color 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.45s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-/* Pulsing highlight for focused cell */
-@keyframes pulse-border {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 122, 47, 0.4); }
-  50% { box-shadow: 0 0 0 4px rgba(224, 122, 47, 0.2); }
+@keyframes tl-focus-ring {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(31, 30, 27, 0.22);
+  }
+  50% {
+    box-shadow: 0 0 0 3px rgba(31, 30, 27, 0.10);
+  }
 }
 
 .cell-focused {
-  border-color: var(--accent) !important;
-  animation: pulse-border 2s ease-in-out infinite;
+  animation: tl-focus-ring 2.2s ease-in-out infinite;
+  border-color: var(--tl-ink) !important;
 }
 
-/* Equation block styling */
+/* ==================================================================
+   Equations
+   ================================================================== */
+
 .equation-block {
-  background: var(--equation-bg);
-  border: 1px solid #FED7AA;
-  border-radius: 8px;
-  padding: 12px 16px;
+  background: var(--tl-surface);
+  border-left: 2px solid var(--tl-line);
+  color: var(--tl-ink-soft);
   font-family: var(--font-mono), monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.8125rem;
+  line-height: 1.65;
+  max-width: 100%;
   overflow-x: auto;
-  white-space: pre-wrap;
+  padding: 0.75rem 1rem;
+  scrollbar-color: var(--tl-line) transparent;
+  scrollbar-width: thin;
+  /* `pre`, not `pre-wrap`: these blocks are column-aligned ASCII math
+     and wrapping destroys the alignment. Narrow viewports scroll. */
+  white-space: pre;
 }
 
-/* Phase badge */
+/* ==================================================================
+   Phase marker: swatch plus mono label, no filled pill
+   ================================================================== */
+
 .phase-badge {
-  display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
-  border-radius: 9999px;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  display: inline-flex;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  gap: 0.5rem;
+  letter-spacing: 0.16em;
+  line-height: 1;
   text-transform: uppercase;
-  color: white;
 }
 
-/* Progress bar */
+.phase-badge::before {
+  background: currentColor;
+  content: "";
+  display: block;
+  height: 7px;
+  width: 7px;
+}
+
+/* ==================================================================
+   Progress
+   ================================================================== */
+
 .progress-track {
-  background: #E8E0D8;
-  border-radius: 9999px;
-  height: 6px;
+  background: var(--tl-line-soft);
+  height: 2px;
   overflow: hidden;
 }
 
 .progress-fill {
-  background: var(--accent);
+  background: var(--tl-ink);
   height: 100%;
-  border-radius: 9999px;
   transition: width 0.3s ease;
 }
 
-/* Arrow styling */
-.policy-arrow {
-  font-size: 1.25rem;
-  line-height: 1;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+input[type="range"] {
+  accent-color: var(--tl-ink);
 }
 
-/* Q-value table */
+/* ==================================================================
+   Policy arrows
+   ================================================================== */
+
+.policy-arrow {
+  font-size: 1.125rem;
+  line-height: 1;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* ==================================================================
+   Q-value table
+   ================================================================== */
+
 .q-table {
-  width: 100%;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  width: 100%;
 }
 
 .q-table th {
+  border-bottom: 1px solid var(--tl-line);
+  color: var(--tl-faint);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  padding: 0 0.5rem 0.4rem 0;
   text-align: left;
-  padding: 4px 8px;
-  border-bottom: 2px solid var(--card-border);
-  font-weight: 600;
-  color: var(--text-secondary);
+  text-transform: uppercase;
 }
 
 .q-table td {
-  padding: 4px 8px;
-  border-bottom: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--tl-line-soft);
+  color: var(--tl-muted);
+  padding: 0.4rem 0.5rem 0.4rem 0;
+}
+
+.q-table tr:last-child td {
+  border-bottom: 0;
 }
 
 .q-table tr.winner td {
+  color: var(--tl-good);
   font-weight: 600;
-  color: var(--accent);
 }
 
-/* Sandbox direction toggle buttons */
-.sandbox-dir-btn:hover {
-  background-color: var(--accent) !important;
-  color: white !important;
-  border-color: var(--accent) !important;
+/* ==================================================================
+   Buttons
+   ================================================================== */
+
+.tl-btn {
+  align-items: center;
+  background: var(--tl-paper);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+  color: var(--tl-ink);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  gap: 0.4rem;
+  justify-content: center;
+  line-height: 1;
+  padding: 0.6rem 0.9rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  white-space: nowrap;
 }
 
-/* Verdict card */
+.tl-btn:hover:not(:disabled) {
+  background: var(--tl-surface);
+  border-color: var(--tl-ink);
+}
+
+.tl-btn:disabled {
+  color: var(--tl-faint);
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tl-btn-primary {
+  background: var(--tl-ink);
+  border-color: var(--tl-ink);
+  color: #fff;
+  font-weight: 600;
+  padding-inline: 1.25rem;
+}
+
+.tl-btn-primary:hover:not(:disabled) {
+  background: var(--tl-ink-soft);
+  border-color: var(--tl-ink-soft);
+  color: #fff;
+}
+
+.tl-btn-icon {
+  padding-inline: 0.7rem;
+}
+
+/* Direction toggles in the sandbox */
+.sandbox-dir-btn {
+  align-items: center;
+  background: var(--tl-paper);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+  color: var(--tl-muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 500;
+  gap: 0.35rem;
+  line-height: 1;
+  padding: 0.5rem 0.6rem;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sandbox-dir-btn:hover:not(:disabled) {
+  border-color: var(--tl-ink);
+  color: var(--tl-ink);
+}
+
+.sandbox-dir-btn[aria-pressed="true"] {
+  background: var(--tl-ink);
+  border-color: var(--tl-ink);
+  color: #fff;
+}
+
+.sandbox-dir-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+/* ==================================================================
+   Verdict
+   ================================================================== */
+
 .verdict-card {
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  border-left: 2px solid var(--tl-line);
+  padding-left: 1rem;
+  transition: border-color 0.3s ease;
 }
 
+/* ==================================================================
+   Masthead
+   ================================================================== */
+
+.tl-masthead {
+  background: transparent;
+  color: var(--tl-ink);
+}
+
+.tl-masthead a {
+  color: var(--tl-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.tl-masthead a:hover {
+  color: var(--tl-ink);
+}
