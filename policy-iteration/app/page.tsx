@@ -147,6 +147,12 @@ export default function Home() {
             answer.
           </p>
 
+          <p className="tl-note mt-6">
+            The grid world used throughout, and the worked example it is built
+            on, come from Professor George A. Lentzas&apos;s machine learning
+            and artificial intelligence course at Columbia Business School.
+          </p>
+
           {/* Contents */}
           <nav aria-label="Contents" className="mt-12">
             <p className="tl-label mb-3">Contents</p>
@@ -687,7 +693,7 @@ export default function Home() {
       <footer className="border-t border-[var(--tl-line)]">
         <div className="max-w-3xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <p className="tl-label">
-            An interactive introduction to reinforcement learning
+            Example by Professor George A. Lentzas, Columbia Business School
           </p>
           <p className="tl-label">Built with Next.js</p>
         </div>
