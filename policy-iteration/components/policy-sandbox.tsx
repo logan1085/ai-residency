@@ -6,9 +6,7 @@ import { useState, useCallback, useRef, useEffect } from "react";
 /*  Types & Constants                                                  */
 /* ------------------------------------------------------------------ */
 
-type Direction = "up" | "down" | "left" | "right";
-type Policy = Record<string, Direction>;
-type Values = Record<string, number>;
+import { type Direction, type Policy, type Values, type Completion, STATES, GOAL, ALL_CELLS, ALL_DIRS, toPos, transition, initValues, bellmanStep, hasConverged, evaluatePolicy, evaluateFrom, evaluatePolicyCounted, improvePolicy, qValue, completionStatus, finishRun } from "../lib/policy";
 
 /** What the sandbox is currently doing. */
 type Mode = "idle" | "running" | "settled";
@@ -24,145 +22,6 @@ interface PathResult {
   path: string[];
   reachesGoal: boolean;
   loops: boolean;
-}
-
-const GRID = 4;
-const STATES = Array.from({ length: 15 }, (_, i) => String(i + 1));
-const GOAL = "G";
-const ALL_CELLS = [...STATES, GOAL];
-const GAMMA = 0.9;
-
-/* ------------------------------------------------------------------ */
-/*  Position helpers                                                   */
-/* ------------------------------------------------------------------ */
-
-function toPos(s: string): [number, number] {
-  if (s === GOAL) return [3, 3];
-  const n = parseInt(s) - 1;
-  return [Math.floor(n / GRID), n % GRID];
-}
-
-function toState(r: number, c: number): string {
-  if (r === 3 && c === 3) return GOAL;
-  return String(r * GRID + c + 1);
-}
-
-/* ------------------------------------------------------------------ */
-/*  Transition function                                                */
-/* ------------------------------------------------------------------ */
-
-function transition(state: string, dir: Direction): string {
-  const [r, c] = toPos(state);
-  let nr = r,
-    nc = c;
-  if (dir === "up") nr = Math.max(0, r - 1);
-  if (dir === "down") nr = Math.min(3, r + 1);
-  if (dir === "left") nc = Math.max(0, c - 1);
-  if (dir === "right") nc = Math.min(3, c + 1);
-  return toState(nr, nc);
-}
-
-/* ------------------------------------------------------------------ */
-/*  Policy evaluation                                                  */
-/* ------------------------------------------------------------------ */
-
-function initValues(): Values {
-  const v: Values = { G: 0 };
-  for (const s of STATES) v[s] = 0;
-  return v;
-}
-
-function bellmanStep(policy: Policy, v: Values): Values {
-  const newV: Values = { G: 0 };
-  for (const s of STATES) {
-    const next = transition(s, policy[s]);
-    const reward = next === GOAL ? 0 : -1;
-    newV[s] = reward + GAMMA * v[next];
-  }
-  return newV;
-}
-
-function hasConverged(prev: Values, next: Values): boolean {
-  for (const s of STATES) {
-    if (Math.abs(prev[s] - next[s]) >= 0.001) return false;
-  }
-  return true;
-}
-
-/** Run evaluation to a fixed horizon, for exact comparisons. */
-function evaluatePolicy(policy: Policy): Values {
-  let v = initValues();
-  for (let i = 0; i < 200; i++) {
-    v = bellmanStep(policy, v);
-  }
-  return v;
-}
-
-/**
- * Evaluate to convergence and report how many sweeps it actually took,
- * so the UI can state a real number rather than a fixed horizon.
- */
-function evaluateFrom(
-  policy: Policy,
-  start: Values
-): { values: Values; sweeps: number } {
-  let v = start;
-  let sweeps = 0;
-  for (let i = 0; i < 500; i++) {
-    const next = bellmanStep(policy, v);
-    sweeps++;
-    const done = hasConverged(v, next);
-    v = next;
-    if (done) break;
-  }
-  return { values: v, sweeps };
-}
-
-function evaluatePolicyCounted(policy: Policy): {
-  values: Values;
-  sweeps: number;
-} {
-  return evaluateFrom(policy, initValues());
-}
-
-/* ------------------------------------------------------------------ */
-/*  Policy improvement: the half the sandbox was missing              */
-/* ------------------------------------------------------------------ */
-
-const ALL_DIRS: Direction[] = ["up", "right", "down", "left"];
-
-/** Score of taking `dir` from `state`, then following the current values. */
-function qValue(state: string, dir: Direction, v: Values): number {
-  const next = transition(state, dir);
-  const reward = next === GOAL ? 0 : -1;
-  return reward + GAMMA * v[next];
-}
-
-/**
- * One greedy improvement sweep: at every state, switch to the best-scoring
- * action. Ties keep the incumbent action, which is what makes the loop
- * terminate instead of oscillating between equally good policies.
- */
-function improvePolicy(
-  policy: Policy,
-  v: Values
-): { policy: Policy; changed: string[] } {
-  const next: Policy = {};
-  const changed: string[] = [];
-  for (const s of STATES) {
-    let best = policy[s];
-    let bestQ = qValue(s, policy[s], v);
-    for (const d of ALL_DIRS) {
-      const q = qValue(s, d, v);
-      if (q > bestQ + 1e-9) {
-        bestQ = q;
-        best = d;
-      }
-    }
-    next[s] = best;
-    if (best !== policy[s]) changed.push(s);
-  }
-  return { policy: next, changed };
 }
 
 /* ------------------------------------------------------------------ */
@@ -454,6 +313,7 @@ export default function PolicySandbox() {
   const [sweeps, setSweeps] = useState(0);
   const [totalSweeps, setTotalSweeps] = useState(0);
   const [round, setRound] = useState(0);
+  const [completion, setCompletion] = useState<Completion>("scored");
   const [changed, setChanged] = useState<string[]>([]);
   const [selected, setSelected] = useState<string>("1");
 
@@ -529,6 +389,11 @@ export default function PolicySandbox() {
         finish();
         return;
       }
+      if (mRound.current >= 25) {
+        setCompletion("limit");
+        finish();
+        return;
+      }
       mPhase.current = "improve";
       setPhase("improve");
       timerRef.current = setTimeout(() => tickRef.current(), PHASE_PAUSE_MS);
@@ -544,7 +409,8 @@ export default function PolicySandbox() {
       setRound(mRound.current);
       setChanged(diff);
 
-      if (diff.length === 0 || mRound.current >= 25) {
+      if (diff.length === 0) {
+        setCompletion("stable");
         finish();
         return;
       }
@@ -572,6 +438,7 @@ export default function PolicySandbox() {
     setSweeps(0);
     setTotalSweeps(0);
     setRound(0);
+    setCompletion("scored");
     setChanged([]);
     const init = initValues();
     setValues(init);
@@ -611,6 +478,7 @@ export default function PolicySandbox() {
       setSweeps(0);
       setTotalSweeps(0);
       setRound(0);
+      setCompletion("scored");
       setChanged([]);
       mFull.current = full;
       mPhase.current = "eval";
@@ -639,6 +507,7 @@ export default function PolicySandbox() {
     setPolicy(improved);
     mPolicy.current = improved;
     setChanged(diff);
+    setCompletion(diff.length === 0 ? "stable" : "improved");
 
     // Old values describe the old policy, so re-score the new one.
     const re = evaluateFrom(improved, base.values);
@@ -656,27 +525,16 @@ export default function PolicySandbox() {
 
   const skipToEnd = useCallback(() => {
     stopTimer();
-    let current = mPolicy.current;
-    let v = mValues.current;
-    let total = mTotal.current;
-    let n = mRound.current;
-    for (let i = 0; i < 25; i++) {
-      const ev = evaluateFrom(current, v);
-      v = ev.values;
-      total += ev.sweeps;
-      const { policy: improved, changed: diff } = improvePolicy(current, v);
-      n += 1;
-      if (diff.length === 0) break;
-      current = improved;
-    }
-    mPolicy.current = current;
-    setPolicy(current);
-    mValues.current = v;
-    setValues(v);
-    mTotal.current = total;
-    setTotalSweeps(total);
-    mRound.current = n;
-    setRound(n);
+    const result = finishRun(mPolicy.current, mValues.current, mFull.current, mRound.current, mTotal.current);
+    mPolicy.current = result.policy;
+    setPolicy(result.policy);
+    mValues.current = result.values;
+    setValues(result.values);
+    mTotal.current = result.total;
+    setTotalSweeps(result.total);
+    mRound.current = result.rounds;
+    setRound(result.rounds);
+    setCompletion(result.result);
     setChanged([]);
     finish();
   }, [finish, stopTimer]);
@@ -701,6 +559,7 @@ export default function PolicySandbox() {
     setTotalSweeps(s);
     mTotal.current = s;
     setRound(0);
+    setCompletion("scored");
     mRound.current = 0;
     setChanged([]);
     finish();
@@ -740,9 +599,7 @@ export default function PolicySandbox() {
         ? `Round ${round + 1} · scoring`
         : `Round ${round + 1} · scoring · sweep ${sweeps}`;
     }
-    if (round > 0)
-      return `Stable after ${round} round${round === 1 ? "" : "s"} · ${totalSweeps} sweeps total`;
-    return `Scored in ${totalSweeps} sweep${totalSweeps === 1 ? "" : "s"}`;
+    return completionStatus(completion, round, totalSweeps);
   };
 
   return (
