@@ -39,8 +39,8 @@
   --background: var(--tl-paper);
   --foreground: var(--tl-ink);
   --text-secondary: var(--tl-muted);
-  --accent: var(--tl-ink);
-  --accent-hover: var(--tl-ink-soft);
+  --accent: #23614c;
+  --accent-hover: #194b3a;
   --card-bg: var(--tl-raised);
   --card-border: var(--tl-line);
   --equation-bg: var(--tl-surface);
@@ -650,3 +650,8 @@ input[type="range"] {
 .tl-masthead a:hover {
   color: var(--tl-ink);
 }
+
+/* Match the portfolio project accent on interactive controls. */
+.tl-btn-primary, .sandbox-dir-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
+.tl-btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+input[type="range"] { accent-color: var(--accent); }
