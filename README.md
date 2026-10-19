@@ -16,6 +16,7 @@ not really happen.
 | Transformer from scratch | [`src/transformer_from_scratch.py`](src/transformer_from_scratch.py) | A 470,528-parameter GPT-style model. Embeddings, causal self-attention, pre-norm blocks, LM head, generation, plus [smoke tests](tests/test_transformer_from_scratch.py) |
 | Policy iteration explainer | [`policy-iteration/`](policy-iteration) | Policy evaluation and improvement in a grid world, stepped through by hand, built on Professor George A. Lentzas's example from his Columbia Business School course. Live at [policy-iteration.vercel.app](https://policy-iteration.vercel.app) |
 | Curriculum | [`docs/curriculum/`](docs/curriculum/index.md) | Ten modules, foundations through systems, evals, and deployment |
+| AI PM interviews | [`30-session interview track`](docs/curriculum/ai-pm-interviews.md) | One-hour sessions, practical exercises, six full mocks, and a readiness rubric |
 | Progress | [`docs/progress/`](docs/progress/index.md) | Work log, rubric, session agendas |
 
 ## Write-ups
