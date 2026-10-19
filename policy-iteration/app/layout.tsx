@@ -49,7 +49,7 @@ export default function RootLayout({
             </span>
             <a
               className="tl-eyebrow"
-              href="https://logan1085.github.io/ai-residency/"
+              href="https://www.loganzev.com/ai-research-residency"
             >
               Curriculum &#8599;
             </a>
