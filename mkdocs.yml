@@ -33,6 +33,7 @@ nav:
   - Home: index.md
   - Curriculum:
       - Overview: curriculum/index.md
+      - AI PM Interviews: curriculum/ai-pm-interviews.md
       - Roadmap: curriculum/roadmap.md
       - Module 1: curriculum/modules/module-01-transformers.md
       - Module 2: curriculum/modules/module-02-training-evaluation.md
