@@ -48,6 +48,10 @@ The residency is organized as ten modules. The sequence moves from mechanistic u
   </div>
 </div>
 
+## AI PM Interview Track
+
+For interview-focused preparation, follow the [30-session AI PM curriculum](ai-pm-interviews.md). It includes one-hour agendas, daily exercises and interview questions, six full mocks, a scoring rubric, and optional role-specific depth. It complements the research modules above.
+
 ## Operating Rhythm
 
 Each module should produce a pull request or release note with the same structure:
