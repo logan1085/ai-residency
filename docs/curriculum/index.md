@@ -50,7 +50,7 @@ The residency is organized as ten modules. The sequence moves from mechanistic u
 
 ## AI PM Interview Track
 
-For interview-focused preparation, follow the [30-session AI PM curriculum](ai-pm-interviews.md). It includes one-hour agendas, daily exercises and interview questions, six full mocks, a scoring rubric, and optional role-specific depth. It complements the research modules above.
+Follow the [100-hour study and interview outline](ai-pm-interviews.md): modeling Days 1–9 (27 hours), agents Days 10–13 (12 hours), building Days 14–18 (15 hours), hardware/evals Days 19–20 (6 hours), then interviews (40 hours). Current learning is Day 1 neural nets; completion of the research modules above is not established. Exact activities from Mark Cinali’s guide remain unverified. The earlier 30-hour adaptation is retained as a supplemental exercise bank.
 
 ## Operating Rhythm
 

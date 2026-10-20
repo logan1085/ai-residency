@@ -16,7 +16,7 @@ not really happen.
 | Transformer from scratch | [`src/transformer_from_scratch.py`](src/transformer_from_scratch.py) | A 470,528-parameter GPT-style model. Embeddings, causal self-attention, pre-norm blocks, LM head, generation, plus [smoke tests](tests/test_transformer_from_scratch.py) |
 | Policy iteration explainer | [`policy-iteration/`](policy-iteration) | Policy evaluation and improvement in a grid world, stepped through by hand, built on Professor George A. Lentzas's example from his Columbia Business School course. Live at [policy-iteration.vercel.app](https://policy-iteration.vercel.app) |
 | Curriculum | [`docs/curriculum/`](docs/curriculum/index.md) | Ten modules, foundations through systems, evals, and deployment |
-| AI PM interviews | [`30-session interview track`](docs/curriculum/ai-pm-interviews.md) | One-hour sessions, practical exercises, six full mocks, and a readiness rubric |
+| AI PM interviews | [`100-hour study and interview outline`](docs/curriculum/ai-pm-interviews.md) | 20 technical study units (60 hours), interview preparation (40 hours), and a supplemental exercise bank |
 | Progress | [`docs/progress/`](docs/progress/index.md) | Work log, rubric, session agendas |
 
 ## Write-ups
@@ -35,12 +35,9 @@ The code is the record. These are the explanations.
 
 ## Where this is up to
 
-Foundations are done. The transformer is written and tested, policy iteration
-is built and shipped.
+Current learning is **Day 1: neural nets**, following the [study checklist](docs/curriculum/ai-pm-interviews.md). Foundations are learning goals, not established as complete.
 
-Current work is GRPO and RL post-training. How a group of sampled completions
-supplies an advantage baseline without a learned critic, and what that signal
-does when every completion in a group turns out to be wrong.
+The repo contains a transformer implementation, tests, and a policy-iteration explainer. These artifacts do not by themselves demonstrate independent understanding. Prior exposure to GRPO and RL post-training remains material to revisit; progress and mastery need evidence from explanations and applied work.
 
 ## Local development
 

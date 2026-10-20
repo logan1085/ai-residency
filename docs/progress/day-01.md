@@ -1,4 +1,14 @@
-# Day 1: Write a Transformer From Scratch
+# Day 1: Neural Nets
+
+**Current status: in progress; mastery not yet established.** Follow the [active checklist](../curriculum/ai-pm-interviews.md). Day 1 is a study unit in the modeling phase, not a calendar date. The phase budgets three hours per unit, which can span multiple sittings.
+
+The exact Day 1 activities from Mark Cinali’s guide are unavailable. These are local coaching suggestions: explain inputs, weights, activations, predictions, and loss in your own words; distinguish training from inference; try a small example; record corrections and open questions. Do not treat prior code or exposure as proof of understanding.
+
+## Earlier transformer build agenda — reference only
+
+The agenda below is preserved from the original research residency. It is a later implementation exercise, not the current Day 1 requirement or a verified activity from Mark’s guide. Its timings and references to “Day 1” belong to that earlier agenda.
+
+# Original agenda: Write a Transformer From Scratch
 
 Day 1 should be hands-on, but not buried in details from the first minute. The reference implementation exists so you have a destination and tests, but the main work is to understand the transformer story, then write the model yourself.
 
