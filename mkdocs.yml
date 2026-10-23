@@ -33,7 +33,8 @@ nav:
   - Home: index.md
   - Curriculum:
       - Overview: curriculum/index.md
-      - AI PM Interviews: curriculum/ai-pm-interviews.md
+      - AI Learning and Interviews: curriculum/ai-pm-interviews.md
+      - AI PM Daily Activities: curriculum/ai-pm-activity-guide.md
       - Roadmap: curriculum/roadmap.md
       - Module 1: curriculum/modules/module-01-transformers.md
       - Module 2: curriculum/modules/module-02-training-evaluation.md
@@ -46,6 +47,8 @@ nav:
       - Module 9: curriculum/modules/module-09-systems-deployment.md
       - Module 10: curriculum/modules/module-10-capstone.md
   - Progress:
+      - AI PM Study Log: progress/ai-pm-study-log.md
+      - AI PM Question Ledger: progress/ai-pm-question-ledger.md
       - Dashboard: progress/index.md
       - Work Log: progress/log.md
       - Mastery Rubric: progress/rubric.md
